@@ -1,7 +1,8 @@
 import Vue from 'vue'
 import Router from 'vue-router'
-import HelloWorld from '@/components/HelloWorld'
 import Home from '@/views/home'
+import Receive from '@/views/receive'
+import ReceiveSuccess from '@/views/receivesuccess'
 
 Vue.use(Router)
 
@@ -14,9 +15,13 @@ export default new Router({
       name: 'Home',
       component: Home
     }, {
-      path: '/hello',
-      name: 'HelloWorld',
-      component: HelloWorld
+      path: '/receive',
+      name: 'Receive',
+      component: Receive
+    }, {
+      path: '/success',
+      name: 'ReceiveSuccess',
+      component: ReceiveSuccess
     }
   ]
 })
