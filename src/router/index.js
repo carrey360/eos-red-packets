@@ -3,6 +3,11 @@ import Router from 'vue-router'
 import Home from '@/views/home'
 import Receive from '@/views/receive'
 import ReceiveSuccess from '@/views/receivesuccess'
+import Account from '@/views/account'
+import ACTransfer from '@/views/ACTransfer'
+import Detail from '@/views/detail'
+import Payment from '@/views/detail/payment.vue'
+import About from '@/views/about'
 
 Vue.use(Router)
 
@@ -22,6 +27,26 @@ export default new Router({
       path: '/success',
       name: 'ReceiveSuccess',
       component: ReceiveSuccess
+    }, {
+      path: '/account',
+      name: 'Account',
+      component: Account
+    }, {
+      path: '/acTransfer',
+      name: 'ACTransfer',
+      component: ACTransfer
+    }, {
+      path: '/detail',
+      name: 'Detail',
+      component: Detail
+    }, {
+      path: '/payment',
+      name: 'Payment',
+      component: Payment
+    }, {
+      path: '/about',
+      name: 'About',
+      component: About
     }
   ]
 })

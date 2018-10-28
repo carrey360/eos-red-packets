@@ -3,14 +3,15 @@ import Vue from 'vue'
 
 Vue.use(Vuex)
 
-const state = {}
-const getters = {}
-const mutations = {}
-
 const store = new Vuex.Store({
-  state,
-  getters,
-  mutations
+  state: {
+    code: '3333'
+  },
+  mutations: {
+    'setCode': (state, data) => {
+      state.code = data.code
+    }
+  }
 })
 
 export default store

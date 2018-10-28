@@ -30,24 +30,27 @@
     <div class="error-tip" v-if="showError">{{ errorMsg }}</div>
     <div class="input-account">
       <input placeholder="请输入您的账号" v-model="account"/>
-      <div class="no-account">还没有账号？<a href="/">创建</a></div>
+      <div class="no-account">还没有账号？<a href="/account">创建</a></div>
       <div class="button" @click="receive">领取</div>
     </div>
+    <loading v-show='showLoading'></loading>
   </div>
 </template>
 
 <script>
 import topBar from '@/components/topBar'
 import IconFont from '@/components/Iconfont'
+import loading from '@/components/loading'
 
 export default {
   name: 'receive',
-  components: { topBar, IconFont },
+  components: { topBar, IconFont, loading },
   data () {
     return {
       account: '',
       showError: false,
-      errorMsg: '账号错误'
+      errorMsg: '账号错误',
+      showLoading: false
     }
   },
   methods: {
@@ -83,6 +86,7 @@ export default {
       font-size rem(12)
       color #5D4220
       margin-top rem(8)
+      text-align center
       .amount
         font-size rem(16)
         margin 0 rem(6)
@@ -125,19 +129,22 @@ export default {
   .inner-div
     height rem(160)
   .error-tip
+    max-width 750px
     background-color #FFEAED
     text-align center
     color #CE2344
     font-size 12px
     position fixed
-    left 0
+    // left 0
     bottom rem(160)
     height rem(34)
     line-height rem(34)
     width 100%
   .input-account
+    text-align center
     position fixed
-    left 0
+    max-width 750px
+    // left 0
     bottom 0
     -webkit-transform translateZ(0)
     height rem(160)
@@ -145,9 +152,12 @@ export default {
     background-color #CE2344
     input
       margin-top rem(16)
-      padding rem(18) 0 rem(18) rem(16)
-      width 85%
+      // padding rem(18) rem(16)
+      padding-left 16px
+      height 56px
+      width calc(100% - 48px)
       border 0 none
+      border-radius 2px
       &::placeholder
         color #C9C2B7
       &:focus
@@ -156,7 +166,8 @@ export default {
       text-align right
       color #ffffff
       margin-top 4px
-      margin-right rem(18)
+      padding-right rem(16)
+      // width calc(100% - 32px)
       font-size 12px
       a
         text-decoration none
@@ -171,5 +182,4 @@ export default {
       color #A69987
       font-size rem(14)
       margin 0 auto
-      margin-top rem(16)
 </style>
