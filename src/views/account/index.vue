@@ -3,7 +3,8 @@
     <topBar title="创建账号"></topBar>
     <div class="account-content">
       <div class="title"><p>账号</p></div>
-      <input class="account-name common-input" type="text" placeholder="请输入账号名称" v-model="userInput.accountName"/>
+      <LimitInput placeholder="请输入账号名称" :isNumber="false" v-model="userInput.accountName"/>
+      <!-- <input class="account-name common-input" type="text" placeholder="请输入账号名称" v-model="userInput.accountName"/> -->
       <div class="input-tip">12位字符，需包含数字1-5和字母a-z两种元素</div>
 
       <div class="title"><p>公钥</p><p class="copy" v-if="userInput.publicKey">复制</p><p class="copy" @click="createKey" v-else>生成新公钥</p></div>
@@ -44,10 +45,10 @@ import topBar from '@/components/topBar'
 import modal from '@/components/dialog'
 import loading from '@/components/loading'
 import ecc from 'eosjs-ecc'
-
+import LimitInput from '@/components/LimitInput'
 export default {
   name: 'account',
-  components: { topBar, modal, loading },
+  components: { topBar, modal, loading, LimitInput },
   data () {
     return {
       modalData: {
