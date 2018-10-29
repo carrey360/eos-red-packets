@@ -11,7 +11,7 @@
       <div class="text-box">
         <p><span>收款账户</span><span>复制</span></p>
         <div class="text">
-          <input disabled="disabled" type="text" value="hb" />
+          <input disabled="disabled" type="text" value="固定账号" />
         </div>
       </div>
       <div class="text-box">
