@@ -2,10 +2,18 @@
   <div class="red-envelope">
     <top-bar title="发红包" />
     <tab :card-show="false" @click="handleTabClick">
-      <tab-item name="first" label="普通红包" />
-      <tab-item name="secound" label="拼手气红包" />
+      <tab-item name="1" label="普通红包" />
+      <tab-item name="2" label="拼手气红包" />
     </tab>
     <div class="red-envelope_wrap">
+      <div class="red-input">
+        <span>红包金额</span>
+        <div>
+          <input placeholder="0.001" type="number" v-model="redInfo.amount"/>
+          <span>EOS</span>
+        </div>
+      </div>
+
       <div class="red-input">
         <span>红包个数</span>
         <div>
@@ -13,13 +21,7 @@
           <span>个</span>
         </div>
       </div>
-      <div class="red-input">
-        <span>红包金额</span>
-        <div>
-          <input placeholder="填写红包金额" type="number" v-model="redInfo.amount"/>
-          <span>EOS</span>
-        </div>
-      </div>
+
       <div class="red-textarea">
         <textarea placeholder="恭喜发财，大吉大利" v-model="redInfo.blessing"></textarea>
       </div>
@@ -49,21 +51,34 @@ export default {
   },
   data () {
     return {
+      curTab: 1,
       redInfo: {
         number: '',
-        amount: ''
+        amount: '',
+        blessing: ''
       }
     }
   },
-  created () {
-    console.log(utils.getUUID())
-  },
   methods: {
     handleSubmit () {
-      this.$router.push({path: `/myred`})
+      if (!this.redInfo.number) {
+        window.tip('请输入红包个数')
+        return false
+      } else if (!this.redInfo.amount) {
+        window.tip('请输入红包金额')
+        return false
+      } else if ((this.redInfo.amount / this.redInfo.number) < 0.001) {
+        window.tip('单个红包金额不可低于0.001EOS')
+        return false
+      }
+      let uuid = utils.getUUID()
+      // COUPONCREATE-红包id-红包类型-红包个数-pubkey-祝福语
+      let packetStr = 'COUPONCREATE-' + uuid + '-' + this.curTab + '-' + this.redInfo.number + '-' + localStorage.getItem(this.$store.state.redPubKeyName) + '-' + this.redInfo.blessing
+
+      this.$router.push({path: 'myred', query: {packetStr}})
     },
     handleTabClick (value) {
-      console.log(value, 'tab点击')
+      this.curTab = value
     }
   }
 }

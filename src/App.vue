@@ -6,11 +6,19 @@
 
 <script>
 import * as tip from '@/utils/tips'
+import ecc from 'eosjs-ecc'
 
 export default {
   name: 'App',
   created () {
     window['tip'] = tip
+    // 如果第一次进来系统生成唯一的key
+    if (!localStorage.getItem(this.$store.state.redPubKeyName)) {
+      ecc.randomKey().then(privateKey => {
+        localStorage.setItem(this.$store.state.redPriKeyName, privateKey)
+        localStorage.setItem(this.$store.state.redPubKeyName, ecc.privateToPublic(privateKey))
+      })
+    }
   }
 }
 </script>

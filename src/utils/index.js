@@ -4,5 +4,5 @@ function S4 () {
 }
 // 生成UUID
 export function getUUID () {
-  return (S4() + S4() + '-' + S4() + '-' + S4() + '-' + S4() + '-' + S4() + S4() + S4())
+  return (S4() + S4() + S4() + S4() + S4() + S4() + S4() + S4())
 }

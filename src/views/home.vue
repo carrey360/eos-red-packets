@@ -8,19 +8,18 @@
     </div>
     <div class="title">麒麟 EOS 红包</div>
     <router-link to="red"><div class="send-packet">发红包</div></router-link>
-    <div class="sum-info">红包数：1299333  &nbsp;&nbsp;&nbsp;红包:21212</div>
+    <div class="sum-info">红包数:1299333  &nbsp;&nbsp;&nbsp;红包总额:21212EOS</div>
     <div class="lang">EN/CN</div>
     <div class="action">
-      <span @click="packeted">我发的红包</span><span class="tip">|</span>
-      <span><a href="/account">创建EOS账号</a></span><span class="tip">|</span>
-      <span><a href="/about">关于我们</a></span>
+      <span><router-link to="redlist">我发的红包</router-link></span><span class="tip">|</span>
+      <span><router-link to="account">创建EOS账号</router-link></span><span class="tip">|</span>
+      <span><router-link to="about">关于我们</router-link></span>
     </div>
     <div class="decoration"><img src="../assets/decoration.png" /></div>
   </div>
 </template>
 
 <script>
-
 export default {
   name: 'home',
   data () {
@@ -31,9 +30,6 @@ export default {
     }
   },
   methods: {
-    packeted () {
-      window.tip('asdfasf')
-    },
     go () {
       if (!this.code) {
         window.tip('请输入code')

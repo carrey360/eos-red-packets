@@ -11,13 +11,13 @@
       <div class="text-box">
         <p><span>收款账户</span><span>复制</span></p>
         <div class="text">
-          <input disabled="disabled" type="text" value="xiaoyezi1234" />
+          <input disabled="disabled" type="text" value="hb.huobi" />
         </div>
       </div>
       <div class="text-box">
         <p><span>备注</span><span>复制</span></p>
         <div class="text">
-          <textarea disabled="disabled" cols="3" rows="6">5200asdfhjkl- 5KYZdUEo39z3FPrtuX2QbbwGnNP5zTd7yyr2SC1j299sBCnWjss</textarea>
+          <textarea disabled="disabled" cols="3" rows="6" v-model="packetStr"></textarea>
         </div>
       </div>
       <div class="my-red_btn">
@@ -33,6 +33,15 @@ export default {
   name: 'my-red',
   components: {
     TopBar, MyButton
+  },
+  data () {
+    return {
+      packetStr: ''
+    }
+  },
+  created () {
+    let query = this.$route.query
+    this.packetStr = query.packetStr
   }
 }
 </script>
