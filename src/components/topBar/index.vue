@@ -1,9 +1,9 @@
 <template>
   <div class="top-bar-warrap">
     <div>
-      <IconFont name="icon-fanhui" type="class" class="iconfont"/>
-      <div class="title">{{title}}</div>
-      <div><IconFont name="icon-shouye" type="class" class="iconfont"/></div>
+      <p @click="goback"><IconFont name="icon-fanhui" type="class" class="iconfont"/></p>
+      <div class="title">{{ title }}</div>
+      <div><p @click="home" v-show="showHome"><IconFont name="icon-shouye" type="class" class="iconfont home"/></p></div>
     </div>
   </div>
 </template>
@@ -15,9 +15,20 @@ export default {
   name: 'top-bar',
   components: { IconFont },
   props: {
+    showHome: {
+      default: false
+    },
     title: {
       type: String,
       default: ''
+    }
+  },
+  methods: {
+    goback () {
+      this.$router.go(-1)
+    },
+    home () {
+      this.$router.push('/')
     }
   }
 }
@@ -39,4 +50,6 @@ export default {
   .iconfont
     color #fff
     font-size 16px
+    &.home
+      font-size 20px
 </style>

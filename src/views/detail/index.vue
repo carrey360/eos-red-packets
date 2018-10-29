@@ -6,15 +6,24 @@
       <div class="from">From HIf528fed125</div>
       <div class="total">Total<span class="amount">256.6666</span> EOS <span class="luck">luck</span></div>
       <div class="blessing">恭喜发财恭喜发财恭喜发财恭喜发财恭喜发财恭喜发财恭喜发财恭喜发财恭喜发财恭喜发财</div>
-      <div class="receive-info">
-        <div>0.2586<span>EOS</span></div>
-        <div>保存到您的EOS账号</div>
-      </div>
       <div class="send-time">
         <div>创建时间：2018-10-17 09:56</div>
         <div class="status"><IconFont name="icon-loudoudaojishi" type="svg" class="iconfont"/> 12:35</div>
       </div>
     </div>
+
+    <div class="copy-content">
+      <div class="title"><p>账号</p><p class="copy">复制</p></div>
+      <div class="tip">Use this code to serch the packet amount</div>
+      <div class="common-input"></div>
+
+      <div class="title"><p>红包串号</p><p class="copy">复制</p></div>
+      <div class="tip">Share this code to your friends via IM</div>
+      <div class="packet-number common-input"></div>
+    </div>
+
+    <div class="fengeline"></div>
+
     <div class="amount-info">Redeemed 4/5, 99.8547/256.666 EOS</div>
     <ul class="receive-list">
       <li><div>HIf528fed125</div><div>0.1254 EOS</div></li>
@@ -42,18 +51,24 @@ export default {
   components: { topBar, IconFont },
   data () {
     return {
-      showError: true,
+      account: '',
+      showError: false,
       errorMsg: '账号错误'
     }
   },
   methods: {
     receive () {
-      this.showError = true
-      let timeout = ''
-      timeout = setTimeout(() => {
-        this.showError = false
-        clearTimeout(timeout)
-      }, 1000)
+      if (this.account) {
+        this.$router.push('success')
+      } else {
+        this.showError = true
+        this.errorMsg = '请输入账号'
+        let timeout = ''
+        timeout = setTimeout(() => {
+          this.showError = false
+          clearTimeout(timeout)
+        }, 1000)
+      }
     }
   }
 }
@@ -97,7 +112,7 @@ export default {
     .send-time
       display flex
       justify-content space-between
-      padding rem(10) rem(16) rem(16)
+      padding rem(16)
       font-size rem(12)
       color #C9C2B7
       .status
@@ -109,23 +124,36 @@ export default {
     text-align left
     color #A69987
     border-bottom 1px solid #F9F9F9
-  .receive-info
-    padding-top rem(6)
-    background url(../../assets/success-bg.png) no-repeat 0 0
-    height rem(94)
+  .copy-content
     margin 0 rem(16)
-    background-size cover
-    border 1px dashed #E6DFD9
-    color #A69987
+    padding-bottom rem(16)
+    .tip
+      color #C9C2B7
+      margin 2px 0 8px 0
+      font-size 12px
+  .title
+    margin-top rem(24)
+    display flex
+    justify-content space-between
     font-size 12px
-    text-align center
-    & > div:first-child
-      margin-top rem(8)
-      font-size rem(44)
-      color #5D4220
-      span
-        font-size 12px
-        margin-left rem(12)
+    color #5D4220
+    .copy
+      color #288EFB
+      font-size 14px
+  .common-input
+    width calc(100% - 10px)
+    border 0 none
+    padding-left 10px
+    margin-top 4px
+    height rem(74)
+    background-color #F8F8F8
+  .packet-number
+    height rem(158)
+    background-color #FFFCDD
+  .fengeline
+    height 8px
+    width 100%
+    background-color #F8F8F8
   .receive-list
     li
       padding 0 rem(16)

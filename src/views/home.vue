@@ -2,22 +2,20 @@
   <div class="home-warrap">
     <div class="top">
       <img class="bg" src="../assets/home.png" />
-      <div class="code"><textarea placeholder="请输入"></textarea></div>
+      <div class="code"><textarea placeholder="请输入" v-model="code"></textarea></div>
       <div class="button" @click="go">GO!</div>
       <img class="logo" src="../assets/logo.png"/>
     </div>
     <div class="title">麒麟 EOS 红包</div>
     <div class="send-packet">发红包</div>
     <div class="sum-info">红包数：1299333  &nbsp;&nbsp;&nbsp;红包:21212</div>
-    <div class="lang">EN</div>
-    <div class="decoration">
-      <div class="action">
-        <span @click="packeted">我发的红包</span><span class="tip">|</span>
-        <span>创建EOS账号</span><span class="tip">|</span>
-        <span>关于我们</span>
-      </div>
-      <img src="../assets/decoration.png" />
+    <div class="lang">EN/CN</div>
+    <div class="action">
+      <span @click="packeted">我发的红包</span><span class="tip">|</span>
+      <span><a href="/account">创建EOS账号</a></span><span class="tip">|</span>
+      <span><a href="/about">关于我们</a></span>
     </div>
+    <div class="decoration"><img src="../assets/decoration.png" /></div>
   </div>
 </template>
 
@@ -28,7 +26,8 @@ export default {
   data () {
     return {
       errorTip: false,
-      message: 'sadfasf'
+      message: 'sadfasf',
+      code: ''
     }
   },
   methods: {
@@ -36,7 +35,12 @@ export default {
       window.tip('asdfasf')
     },
     go () {
-      this.$router.push('receive')
+      if (!this.code) {
+        window.tip('请输入code')
+      } else {
+        this.$store.commit('setCode', {code: this.code})
+        this.$router.push('receive')
+      }
     }
   }
 }
@@ -45,7 +49,7 @@ export default {
 <style lang="stylus" scoped>
 .home-warrap
   background-color #CF2546
-  font-family PingFangSC-Regular
+  text-align center
   .top
     position relative
     left 0
@@ -83,7 +87,7 @@ export default {
       color rgba(255,247,193,1)
       position absolute
       left 50%
-      bottom 80px
+      bottom 70px
       transform translateX(-50%)
     .logo
       position absolute
@@ -128,23 +132,21 @@ export default {
     text-align center
     margin-left 50%
     transform translateX(-50%)
-  .decoration
+  .action
     position relative
-    left 0
-    bottom 0
-    img
-      width 100%
-      position relative
-      top -40px
-      z-index 1
-    .action
-      position relative
-      z-index 2
-      margin-top 15px
+    z-index 2
+    margin-top 15px
+    color rgba(252,219,178,1)
+    font-size 12px
+    opacity 0.7
+    .tip
+      margin 0 10px
+    a
+      text-decoration none
       color rgba(252,219,178,1)
-      font-size 12px
-      opacity 0.7
-      .tip
-        margin 0 10px
-
+  .decoration
+    background-color #CF2546
+    margin-top -50px
+    img
+      width 90%
 </style>
