@@ -4,7 +4,7 @@
       <div ref="headerTab" class="tabs__header_wrap">
         <div v-for="(item, index) in tabList" :key="index"
             :class="{activate: activeIndex === index}"
-            @click="(e) => handleClick(e,index)">
+            @click="(e) => handleClick(e,index, item.name)">
           {{item.label}}
         </div>
         <div ref="line" class="tabs_active_line"></div>
@@ -35,7 +35,7 @@ export default {
     }
   },
   mounted () {
-    console.log(this, 'dddddd')
+    console.log(this.tabList, 'item.name')
     this.$nextTick(() => {
       // 初始化主体内容
       for (let i = 0; i < this.$refs.contentTab.children.length; i++) {
@@ -56,7 +56,7 @@ export default {
     })
   },
   methods: {
-    handleClick (e, index) {
+    handleClick (e, index, name) {
       const { clientWidth, offsetLeft } = e.target
       this.$refs.line.style.width = `${clientWidth - 48}px`
       this.$refs.line.style.transform = `translateX(${offsetLeft + 12}px)`
@@ -68,6 +68,8 @@ export default {
           this.$refs.contentTab.children[i].style.display = ''
         }
       }
+      console.log(name, 'name')
+      this.$emit('click', name || index)
     }
   }
 }
