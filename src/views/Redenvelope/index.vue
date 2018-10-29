@@ -1,9 +1,9 @@
 <template>
   <div class="red-envelope">
     <top-bar title="发红包" />
-    <tab :card-show="false">
-      <tab-item label="普通红包" />
-      <tab-item label="拼手气红包" />
+    <tab :card-show="false" @click="handleTabClick">
+      <tab-item name="first" label="普通红包" />
+      <tab-item name="secound" label="拼手气红包" />
     </tab>
     <div class="red-envelope_wrap">
       <div class="red-input">
@@ -23,7 +23,8 @@
       <div class="red-textarea">
         <textarea placeholder="恭喜发财，大吉大利" v-model="redInfo.blessing"></textarea>
       </div>
-      <p class="warn-title">红包金额以实际转账为准</p>
+      <p class="warn-title"><span>红包金额以实际转账为准</span> <a href="/redabout"><Iconfont name="icon-bangzhutishi" /></a></p>
+
       <div class="submit">
         <my-button @click="handleSubmit" label="塞钱进红包" />
       </div>
@@ -39,11 +40,12 @@ import Tab from '@/components/Tab'
 import TabItem from '@/components/Tab/tabItem'
 import MyButton from '@/components/Button'
 import * as utils from '@/utils/'
+import Iconfont from '@/components/Iconfont'
 
 export default {
   name: 'red-envelope',
   components: {
-    TopBar, Tab, TabItem, MyButton
+    TopBar, Tab, TabItem, MyButton, Iconfont
   },
   data () {
     return {
@@ -59,6 +61,9 @@ export default {
   methods: {
     handleSubmit () {
       this.$router.push({path: `/myred`})
+    },
+    handleTabClick (value) {
+      console.log(value, 'tab点击')
     }
   }
 }
@@ -79,6 +84,9 @@ export default {
       margin-bottom rem(20)
       ::placeholder
         color #C9C2B7
+      span
+        color #5D4220
+        font-size rem(16)
       input
         border-radius 4px
         border none
@@ -115,6 +123,12 @@ export default {
       color #5D4220
       font-size rem(12)
       margin-top 4px
+      display flex
+      justify-content space-between
+      svg
+        width 16px
+        height 16px
+        margin-top 8px
     .submit
       margin-top 70px
   .warn-foot

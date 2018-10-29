@@ -4,12 +4,14 @@ import Home from '@/views/home'
 import Receive from '@/views/receive'
 import ReceiveSuccess from '@/views/receivesuccess'
 import Redenvelope from '@/views/Redenvelope'
-import MyRedenvelope from '@/views/MyRedenvelope'
+import MyRedenvelope from '@/views/Redenvelope/myred'
 import Account from '@/views/account'
 import ACTransfer from '@/views/ACTransfer'
 import Detail from '@/views/detail'
 import Payment from '@/views/detail/payment.vue'
 import About from '@/views/about'
+import RedList from '@/views/Redenvelope/redlist'
+import RedAbout from '@/views/Redenvelope/redabout'
 
 Vue.use(Router)
 
@@ -57,6 +59,14 @@ export default new Router({
       path: '/about',
       name: 'About',
       component: About
+    }, {
+      path: '/redlist',
+      name: 'RedList',
+      component: RedList
+    }, {
+      path: '/redabout',
+      name: 'Redabout',
+      component: RedAbout
     }
   ]
 })

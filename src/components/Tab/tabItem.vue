@@ -10,6 +10,10 @@ export default {
     label: {
       type: String,
       default: ''
+    },
+    name: {
+      type: String,
+      default: ''
     }
   },
   beforeCreate () {
