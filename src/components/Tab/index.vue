@@ -67,7 +67,6 @@ export default {
           this.$refs.contentTab.children[i].style.display = ''
         }
       }
-      console.log(name, 'name')
       this.$emit('click', name || index)
     }
   }

@@ -6,22 +6,10 @@
       <tab-item name="2" label="拼手气红包" />
     </tab>
     <div class="red-envelope_wrap">
-      <div class="red-input">
-        <span>红包金额</span>
-        <div>
-          <input placeholder="0.001" type="number" v-model="redInfo.amount"/>
-          <span>EOS</span>
-        </div>
-      </div>
-
-      <div class="red-input">
-        <span>红包个数</span>
-        <div>
-          <input placeholder="填写个数" type="number" v-model="redInfo.number"/>
-          <span>个</span>
-        </div>
-      </div>
-
+      <LimitInput numberType="int" placeholder="填写个数" left-label="红包个数" right-label="个"
+                v-model="redInfo.number" />
+      <LimitInput numberType="float" placeholder="填写红包金额" left-label="红包金额" right-label="EOS"
+                v-model="redInfo.amount" />
       <div class="red-textarea">
         <textarea placeholder="恭喜发财，大吉大利" v-model="redInfo.blessing"></textarea>
       </div>
@@ -43,11 +31,11 @@ import TabItem from '@/components/Tab/tabItem'
 import MyButton from '@/components/Button'
 import * as utils from '@/utils/'
 import Iconfont from '@/components/Iconfont'
-
+import LimitInput from '@/components/LimitInput'
 export default {
   name: 'red-envelope',
   components: {
-    TopBar, Tab, TabItem, MyButton, Iconfont
+    TopBar, Tab, TabItem, MyButton, Iconfont, LimitInput
   },
   data () {
     return {
@@ -87,37 +75,6 @@ export default {
 .red-envelope
   &_wrap
     padding 24px 16px
-    .red-input
-      background-color #F8F8F8
-      height rem(26)
-      display flex
-      align-items center
-      justify-content space-between
-      padding 16px
-      font-size rem(16)
-      border-radius 3px
-      margin-bottom rem(20)
-      ::placeholder
-        color #C9C2B7
-      span
-        color #5D4220
-        font-size rem(16)
-      input
-        border-radius 4px
-        border none
-        box-sizing border-box
-        color #606266
-        display inline-block
-        font-size inherit
-        height 100%
-        outline none
-        padding 0 10px 0 15px
-        background-color #F8F8F8
-        text-align right
-      input::-webkit-outer-spin-button, input::-webkit-inner-spin-button
-        -webkit-appearance none
-      input[type="number"]
-        -moz-appearance textfield
     .red-textarea
       margin-top 24px
       background-color #F8F8F8
