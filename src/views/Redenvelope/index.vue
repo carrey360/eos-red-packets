@@ -8,8 +8,8 @@
     <div class="red-envelope_wrap">
       <LimitInput numberType="int" placeholder="填写个数" left-label="红包个数" right-label="个"
                 v-model="redInfo.number" />
-      <LimitInput numberType="float" placeholder="填写红包金额" left-label="红包金额" right-label="EOS"
-                v-model="redInfo.amount" />
+      <!-- <LimitInput numberType="float" placeholder="填写红包金额" left-label="红包金额" right-label="EOS"
+                v-model="redInfo.amount" /> -->
       <div class="red-textarea">
         <textarea placeholder="恭喜发财，大吉大利" v-model="redInfo.blessing"></textarea>
       </div>
@@ -51,12 +51,6 @@ export default {
     handleSubmit () {
       if (!this.redInfo.number) {
         window.tip('请输入红包个数')
-        return false
-      } else if (!this.redInfo.amount) {
-        window.tip('请输入红包金额')
-        return false
-      } else if ((this.redInfo.amount / this.redInfo.number) < 0.001) {
-        window.tip('单个红包金额不可低于0.001EOS')
         return false
       }
       let uuid = utils.getUUID()

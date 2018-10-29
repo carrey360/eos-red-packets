@@ -9,7 +9,7 @@
     </div>
     <div class="exchange-content">
       <div class="title"><p>收款账号</p><p class="copy">复制</p></div>
-      <div class="common-content">hb.huobi</div>
+      <div class="common-content">hb</div>
 
       <div class="title"><p>转账金额</p></div>
       <div class="common-content">0.62<span class="unit">EOS</span></div>
