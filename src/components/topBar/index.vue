@@ -2,7 +2,7 @@
   <div class="top-bar-warrap">
     <div>
       <IconFont name="icon-fanhui" type="class" class="iconfont"/>
-      <div class="title">领取红包</div>
+      <div class="title">{{title}}</div>
       <div><IconFont name="icon-shouye" type="class" class="iconfont"/></div>
     </div>
   </div>
@@ -13,7 +13,13 @@ import IconFont from '@/components/Iconfont'
 
 export default {
   name: 'top-bar',
-  components: { IconFont }
+  components: { IconFont },
+  props: {
+    title: {
+      type: String,
+      default: ''
+    }
+  }
 }
 </script>
 

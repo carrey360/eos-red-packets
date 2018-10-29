@@ -3,6 +3,8 @@ import Router from 'vue-router'
 import Home from '@/views/home'
 import Receive from '@/views/receive'
 import ReceiveSuccess from '@/views/receivesuccess'
+import Redenvelope from '@/views/Redenvelope'
+import MyRedenvelope from '@/views/MyRedenvelope'
 
 Vue.use(Router)
 
@@ -22,6 +24,14 @@ export default new Router({
       path: '/success',
       name: 'ReceiveSuccess',
       component: ReceiveSuccess
+    }, {
+      path: '/red',
+      name: 'Redenvelope',
+      component: Redenvelope
+    }, {
+      path: '/myred',
+      name: 'MyRedenvelope',
+      component: MyRedenvelope
     }
   ]
 })
