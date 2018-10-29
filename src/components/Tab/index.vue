@@ -35,7 +35,6 @@ export default {
     }
   },
   mounted () {
-    console.log(this, 'dddddd')
     this.$nextTick(() => {
       // 初始化主体内容
       for (let i = 0; i < this.$refs.contentTab.children.length; i++) {

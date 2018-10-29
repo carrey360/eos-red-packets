@@ -9,13 +9,13 @@
     </div>
     <div class="exchange-content">
       <div class="title"><p>收款账号</p><p class="copy">复制</p></div>
-      <div class="common-content">asdfaf</div>
+      <div class="common-content">hb.huobi</div>
 
-      <div class="title"><p>公钥</p></div>
-      <div class="common-content">asdfasdf</div>
+      <div class="title"><p>转账金额</p></div>
+      <div class="common-content">0.62<span class="unit">EOS</span></div>
 
-      <div class="title"><p>私钥</p><p class="copy">复制</p></div>
-      <div class="packet-number common-content">asdfasdf</div>
+      <div class="title"><p>备注</p><p class="copy">复制</p></div>
+      <div class="packet-number common-content">{{ remark }}</div>
     </div>
   </div>
 </template>
@@ -28,8 +28,15 @@ export default {
   components: { topBar },
   data () {
     return {
-      showHome: true
+      showHome: true,
+      remark: ''
     }
+  },
+  created () {
+    let query = this.$route.query
+    console.log(query)
+    // ACCOUNTCREATE-账号名-公钥
+    this.remark = 'ACCOUNTCREATE-' + query.accountName + '-' + query.publicKey
   },
   methods: {
     create () {
@@ -66,13 +73,17 @@ export default {
       .copy
         color #288EFB
     .common-content
-      width calc(100% - 10px)
+      width calc(100% - 20px)
       border 0 none
-      padding-left 10px
+      padding 10px
       margin-top 4px
-      height rem(48)
-      line-height rem(48)
+      height rem(28)
       background-color #F8F8F8
+      word-break break-all
+      font-size 16px
+      .unit
+        font-size 12px
+        margin-left 6px
     .packet-number
       height rem(92)
       background-color #F8F8F8

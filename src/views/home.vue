@@ -7,7 +7,7 @@
       <img class="logo" src="../assets/logo.png"/>
     </div>
     <div class="title">麒麟 EOS 红包</div>
-    <div class="send-packet">发红包</div>
+    <router-link to="red"><div class="send-packet">发红包</div></router-link>
     <div class="sum-info">红包数：1299333  &nbsp;&nbsp;&nbsp;红包:21212</div>
     <div class="lang">EN/CN</div>
     <div class="action">
@@ -50,6 +50,8 @@ export default {
 .home-warrap
   background-color #CF2546
   text-align center
+  a
+    text-decoration none
   .top
     position relative
     left 0

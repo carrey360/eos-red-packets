@@ -9,12 +9,19 @@
       <div class="red-input">
         <span>红包个数</span>
         <div>
-          <input placeholder="填写个数" type="number" dir='rtl' />
+          <input placeholder="填写个数" type="number" v-model="redInfo.number"/>
           <span>个</span>
         </div>
       </div>
+      <div class="red-input">
+        <span>红包金额</span>
+        <div>
+          <input placeholder="填写红包金额" type="number" v-model="redInfo.amount"/>
+          <span>EOS</span>
+        </div>
+      </div>
       <div class="red-textarea">
-        <textarea placeholder="恭喜发财，大吉大利" ></textarea>
+        <textarea placeholder="恭喜发财，大吉大利" v-model="redInfo.blessing"></textarea>
       </div>
       <p class="warn-title">红包金额以实际转账为准</p>
       <div class="submit">
@@ -31,10 +38,23 @@ import TopBar from '@/components/topBar'
 import Tab from '@/components/Tab'
 import TabItem from '@/components/Tab/tabItem'
 import MyButton from '@/components/Button'
+import * as utils from '@/utils/'
+
 export default {
   name: 'red-envelope',
   components: {
     TopBar, Tab, TabItem, MyButton
+  },
+  data () {
+    return {
+      redInfo: {
+        number: '',
+        amount: ''
+      }
+    }
+  },
+  created () {
+    console.log(utils.getUUID())
   },
   methods: {
     handleSubmit () {
@@ -56,6 +76,7 @@ export default {
       padding 16px
       font-size rem(16)
       border-radius 3px
+      margin-bottom rem(20)
       ::placeholder
         color #C9C2B7
       input
@@ -69,6 +90,7 @@ export default {
         outline none
         padding 0 10px 0 15px
         background-color #F8F8F8
+        text-align right
       input::-webkit-outer-spin-button, input::-webkit-inner-spin-button
         -webkit-appearance none
       input[type="number"]

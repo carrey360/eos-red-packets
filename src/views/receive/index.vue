@@ -30,7 +30,7 @@
     <div class="error-tip" v-if="showError">{{ errorMsg }}</div>
     <div class="input-account">
       <input placeholder="请输入您的账号" v-model="account"/>
-      <div class="no-account">还没有账号？<a href="/account">创建</a></div>
+      <div class="no-account">还没有账号？<router-link to="account">创建</router-link></div>
       <div class="button" @click="receive">领取</div>
     </div>
     <loading v-show='showLoading'></loading>

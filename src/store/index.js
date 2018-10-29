@@ -5,10 +5,15 @@ Vue.use(Vuex)
 
 const store = new Vuex.Store({
   state: {
-    code: '3333'
+    code: ''
+  },
+  getters: {
+    getCode: (state) => state.code
   },
   mutations: {
     'setCode': (state, data) => {
+      console.log(data)
+      console.log(state)
       state.code = data.code
     }
   }
