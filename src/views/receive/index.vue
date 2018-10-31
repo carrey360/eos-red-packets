@@ -11,7 +11,7 @@
       <div class="blessing">{{ info.memo }}</div>
       <div class="send-time">
         <div>{{$t('创建时间')}}：{{ info.expire | formatDate('YYYY-MM-DD HH:mm') }}</div>
-        <div class="status"><IconFont name="icon-loudoudaojishi" type="svg" class="iconfont"/> 12:35</div>
+        <div class="status"><count-down v-if="info.countDate" :count-date="info.countDate"/></div>
       </div>
     </div>
     <div class="amount-info">{{$t('兑换')}} {{ info.data.length }}/{{ info.limit }}, 99.8547/{{ info.amount }}</div>
@@ -21,9 +21,9 @@
     <div class="inner-div"></div>
     <div class="error-tip" v-if="showError">{{ errorMsg }}</div>
     <div class="input-account">
-      <LimitInput class="input" placeholder="请输入您的账号" :isNumber="false" v-model="account"/>
-      <div class="no-account">{{$t('还没有EOS账号')}}?<router-link to="account">{{$t('创建')}}</router-link></div>
-      <div class="button" @click="receive">领取</div>
+      <LimitInput class="input" :placeholder="$t('请输入您的账号')" :isNumber="false" v-model="account"/>
+      <div class="no-account">{{$t('还没有EOS账号')}} ? <router-link to="account">{{$t('创建')}}</router-link></div>
+      <div class="button" @click="receive">{{$t('领取')}}</div>
     </div>
     <loading v-show='showLoading'></loading>
   </div>
@@ -36,19 +36,20 @@ import loading from '@/components/loading'
 import LimitInput from '@/components/LimitInput'
 import { formatDate } from '@/utils/filter'
 import { formatePacket } from '@/utils/'
-// import { Api, JsonRpc, JsSignatureProvider } from 'eosjs'
-// import { TextDecoder, TextEncoder } from 'text-encoding'
-import { JsonRpc } from 'eosjs'
+import CountDown from '@/components/Countdown'
+import { Api, JsonRpc, JsSignatureProvider } from 'eosjs'
+import { TextDecoder, TextEncoder } from 'text-encoding'
 
 export default {
   name: 'receive',
-  components: { topBar, IconFont, loading, LimitInput },
+  components: {topBar, IconFont, loading, LimitInput, CountDown},
   data () {
     return {
       account: '',
       showError: false,
-      errorMsg: '账号错误',
+      errorMsg: '',
       showLoading: false,
+      rpcJson: '',
       info: {
         id: '',
         type: '',
@@ -74,45 +75,56 @@ export default {
       key_type: 'i64',
       index_position: '1'
     }
-    const rpc = new JsonRpc(this.$store.state.eosjsConfig.endpoint)
-    // const signatureProvider = new JsSignatureProvider([this.$store.state.defaultPrivateKey])
-    // const api = new Api({rpc, signatureProvider, textDecoder: new TextDecoder(), textEncoder: new TextEncoder()})
-    this.getTableRows(rpc, params)
-    // this.transact(api)
+    this.rpcJson = new JsonRpc(this.$store.state.eosjsConfig.endpoint)
+    this.getTableRows(this.rpcJson, params)
   },
   methods: {
     async getTableRows (rpc, params) {
       const response = await rpc.get_table_rows(params)
       if (response.rows) {
-        this.info = response.rows[0]
+        let result = response.rows[0]
+        let nowTime = parseInt((new Date()).getTime() / 1000)
+        if (result.expire > nowTime) {
+          result.countDate = result.expire - nowTime
+        }
+        result.expire = result.expire - 24 * 60 * 60
+        this.info = result
       }
     },
-    async transact (api) {
+    // 执行动作
+    getTransact () {
+      const signatureProvider = new JsSignatureProvider([this.$store.state.defaultPrivateKey])
+      const api = new Api({rpc: this.rpcJson, signatureProvider, textDecoder: new TextDecoder(), textEncoder: new TextEncoder()})
+      this.transact(api)
+    },
+    // 调用eosjs-api-get
+    async getTransactAction (api) {
+      let formatCodeJson = formatePacket(this.$store.state.code)
+      let params = {
+        receiver: this.account,
+        id: formatCodeJson.id,
+        sig: formatCodeJson.sign
+      }
       const result = await api.transact({
         actions: [{
-          account: 'eosio.token',
-          name: 'transfer',
-          authorization: [{
-            actor: this.$store.state.defaultAccount,
-            permission: 'active'
-          }],
-          data: {
-            from: this.$store.state.defaultAccount,
-            to: 'eoshuobipool',
-            quantity: '1.0000 EOS',
-            memo: ''
-          }
+          account: this.$store.state.tranAccountName,
+          name: 'get',
+          authorization: [{actor: this.$store.state.defaultAccount, permission: 'active'}],
+          data: params
         }]
-      }, {
-        blocksBehind: 3,
-        expireSeconds: 300
-      })
-      console.log(result, '-=-=-=')
+      }, {blocksBehind: 3, expireSeconds: 300})
+
+      if (result && result.transaction_id) {
+        this.$router.push({path: 'success', query: {id: this.info.id, accountName: this.account}})
+      } else {
+        window.tip(result.error)
+      }
     },
     receive () {
+      // 验证输入账号是否正确
       if (!this.account) {
         this.showError = true
-        this.errorMsg = '请输入账号'
+        this.errorMsg = this.$t('请输入账号名称')
         let timeout = ''
         timeout = setTimeout(() => {
           this.showError = false
@@ -120,14 +132,15 @@ export default {
         }, 1000)
       } else if (this.account.length !== 12) {
         this.showError = true
-        this.errorMsg = '请输入12位有效账号'
+        this.errorMsg = this.$t('请输入12位有效账号')
         let timeout = ''
         timeout = setTimeout(() => {
           this.showError = false
           clearTimeout(timeout)
         }, 1000)
       } else {
-        this.$router.push('success')
+        // 有账号领取
+        this.getTransact()
       }
     }
   },
@@ -249,5 +262,5 @@ export default {
       border-radius rem(20)
       color #5D4220
       font-size rem(14)
-      margin 0 auto
+      margin 10px auto
 </style>

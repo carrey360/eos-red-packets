@@ -2,21 +2,21 @@
   <div class="account-warrap">
     <topBar title="创建账号"></topBar>
     <div class="account-content">
-      <div class="title"><p>账号</p></div>
-      <LimitInput placeholder="请输入账号名称" :isNumber="false" v-model="userInput.accountName"/>
+      <div class="title"><p>{{$t('账号')}}</p></div>
+      <LimitInput :placeholder="$t('请输入您的账号')" :isNumber="false" v-model="userInput.accountName"/>
       <!-- <input class="account-name common-input" type="text" placeholder="请输入账号名称" v-model="userInput.accountName"/> -->
-      <div class="input-tip">12位字符，需包含数字1-5和字母a-z两种元素</div>
+      <div class="input-tip">{{$t('12位字符，需包含数字1-5和字母a-z两种元素')}}</div>
 
-      <div class="title"><p>公钥</p><p class="copy" @click="createKey">生成新公钥</p></div>
+      <div class="title"><p>{{$t('公钥')}}</p><p class="copy" @click="createKey">{{$t('生成新公钥')}}</p></div>
       <textarea class="public-key common-input" placeholder="请输入新账号所有者的公钥" v-model="userInput.publicKey"></textarea>
       <div class="input-tip">所有者和使用者公钥相同</div>
 
       <div class="title">
-        <p>私钥</p>
-        <p v-if="userInput.privateKey" class="copy privateKey" :data-clipboard-text="userInput.privateKey" @click="copy('.privateKey')">复制</p>
+        <p>{{$t('私钥')}}</p>
+        <p v-if="userInput.privateKey" class="copy privateKey" :data-clipboard-text="userInput.privateKey" @click="copy('.privateKey')">{{$t('复制')}}</p>
       </div>
       <div class="private-key common-input">{{ userInput.privateKey }}</div>
-      <div class="input-tip red">不要透露给任何人</div>
+      <div class="input-tip red">{{$t('不要透露给任何人')}}</div>
 
       <div class="title"><p>红包串号(选填)</p></div>
       <textarea class="packet-number common-input" v-model="packetNumber"></textarea>
@@ -61,9 +61,9 @@ export default {
     return {
       modalData: {
         'showDailog': false,
-        'title': '提示',
-        'content': '确定私钥已保存安全位置',
-        'btn': [{text: '否'}, {text: '是'}]
+        'title': this.$t('提示'),
+        'content': '',
+        'btn': [{text: this.$t('否')}, {text: this.$t('是')}]
       },
       packetNumber: this.$store.state.code,
       showLoading: false,
@@ -90,18 +90,18 @@ export default {
     },
     create () {
       if (!this.userInput.accountName) {
-        window.tip('请输入账号名称')
+        window.tip(this.$t('请输入账号名称'))
         return false
       } else if (this.userInput.accountName.length !== 12) {
-        window.tip('请输入12位有效账号')
+        window.tip(this.$t('请输入12位有效账号'))
         return false
       } else if (!this.userInput.publicKey) {
-        window.tip('请输入公钥')
+        window.tip(this.$t('请输入公钥'))
         return false
       }
       let formatCode = formatePacket(this.packetNumber)
       if (this.userInput.privateKey) {
-        this.modalData.content = '确定私钥已保存安全位置'
+        this.modalData.content = this.$t('确定私钥已保存安全位置')
         this.modalData.showDailog = true
       } else if (formatCode.isMemo) {
         this.packetCreate()
@@ -153,7 +153,7 @@ export default {
     copy (className) {
       var clipboard = new Clipboard(className)
       clipboard.on('success', e => {
-        window.tip('复制成功')
+        window.tip(this.$t('复制成功'))
         // 释放内存
         clipboard.destroy()
       })

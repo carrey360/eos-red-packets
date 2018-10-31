@@ -11,17 +11,17 @@
       </div>
       <div class="blessing">{{ info.memo }}</div>
       <div class="receive-info">
-        <div>0.2586<span>EOS</span></div>
-        <div>保存到您的EOS账号</div>
+        <div>{{ claimAmount }}</div>
+        <div>{{$t('保存到您的EOS账号')}}</div>
       </div>
       <div class="send-time">
-        <div>创建时间：{{ info.expire | formatDate('YYYY-MM-DD HH:mm') }}</div>
+        <div>{{$t('创建时间')}}：{{ info.expire | formatDate('YYYY-MM-DD HH:mm') }}</div>
         <div class="status"><count-down v-if="info.countDate" :count-date="info.countDate"/></div>
       </div>
     </div>
     <div class="amount-info">{{$t('兑换')}} {{ info.data.length }}/{{ info.limit }}, 99.8547/{{ info.amount }}</div>
     <ul class="receive-list">
-      <li v-for="(item, key) in info.data" :key="key"><div>HIf528fed125</div><div>0.1254 EOS</div></li>
+      <li v-for="(item, key) in info.data" :key="key" :class="item.isCurUser ? 'active' : ''"><div>HIf528fed125</div><div>0.1254 EOS</div></li>
     </ul>
     <loading v-if='showLoading'></loading>
   </div>
@@ -31,15 +31,19 @@
 import topBar from '@/components/topBar'
 import IconFont from '@/components/Iconfont'
 import CountDown from '@/components/Countdown'
+import loading from '@/components/loading'
 import { formatDate } from '@/utils/filter'
+import { JsonRpc } from 'eosjs'
 
 export default {
   name: 'receive',
-  components: { topBar, IconFont, CountDown },
+  components: { topBar, IconFont, CountDown, loading },
   data () {
     return {
       showHome: true,
       showLoading: true,
+      curAccountName: '',
+      claimAmount: '',
       info: {
         id: '',
         type: '',
@@ -50,6 +54,44 @@ export default {
         memo: '',
         expire: 0,
         data: []
+      }
+    }
+  },
+  created () {
+    let query = this.$route.query
+    this.curAccountName = query.accountName
+    let params = {
+      json: true,
+      code: this.$store.state.tranAccountName,
+      scope: this.$store.state.tranAccountName,
+      table: 'coupons',
+      lower_bound: query.id,
+      limit: 1,
+      key_type: 'i64',
+      index_position: '1'
+    }
+    const rpc = new JsonRpc(this.$store.state.eosjsConfig.endpoint)
+    this.getTableRows(rpc, params)
+  },
+  methods: {
+    async getTableRows (rpc, params) {
+      const response = await rpc.get_table_rows(params)
+      if (response.rows) {
+        let result = response.rows[0]
+        let nowTime = parseInt((new Date()).getTime() / 1000)
+        if (result.expire > nowTime) {
+          result.countDate = result.expire - nowTime
+        }
+        result.expire = result.expire - 24 * 60 * 60
+        result.data.map(item => {
+          if (item.user === this.curAccountName) {
+            item.isCurUser = true
+            this.claimAmount = item.amount
+          }
+          return item
+        })
+        this.info = result
+        this.showLoading = false
       }
     }
   },
@@ -138,4 +180,6 @@ export default {
       align-items center
       justify-content space-between
       border-bottom 1px solid #F9F9F9
+      &.active
+        color #CE2344
 </style>

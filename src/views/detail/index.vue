@@ -11,7 +11,7 @@
       </div>
       <div class="blessing">{{ info.memo }}</div>
       <div class="send-time">
-        <div>创建时间：{{ info.expire | formatDate('YYYY-MM-DD HH:mm') }}</div>
+        <div>{{$t('创建时间')}}：{{ info.expire | formatDate('YYYY-MM-DD HH:mm') }}</div>
         <!-- <div class="status"><IconFont name="icon-loudoudaojishi" type="svg" class="iconfont"/> 12:35</div> -->
         <div class="status"><count-down v-if="info.countDate" :count-date="info.countDate"/></div>
       </div>
@@ -88,7 +88,7 @@ export default {
     copy (className) {
       var clipboard = new Clipboard(className)
       clipboard.on('success', e => {
-        window.tip('复制成功')
+        window.tip(this.$t('复制成功'))
         // 释放内存
         clipboard.destroy()
       })

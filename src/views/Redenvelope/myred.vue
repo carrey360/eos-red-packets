@@ -9,19 +9,19 @@
         目前明确支持的交易所有 OTCBTC、Gate.io、Chaince、 Bitfinex、OKcoin，请不要从其他交易所转入，避免财产损失
       </div>
       <div class="text-box">
-        <p><span>收款账户</span><span class="account" :data-clipboard-text="account" @click="copy('.account')">复制</span></p>
+        <p><span>收款账户</span><span class="account" :data-clipboard-text="account" @click="copy('.account')">{{$t('复制')}}</span></p>
         <div class="text">
           <input disabled="disabled" type="text" :value="account" />
         </div>
       </div>
       <div class="text-box">
-        <p><span>备注</span><span class="remark" :data-clipboard-text="remark" @click="copy('.remark')">复制</span></p>
+        <p><span>备注</span><span class="remark" :data-clipboard-text="remark" @click="copy('.remark')">{{$t('复制')}}</span></p>
         <div class="text">
           <textarea disabled="disabled" cols="3" rows="6" v-model="remark"></textarea>
         </div>
       </div>
       <div class="text-box" v-show="packetStr">
-        <p><span>红包串号</span><span class="packetStr" :data-clipboard-text="packetStr" @click="copy('.packetStr')">复制</span></p>
+        <p><span>红包串号</span><span class="packetStr" :data-clipboard-text="packetStr" @click="copy('.packetStr')">{{$t('复制')}}</span></p>
         <div class="text">
           <textarea disabled="disabled" cols="3" rows="6" v-model="packetStr"></textarea>
         </div>
@@ -76,7 +76,7 @@ export default {
     copy (className) {
       var clipboard = new Clipboard(className)
       clipboard.on('success', e => {
-        window.tip('复制成功')
+        window.tip(this.$t('复制成功'))
         // 释放内存
         clipboard.destroy()
       })
