@@ -11,14 +11,19 @@
     "build": "node build/build.js"
   },
   "dependencies": {
+    "clipboard": "^2.0.1",
+    "dayjs": "^1.7.5",
+    "eosjs": "^20.0.0-beta2",
     "eosjs-ecc": "^4.0.4",
-    "eosjs": "^16.0.9",
+    "scatterjs-core": "^2.3.8",
+    "text-encoding": "^0.6.4",
     "vue": "^2.5.2",
     "vue-i18n": "^7.8.0",
     "vue-router": "^3.0.1",
     "vuex": "^3.0.1"
   },
   "devDependencies": {
+    "@babel/runtime": "^7.1.2",
     "autoprefixer": "^7.1.2",
     "babel-core": "^6.22.1",
     "babel-eslint": "^8.2.1",

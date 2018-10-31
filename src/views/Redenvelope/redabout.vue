@@ -1,6 +1,6 @@
 <template>
   <div class="red-about">
-    <top-bar title="" />
+    <top-bar title="红包简介" :showHome="showHome"/>
     <div class="red-about_wrap">
       <h2>普通红包</h2>
       <p>一对一或者一对多发送，在设置好红包个数并转账总金额到指定账户之后，会生成固定金额的红包，在分享给好友或群发后，每个被领取的红包金额相同。</p>
@@ -13,7 +13,12 @@
 import TopBar from '@/components/topBar'
 export default {
   name: 'red-about',
-  components: { TopBar }
+  components: { TopBar },
+  data () {
+    return {
+      showHome: true
+    }
+  }
 }
 </script>
 <style lang="stylus" scoped>

@@ -10,7 +10,7 @@ import ecc from 'eosjs-ecc'
 
 export default {
   name: 'App',
-  created () {
+  mounted () {
     window['tip'] = tip
     // 如果第一次进来系统生成唯一的key
     if (!localStorage.getItem(this.$store.state.redPubKeyName)) {

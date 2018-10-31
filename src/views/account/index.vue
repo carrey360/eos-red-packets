@@ -7,16 +7,19 @@
       <!-- <input class="account-name common-input" type="text" placeholder="请输入账号名称" v-model="userInput.accountName"/> -->
       <div class="input-tip">12位字符，需包含数字1-5和字母a-z两种元素</div>
 
-      <div class="title"><p>公钥</p><p class="copy" v-if="userInput.publicKey">复制</p><p class="copy" @click="createKey" v-else>生成新公钥</p></div>
+      <div class="title"><p>公钥</p><p class="copy" @click="createKey">生成新公钥</p></div>
       <textarea class="public-key common-input" placeholder="请输入新账号所有者的公钥" v-model="userInput.publicKey"></textarea>
       <div class="input-tip">所有者和使用者公钥相同</div>
 
-      <div class="title"><p>私钥</p><p class="copy">复制保存</p></div>
+      <div class="title">
+        <p>私钥</p>
+        <p v-if="userInput.privateKey" class="copy privateKey" :data-clipboard-text="userInput.privateKey" @click="copy('.privateKey')">复制</p>
+      </div>
       <div class="private-key common-input">{{ userInput.privateKey }}</div>
       <div class="input-tip red">不要透露给任何人</div>
 
-      <div class="title"><p>红包串号(选填){{ $store.state.code }}</p></div>
-      <textarea class="packet-number common-input" v-model="userInput.packetNumber"></textarea>
+      <div class="title"><p>红包串号(选填)</p></div>
+      <textarea class="packet-number common-input" v-model="packetNumber"></textarea>
 
       <div class="account-tip">
         <p>创建提示</p>
@@ -36,7 +39,7 @@
       <div class="button" @click="create">创建账号</div>
     </div>
     <modal v-show="modalData.showDailog" :modalData="modalData" @leftBtnAction="leftBtnAction" @rightBtnAction="rightBtnAction"></modal>
-    <loading v-show='showLoading'></loading>
+    <loading v-if='showLoading'></loading>
   </div>
 </template>
 
@@ -46,6 +49,11 @@ import modal from '@/components/dialog'
 import loading from '@/components/loading'
 import ecc from 'eosjs-ecc'
 import LimitInput from '@/components/LimitInput'
+import { formatePacket } from '@/utils/'
+import Clipboard from 'clipboard'
+import { Api, JsonRpc, JsSignatureProvider } from 'eosjs'
+import { TextDecoder, TextEncoder } from 'text-encoding'
+
 export default {
   name: 'account',
   components: { topBar, modal, loading, LimitInput },
@@ -66,25 +74,69 @@ export default {
       }
     }
   },
+  created () {
+  },
   methods: {
     leftBtnAction () {
       this.modalData.showDailog = false
     },
     rightBtnAction () {
-      this.$router.push({path: 'acTransfer', query: this.userInput})
+      let formatCode = formatePacket(this.packetNumber)
+      if (formatCode.isMemo) {
+        this.packetCreate()
+      } else {
+        this.$router.push({path: 'acTransfer', query: this.userInput})
+      }
     },
     create () {
       if (!this.userInput.accountName) {
         window.tip('请输入账号名称')
         return false
+      } else if (this.userInput.accountName.length !== 12) {
+        window.tip('请输入12位有效账号')
+        return false
       } else if (!this.userInput.publicKey) {
         window.tip('请输入公钥')
         return false
       }
+      let formatCode = formatePacket(this.packetNumber)
       if (this.userInput.privateKey) {
         this.modalData.content = '确定私钥已保存安全位置'
+        this.modalData.showDailog = true
+      } else if (formatCode.isMemo) {
+        this.packetCreate()
+      } else {
+        this.$router.push({path: 'acTransfer', query: this.userInput})
       }
-      this.modalData.showDailog = true
+    },
+    packetCreate () {
+      const rpc = new JsonRpc(this.$store.state.eosjsConfig.endpoint)
+      const signatureProvider = new JsSignatureProvider([this.$store.state.defaultPrivateKey])
+      const api = new Api({rpc, signatureProvider, textDecoder: new TextDecoder(), textEncoder: new TextEncoder()})
+      this.packetCreateAction(api)
+    },
+    async packetCreateAction (api) {
+      let formatCode = formatePacket(this.packetNumber)
+
+      let params = {
+        account_to_create: this.userInput.accountName,
+        owner_key: this.userInput.publicKey,
+        active_key: this.userInput.publicKey,
+        id: formatCode.uuid,
+        sig: formatCode.sign
+      }
+      const result = await api.transact({
+        actions: [{
+          account: this.$store.state.tranAccountName,
+          name: 'create',
+          authorization: [{actor: this.$store.state.defaultAccount, permission: 'active'}],
+          data: params
+        }]
+      }, {blocksBehind: 3, expireSeconds: 300})
+      // 跳转
+      if (result && result.transaction_id) {
+        this.$router.push({path: 'acTransfer', query: this.userInput})
+      }
     },
     createKey () {
       this.showLoading = true
@@ -96,6 +148,20 @@ export default {
         }).catch(() => {
           this.showLoading = false
         })
+      })
+    },
+    copy (className) {
+      var clipboard = new Clipboard(className)
+      clipboard.on('success', e => {
+        window.tip('复制成功')
+        // 释放内存
+        clipboard.destroy()
+      })
+      clipboard.on('error', e => {
+        // 不支持复制
+        window.tip('该浏览器不支持自动复制')
+        // 释放内存
+        clipboard.destroy()
       })
     }
   }
@@ -111,7 +177,7 @@ export default {
       margin-top rem(24)
       display flex
       justify-content space-between
-      font-size 12px
+      font-size 14px
       color #5D4220
       .copy
         color #288EFB
@@ -122,6 +188,7 @@ export default {
       padding 10px
       margin-top 4px
       word-break break-all
+      resize none
       &:focus
         outline none
       &::placeholder

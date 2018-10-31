@@ -37,15 +37,19 @@ export default {
 <style lang="stylus" scoped>
 .top-bar-warrap
   background-color #CE2344
+  padding 0
+  margin 0
   & > div
     height 44px
     line-height 44px
     display flex
     align-items center
     justify-content space-between
+    align-items center
     padding 0 rem(15)
     .title
       font-size rem(16)
+      line-height 44px
       color rgba(255,255,255,1)
   .iconfont
     color #fff

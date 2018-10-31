@@ -9,19 +9,30 @@
         目前明确支持的交易所有 OTCBTC、Gate.io、Chaince、 Bitfinex、OKcoin，请不要从其他交易所转入，避免财产损失
       </div>
       <div class="text-box">
-        <p><span>收款账户</span><span>复制</span></p>
+        <p><span>收款账户</span><span class="account" :data-clipboard-text="account" @click="copy('.account')">复制</span></p>
         <div class="text">
-          <input disabled="disabled" type="text" value="固定账号" />
+          <input disabled="disabled" type="text" :value="account" />
         </div>
       </div>
       <div class="text-box">
-        <p><span>备注</span><span>复制</span></p>
+        <p><span>备注</span><span class="remark" :data-clipboard-text="remark" @click="copy('.remark')">复制</span></p>
+        <div class="text">
+          <textarea disabled="disabled" cols="3" rows="6" v-model="remark"></textarea>
+        </div>
+      </div>
+      <div class="text-box" v-show="packetStr">
+        <p><span>红包串号</span><span class="packetStr" :data-clipboard-text="packetStr" @click="copy('.packetStr')">复制</span></p>
         <div class="text">
           <textarea disabled="disabled" cols="3" rows="6" v-model="packetStr"></textarea>
         </div>
       </div>
-      <div class="my-red_btn">
-        <my-button label="我塞的红包" />
+      <div class="my-red_btn_wrapp">
+        <div v-show="showScatterTransform" @click="transform">
+          <my-button label="转账" />
+        </div>
+        <div>
+          <router-link to="redlist"><my-button label="我塞的红包"/></router-link>
+        </div>
       </div>
     </div>
   </div>
@@ -29,6 +40,10 @@
 <script>
 import TopBar from '@/components/topBar'
 import MyButton from '@/components/Button'
+import Clipboard from 'clipboard'
+import ScatterJS from 'scatterjs-core'
+import ecc from 'eosjs-ecc'
+
 export default {
   name: 'my-red',
   components: {
@@ -36,12 +51,57 @@ export default {
   },
   data () {
     return {
-      packetStr: ''
+      remark: '',
+      packetStr: '',
+      showScatterTransform: false,
+      scatter: '',
+      account: this.$store.state.tranAccountName,
+      scatterNetwork: this.$store.state.scatterNetwork
     }
   },
   created () {
     let query = this.$route.query
-    this.packetStr = query.packetStr
+    this.remark = query.packetStr
+
+    ScatterJS.scatter.connect(this.$store.state.projectName).then(connected => {
+      if (!connected) return false
+      this.scatter = ScatterJS.scatter
+      window.scatter = null
+      this.showScatterTransform = true
+    }).catch(e => {
+      this.showScatterTransform = false
+    })
+  },
+  methods: {
+    copy (className) {
+      var clipboard = new Clipboard(className)
+      clipboard.on('success', e => {
+        window.tip('复制成功')
+        // 释放内存
+        clipboard.destroy()
+      })
+      clipboard.on('error', e => {
+        // 不支持复制
+        window.tip('该浏览器不支持自动复制')
+        // 释放内存
+        clipboard.destroy()
+      })
+    },
+    transform () {
+      const tokenDetails = {contract: 'eosio.token', symbol: 'EOS', memo: this.remark, decimals: 4}
+      this.scatter.requestTransfer(this.scatterNetwork, this.account, this.$route.query.amount + '', tokenDetails).then(result => {
+        if (result && result.transaction_id) {
+          window.tip('转账成功')
+          let query = this.$route.query
+          let params = query.uuid + '_' + query.type + '_queqiqueqiaa_' + query.blessing
+          let privarekey = localStorage.getItem(this.$store.state.redPriKeyName)
+          this.packetStr = ecc.sign(params, privarekey)
+          this.showScatterTransform = false
+        } else {
+          window.tip(result.error || '创建失败')
+        }
+      })
+    }
   }
 }
 </script>
@@ -84,6 +144,12 @@ export default {
           width 100%
           height 100%
           resize none
-    .my-red_btn
-      margin-top 64px
+    .my-red_btn_wrapp
+      margin-top 32px
+      display flex
+      justify-content space-between
+      & > div
+        width 100%
+        &:first-child
+          margin-right 10px
 </style>

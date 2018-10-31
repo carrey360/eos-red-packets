@@ -1,59 +1,61 @@
 <template>
   <div class="receive-warrap">
-    <topBar></topBar>
+    <topBar title="领红包" :showHome="showHome"></topBar>
     <div class="dispatch-info">
       <img src="@/assets/red-top.png"/>
-      <div class="from">From HIf528fed125</div>
-      <div class="total">Total<span class="amount">256.6666</span> EOS <span class="luck">luck</span></div>
-      <div class="blessing">恭喜发财恭喜发财恭喜发财恭喜发财恭喜发财恭喜发财恭喜发财恭喜发财恭喜发财恭喜发财</div>
+      <div class="from">From {{ info.sender }}</div>
+      <div class="total">
+        Total<span class="amount">{{ info.amount }}</span>
+        <span v-if="info.type == 3" class="luck">{{$t('普')}}</span>
+        <span class="share" v-if="info.type == 4">{{$t('拼')}}</span>
+      </div>
+      <div class="blessing">{{ info.memo }}</div>
       <div class="receive-info">
         <div>0.2586<span>EOS</span></div>
         <div>保存到您的EOS账号</div>
       </div>
       <div class="send-time">
-        <div>创建时间：2018-10-17 09:56</div>
-        <div class="status"><IconFont name="icon-loudoudaojishi" type="svg" class="iconfont"/> 12:35</div>
+        <div>创建时间：{{ info.expire | formatDate('YYYY-MM-DD HH:mm') }}</div>
+        <div class="status"><count-down v-if="info.countDate" :count-date="info.countDate"/></div>
       </div>
     </div>
-    <div class="amount-info">Redeemed 4/5, 99.8547/256.666 EOS</div>
+    <div class="amount-info">{{$t('兑换')}} {{ info.data.length }}/{{ info.limit }}, 99.8547/{{ info.amount }}</div>
     <ul class="receive-list">
-      <li><div>HIf528fed125</div><div>0.1254 EOS</div></li>
-      <li><div>HIf528fed125</div><div>0.1254 EOS</div></li>
-      <li><div>HIf528fed125</div><div>0.1254 EOS</div></li>
-      <li><div>HIf528fed125</div><div>0.1254 EOS</div></li>
-      <li><div>HIf528fed125</div><div>0.1254 EOS</div></li>
-      <li><div>HIf528fed125</div><div>0.1254 EOS</div></li>
-      <li><div>HIf528fed125</div><div>0.1254 EOS</div></li>
-      <li><div>HIf528fed125</div><div>0.1254 EOS</div></li>
-      <li><div>HIf528fed125</div><div>0.1254 EOS</div></li>
-      <li><div>HIf528fed125</div><div>0.1254 EOS</div></li>
-      <li><div>HIf528fed125</div><div>0.1254 EOS</div></li>
-      <li><div>HIf528fed125</div><div>0.1254 EOS</div></li>
+      <li v-for="(item, key) in info.data" :key="key"><div>HIf528fed125</div><div>0.1254 EOS</div></li>
     </ul>
+    <loading v-if='showLoading'></loading>
   </div>
 </template>
 
 <script>
 import topBar from '@/components/topBar'
 import IconFont from '@/components/Iconfont'
+import CountDown from '@/components/Countdown'
+import { formatDate } from '@/utils/filter'
 
 export default {
   name: 'receive',
-  components: { topBar, IconFont },
+  components: { topBar, IconFont, CountDown },
   data () {
     return {
-      showError: true,
-      errorMsg: '账号错误'
+      showHome: true,
+      showLoading: true,
+      info: {
+        id: '',
+        type: '',
+        limit: '',
+        sender: '',
+        pubkey: '',
+        amount: '',
+        memo: '',
+        expire: 0,
+        data: []
+      }
     }
   },
-  methods: {
-    receive () {
-      this.showError = true
-      let timeout = ''
-      timeout = setTimeout(() => {
-        this.showError = false
-        clearTimeout(timeout)
-      }, 1000)
+  filters: {
+    formatDate (value, pattern) {
+      return formatDate(value, pattern)
     }
   }
 }

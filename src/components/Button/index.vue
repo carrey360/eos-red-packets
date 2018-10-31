@@ -28,4 +28,5 @@ export default {
   font-size rem(16)
   color #5D4220
   font-weight 400
+  border-radius 2px
 </style>

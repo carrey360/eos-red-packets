@@ -13,32 +13,35 @@ export default {
   },
   data () {
     return {
-      time: ''
+      time: '',
+      seconds: ''
     }
   },
   created () {
-    let time = this.countDate
+    this.seconds = this.countDate
     let _that = this
+    this.countDown(this.seconds)
     setInterval(function () {
-      // var nowtime = new Date()
-      // var time = Math.abs(starttime - nowtime)
-      // var day = parseInt(time / 1000 / 60 / 60 / 24) // 天
+      _that.countDown(_that.seconds)
+    }, 60000)
+  },
+  methods: {
+    countDown (time) {
       let hour = parseInt(time / 60 / 60) // 小时
       let minute = parseInt(time / 60 % 60) // 分钟
-      let seconds = parseInt(time % 60) // 秒
       hour = hour < 10 ? `0${hour}` : hour
       minute = minute < 10 ? `0${minute}` : minute
-      seconds = seconds < 10 ? `0${seconds}` : seconds
-      time--
-      _that.time = `${hour}:${minute}:${seconds}`
-    }, 1000)
+      time = time - 60
+      this.seconds = time
+      this.time = `${hour}:${minute}`
+    }
   }
 }
 </script>
 <style lang="stylus" scoped>
 .count-down
   color #FF9200
-  background-color rgba(255, 146, 0, 0.1)
+  background-color #FFF5E8
   padding 2px 3px
   font-weight 500
   display flex

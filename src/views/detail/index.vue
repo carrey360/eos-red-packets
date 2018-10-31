@@ -1,74 +1,125 @@
 <template>
   <div class="receive-warrap">
-    <topBar></topBar>
+    <topBar title="红包详情" :showHome="showHome"></topBar>
     <div class="dispatch-info">
       <img src="@/assets/red-top.png"/>
-      <div class="from">From HIf528fed125</div>
-      <div class="total">Total<span class="amount">256.6666</span> EOS <span class="luck">luck</span></div>
-      <div class="blessing">恭喜发财恭喜发财恭喜发财恭喜发财恭喜发财恭喜发财恭喜发财恭喜发财恭喜发财恭喜发财</div>
+      <div class="from">From {{ info.sender }}</div>
+      <div class="total">
+        Total<span class="amount">{{ info.amount }}</span>
+        <span v-if="info.type == 3" class="luck">{{$t('普')}}</span>
+        <span class="share" v-if="info.type == 4">{{$t('拼')}}</span>
+      </div>
+      <div class="blessing">{{ info.memo }}</div>
       <div class="send-time">
-        <div>创建时间：2018-10-17 09:56</div>
-        <div class="status"><IconFont name="icon-loudoudaojishi" type="svg" class="iconfont"/> 12:35</div>
+        <div>创建时间：{{ info.expire | formatDate('YYYY-MM-DD HH:mm') }}</div>
+        <!-- <div class="status"><IconFont name="icon-loudoudaojishi" type="svg" class="iconfont"/> 12:35</div> -->
+        <div class="status"><count-down v-if="info.countDate" :count-date="info.countDate"/></div>
       </div>
     </div>
 
     <div class="copy-content">
-      <div class="title"><p>账号</p><p class="copy">复制</p></div>
-      <div class="tip">Use this code to serch the packet amount</div>
-      <div class="common-input"></div>
+      <!-- <div class="title"><p>红包ID</p><p class="copy account" :data-clipboard-text="redID" @click="copy('.account')">{{$t('复制')}}</p></div>
+      <div class="common-input">{{ redID }}</div> -->
 
-      <div class="title"><p>红包串号</p><p class="copy">复制</p></div>
-      <div class="tip">Share this code to your friends via IM</div>
-      <div class="packet-number common-input"></div>
+      <div class="title"><p>红包串号</p><p class="copy packetStr" :data-clipboard-text="packetStr" @click="copy('.packetStr')">{{$t('复制')}}</p></div>
+      <div class="tip">分享该串给您朋友，让你朋友领取红包</div>
+      <div class="packet-number common-input">{{ packetStr }}</div>
     </div>
 
     <div class="fengeline"></div>
 
-    <div class="amount-info">Redeemed 4/5, 99.8547/256.666 EOS</div>
+    <div class="amount-info">{{$t('兑换')}} {{ info.data.length }}/{{ info.limit }}, 99.8547/{{ info.amount }}</div>
     <ul class="receive-list">
-      <li><div>HIf528fed125</div><div>0.1254 EOS</div></li>
-      <li><div>HIf528fed125</div><div>0.1254 EOS</div></li>
-      <li><div>HIf528fed125</div><div>0.1254 EOS</div></li>
-      <li><div>HIf528fed125</div><div>0.1254 EOS</div></li>
-      <li><div>HIf528fed125</div><div>0.1254 EOS</div></li>
-      <li><div>HIf528fed125</div><div>0.1254 EOS</div></li>
-      <li><div>HIf528fed125</div><div>0.1254 EOS</div></li>
-      <li><div>HIf528fed125</div><div>0.1254 EOS</div></li>
-      <li><div>HIf528fed125</div><div>0.1254 EOS</div></li>
-      <li><div>HIf528fed125</div><div>0.1254 EOS</div></li>
-      <li><div>HIf528fed125</div><div>0.1254 EOS</div></li>
-      <li><div>HIf528fed125</div><div>0.1254 EOS</div></li>
+      <li v-for="(item, key) in info.data" :key="key"><div>HIf528fed125</div><div>0.1254 EOS</div></li>
     </ul>
+    <loading v-if='showLoading'></loading>
   </div>
 </template>
 
 <script>
 import topBar from '@/components/topBar'
 import IconFont from '@/components/Iconfont'
+import Clipboard from 'clipboard'
+import CountDown from '@/components/Countdown'
+import loading from '@/components/loading'
+import ecc from 'eosjs-ecc'
+import { formatDate } from '@/utils/filter'
+import { JsonRpc } from 'eosjs'
 
 export default {
-  name: 'receive',
-  components: { topBar, IconFont },
+  name: 'detail',
+  components: {topBar, IconFont, CountDown, loading},
   data () {
     return {
-      account: '',
-      showError: false,
-      errorMsg: '账号错误'
+      showHome: true,
+      redID: '',
+      packetStr: '',
+      showLoading: true,
+      info: {
+        id: '',
+        type: '',
+        limit: '',
+        sender: '',
+        pubkey: '',
+        amount: '',
+        memo: '',
+        expire: 0,
+        data: []
+      }
     }
   },
+  created () {
+    let query = this.$route.query
+    let params = {
+      json: true,
+      code: this.$store.state.tranAccountName,
+      scope: this.$store.state.tranAccountName,
+      table: 'coupons',
+      lower_bound: query.id,
+      limit: 1,
+      key_type: 'i64',
+      index_position: '1'
+    }
+    this.redID = query.id
+    const rpc = new JsonRpc(this.$store.state.eosjsConfig.endpoint)
+    this.getTableRows(rpc, params)
+  },
   methods: {
-    receive () {
-      if (this.account) {
-        this.$router.push('success')
-      } else {
-        this.showError = true
-        this.errorMsg = '请输入账号'
-        let timeout = ''
-        timeout = setTimeout(() => {
-          this.showError = false
-          clearTimeout(timeout)
-        }, 1000)
+    copy (className) {
+      var clipboard = new Clipboard(className)
+      clipboard.on('success', e => {
+        window.tip('复制成功')
+        // 释放内存
+        clipboard.destroy()
+      })
+      clipboard.on('error', e => {
+        // 不支持复制
+        window.tip('该浏览器不支持自动复制')
+        // 释放内存
+        clipboard.destroy()
+      })
+    },
+    async getTableRows (rpc, params) {
+      const response = await rpc.get_table_rows(params)
+      if (response.rows) {
+        let result = response.rows[0]
+        let nowTime = parseInt((new Date()).getTime() / 1000)
+        if (result.expire > nowTime) {
+          result.countDate = result.expire - nowTime
+        }
+        result.expire = result.expire - 24 * 60 * 60
+        //  红包串
+        let params = result.id + '_' + result.type + '_queqiqueqiaa_' + result.memo
+        let privarekey = localStorage.getItem(this.$store.state.redPriKeyName)
+        this.packetStr = result.memo + '-' + result.id + '-' + result.type + '-' + result.limit + '-' + ecc.sign(params, privarekey)
+        this.info = result
+        this.showLoading = false
       }
+    }
+  },
+  filters: {
+    formatDate (value, pattern) {
+      return formatDate(value, pattern)
     }
   }
 }
@@ -141,14 +192,17 @@ export default {
       color #288EFB
       font-size 14px
   .common-input
-    width calc(100% - 10px)
+    width calc(100% - 20px)
     border 0 none
-    padding-left 10px
+    padding 10px
     margin-top 4px
-    height rem(74)
+    height rem(48)
+    line-height rem(48)
     background-color #F8F8F8
+    word-break break-all
   .packet-number
     height rem(158)
+    line-height normal
     background-color #FFFCDD
   .fengeline
     height 8px

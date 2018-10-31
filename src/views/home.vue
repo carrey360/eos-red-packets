@@ -6,13 +6,13 @@
       <div class="button" @click="go">GO!</div>
       <img class="logo" src="../assets/logo.png"/>
     </div>
-    <div class="title">麒麟 EOS 红包</div>
+    <div class="title">EOS {{$t('红包')}}</div>
     <router-link to="red"><div class="send-packet">发红包</div></router-link>
-    <div class="sum-info">红包数:1299333  &nbsp;&nbsp;&nbsp;红包总额:21212EOS</div>
-    <div class="lang">EN/CN</div>
+    <div class="sum-info">红包数:12993  &nbsp;&nbsp;&nbsp;红包总额:21212EOS</div>
+    <div class="lang" @click="setLang">EN/CN</div>
     <div class="action">
-      <span><router-link to="redlist">我发的红包</router-link></span><span class="tip">|</span>
-      <span><router-link to="account">创建EOS账号</router-link></span><span class="tip">|</span>
+      <span><router-link to="redlist">我塞的红包</router-link></span><span class="tip">|</span>
+      <span @click="linkToCreateAccount">创建EOS账号</span><span class="tip">|</span>
       <span><router-link to="about">关于我们</router-link></span>
     </div>
     <div class="decoration"><img src="../assets/decoration.png" /></div>
@@ -20,12 +20,12 @@
 </template>
 
 <script>
+import { formatePacket } from '@/utils/'
+
 export default {
   name: 'home',
   data () {
     return {
-      errorTip: false,
-      message: 'sadfasf',
       code: ''
     }
   },
@@ -33,10 +33,21 @@ export default {
     go () {
       if (!this.code) {
         window.tip('请输入code')
+      } else if (!formatePacket(this.code).isMemo) {
+        window.tip('请输入有效code值')
       } else {
         this.$store.commit('setCode', {code: this.code})
         this.$router.push('receive')
       }
+    },
+    setLang () {
+      let lang = localStorage.getItem('redLang') || 'cn'
+      localStorage.setItem('redLang', lang === 'cn' ? 'en' : 'cn')
+      this.$router.go(0)
+    },
+    linkToCreateAccount () {
+      this.$store.commit('setCode', {code: ''})
+      this.$router.push('account')
     }
   }
 }
@@ -60,18 +71,20 @@ export default {
       left 50%
       transform translateX(-50%)
       width 100%
+      height 36%
       textarea
         border 1px solid #DEDEDE
-        height 90px
+        border-radius 2px
+        height 100%
         padding rem(10)
         width 80%
         resize none
         color #5D4220
         font-size 12px
+        outline none
         &::placeholder
           color #C9C2B7
         &:focus
-          outline none
           border 1px solid #DEDEDE
     .button
       width 126px
@@ -85,7 +98,7 @@ export default {
       color rgba(255,247,193,1)
       position absolute
       left 50%
-      bottom 70px
+      bottom 26%
       transform translateX(-50%)
     .logo
       position absolute
@@ -95,10 +108,11 @@ export default {
       height 76px
       bottom -20px
   .title
-    margin-top 54px
+    margin-top 40px
     text-align center
     font-size 24px
     color rgba(255,243,209,1)
+    font-weight bold
   .send-packet
     background rgba(252,219,178,1)
     height 50px

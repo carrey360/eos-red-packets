@@ -1,6 +1,6 @@
 <template>
-  <div class="receive-warrap">
-    <topBar></topBar>
+  <div class="payment-warrap">
+    <topBar title="红包详情" :showHome="showHome"></topBar>
     <div class="dispatch-info">
       <img src="@/assets/red-top.png"/>
       <div class="from">From HIf528fed125</div>
@@ -13,11 +13,11 @@
     </div>
 
     <div class="copy-content">
-      <div class="title"><p>账号</p><p class="copy">复制</p></div>
-      <div class="common-input"></div>
+      <div class="title"><p>账号</p><p class="copy account" :data-clipboard-text="account" @click="copy('.account')">复制</p></div>
+      <div class="common-input">{{ account }}</div>
 
-      <div class="title"><p>MEMO</p><p class="copy">复制</p></div>
-      <div class="packet-number common-input"></div>
+      <div class="title"><p>MEMO</p><p class="copy memo" :data-clipboard-text="memo" @click="copy('.memo')">复制</p></div>
+      <div class="packet-number common-input">{{ memo }}</div>
     </div>
 
     <div class="tip">
@@ -34,37 +34,39 @@
 <script>
 import topBar from '@/components/topBar'
 import IconFont from '@/components/Iconfont'
+import Clipboard from 'clipboard'
 
 export default {
-  name: 'receive',
+  name: 'payment',
   components: { topBar, IconFont },
   data () {
     return {
+      showHome: true,
       account: '',
-      showError: false,
-      errorMsg: '账号错误'
+      memo: ''
     }
   },
   methods: {
-    receive () {
-      if (this.account) {
-        this.$router.push('success')
-      } else {
-        this.showError = true
-        this.errorMsg = '请输入账号'
-        let timeout = ''
-        timeout = setTimeout(() => {
-          this.showError = false
-          clearTimeout(timeout)
-        }, 1000)
-      }
+    copy (className) {
+      var clipboard = new Clipboard(className)
+      clipboard.on('success', e => {
+        window.tip('复制成功')
+        // 释放内存
+        clipboard.destroy()
+      })
+      clipboard.on('error', e => {
+        // 不支持复制
+        window.tip('该浏览器不支持自动复制')
+        // 释放内存
+        clipboard.destroy()
+      })
     }
   }
 }
 </script>
 
 <style lang="stylus" scoped>
-.receive-warrap
+.payment-warrap
   img
     width 100%
   .dispatch-info
