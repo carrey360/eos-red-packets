@@ -1,24 +1,24 @@
 <template>
   <div class="red-envelope">
-    <top-bar title="发红包" />
+    <top-bar :title="$t('发红包')" />
     <tab :card-show="false" @click="handleTabClick">
-      <tab-item name="3" label="普通红包" />
-      <tab-item name="4" label="拼手气红包" />
+      <tab-item name="MULTY_NORMAL" :label="$t('普通红包')" />
+      <tab-item name="MULTY_RANDOM" :label="$t('拼手气红包')" />
     </tab>
     <div class="red-envelope_wrap">
-      <LimitInput v-show="scatterIsConnect" numberType="float" placeholder="填写红包金额" left-label="红包金额" right-label="EOS" v-model="redInfo.amount" />
-      <LimitInput numberType="int" placeholder="填写个数" left-label="红包个数" right-label="个" v-model="redInfo.number" />
+      <LimitInput v-show="scatterIsConnect" numberType="float" :placeholder="$t('填写红包金额')" :left-label="$t('红包金额')" right-label="EOS" v-model="redInfo.amount" />
+      <LimitInput numberType="int" :placeholder="$t('填写个数')" :left-label="$t('红包个数')" :right-label="$t('个')" v-model="redInfo.number" />
       <div class="red-textarea">
-        <textarea placeholder="恭喜发财，大吉大利" v-model="redInfo.blessing"></textarea>
+        <textarea :placeholder="$t('恭喜发财，大吉大利')" v-model="redInfo.blessing" maxLength="30"></textarea>
       </div>
-      <p class="warn-title"><span>红包金额以实际转账为准</span> <a href="/redabout"><Iconfont name="icon-bangzhutishi" /></a></p>
+      <p class="warn-title"><span>{{$t('红包金额以实际转账为准')}}</span><a href="/redabout"><Iconfont name="icon-bangzhutishi" class="iconfont"/></a></p>
 
       <div class="submit">
-        <my-button @click="handleSubmit" label="塞钱进红包" />
+        <my-button @click="handleSubmit" :label="$t('塞钱进红包')" />
       </div>
     </div>
     <div class="warn-foot">
-      <small>未领取的红包，将于转账成功24小时后发起退款</small>
+      <small>{{$t('未领取的红包，将于转账成功24小时后发起退款')}}</small>
     </div>
   </div>
 </template>
@@ -39,14 +39,14 @@ export default {
   },
   data () {
     return {
-      curTab: 3,
+      curTab: 'MULTY_NORMAL',
       scatterIsConnect: false,
       redInfo: {
         number: '',
         amount: '',
         blessing: ''
       },
-      defaultBlessing: '恭喜发财，大吉大利'
+      defaultBlessing: this.$t('恭喜发财，大吉大利')
     }
   },
   created () {
@@ -61,22 +61,22 @@ export default {
     handleSubmit () {
       if (this.scatterIsConnect) {
         if (!this.redInfo.amount) {
-          window.tip('请输入红包金额')
+          window.tip(this.$t('请输入红包金额'))
           return false
         } else if ((this.redInfo.amount / this.redInfo.number) < 0.001) {
-          window.tip('红包金额不能低于0.001EOS')
+          window.tip(this.$t('红包金额不能低于0.001EOS'))
           return false
         }
       }
       if (!this.redInfo.number) {
-        window.tip('请输入红包个数')
+        window.tip(this.$t('请输入红包个数'))
         return false
       }
       let uuid = utils.getUUID()
       // COUPONCREATE-红包id-红包类型-红包个数-pubkey-祝福语
-      let packetStr = 'COUPONCREATE-' + uuid + '-' + this.curTab + '-' + this.redInfo.number + '-' + localStorage.getItem(this.$store.state.redPubKeyName) + '-' + (this.redInfo.blessing || this.defaultBlessing)
+      let packetStr = 'REDPACKET-' + this.curTab + '-' + uuid + '-' + this.redInfo.number + '-' + localStorage.getItem(this.$store.state.redPubKeyName) + '-' + (this.redInfo.blessing || this.defaultBlessing)
 
-      this.$router.push({path: 'myred', query: {packetStr, amount: this.redInfo.amount, uuid: uuid, type: this.curTab, blessing: (this.redInfo.blessing || this.defaultBlessing)}})
+      this.$router.push({path: 'myred', query: {packetStr, amount: this.redInfo.amount, uuid: uuid, type: this.curTab, limit: this.redInfo.number, blessing: (this.redInfo.blessing || this.defaultBlessing)}})
     },
     handleTabClick (value) {
       this.curTab = value
@@ -110,6 +110,7 @@ export default {
       margin-top 4px
       display flex
       justify-content space-between
+      align-items center
       svg
         width 16px
         height 16px

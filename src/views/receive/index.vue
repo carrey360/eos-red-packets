@@ -14,13 +14,14 @@
         <div class="status"><count-down v-if="info.countDate" :count-date="info.countDate"/></div>
       </div>
     </div>
-    <div class="amount-info">{{$t('兑换')}} {{ info.data.length }}/{{ info.limit }}, 99.8547/{{ info.amount }}</div>
+    <div class="amount-info">{{$t('兑换')}} {{ info.log.length }}/{{ info.limit }}, {{ receiveAmount }}/{{ info.amount }}</div>
     <ul class="receive-list">
-      <li v-for="(item, key) in info.data" :key="key"><div>HIf528fed125</div><div>0.1254 EOS</div></li>
+      <li v-for="(item, key) in info.log" :key="key"><div>{{ item.who }}</div><div>{{ item.amount }}</div></li>
     </ul>
+    <div v-show="info.log.length == 0" class="list-noData">{{$t('暂无数据')}}</div>
     <div class="inner-div"></div>
     <div class="error-tip" v-if="showError">{{ errorMsg }}</div>
-    <div class="input-account">
+    <div class="input-account" v-if="!isIputCodeNumber">
       <LimitInput class="input" :placeholder="$t('请输入您的账号')" :isNumber="false" v-model="account"/>
       <div class="no-account">{{$t('还没有EOS账号')}} ? <router-link to="account">{{$t('创建')}}</router-link></div>
       <div class="button" @click="receive">{{$t('领取')}}</div>
@@ -50,6 +51,8 @@ export default {
       errorMsg: '',
       showLoading: false,
       rpcJson: '',
+      receiveAmount: 0,
+      isIputCodeNumber: false, // 通过红包id进来
       info: {
         id: '',
         type: '',
@@ -59,18 +62,22 @@ export default {
         amount: '',
         memo: '',
         expire: 0,
-        data: []
+        log: []
       }
     }
   },
   created () {
     let formatCodeJson = formatePacket(this.$store.state.code)
+
+    if (!formatCodeJson.sign) {
+      this.isIputCodeNumber = true
+    }
     let params = {
       json: true,
       code: this.$store.state.tranAccountName,
       scope: this.$store.state.tranAccountName,
-      table: 'coupons',
-      lower_bound: formatCodeJson.id,
+      table: 'redpacket',
+      lower_bound: formatCodeJson.uuid,
       limit: 1,
       key_type: 'i64',
       index_position: '1'
@@ -87,6 +94,9 @@ export default {
         if (result.expire > nowTime) {
           result.countDate = result.expire - nowTime
         }
+        result.log.map(item => {
+          this.receiveAmount += parseFloat(item.amount)
+        })
         result.expire = result.expire - 24 * 60 * 60
         this.info = result
       }
@@ -95,16 +105,18 @@ export default {
     getTransact () {
       const signatureProvider = new JsSignatureProvider([this.$store.state.defaultPrivateKey])
       const api = new Api({rpc: this.rpcJson, signatureProvider, textDecoder: new TextDecoder(), textEncoder: new TextEncoder()})
-      this.transact(api)
+      this.getTransactAction(api)
     },
     // 调用eosjs-api-get
     async getTransactAction (api) {
       let formatCodeJson = formatePacket(this.$store.state.code)
+
       let params = {
         receiver: this.account,
-        id: formatCodeJson.id,
+        id: +formatCodeJson.uuid,
         sig: formatCodeJson.sign
       }
+
       const result = await api.transact({
         actions: [{
           account: this.$store.state.tranAccountName,

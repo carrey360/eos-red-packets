@@ -19,9 +19,9 @@
         <div class="status"><count-down v-if="info.countDate" :count-date="info.countDate"/></div>
       </div>
     </div>
-    <div class="amount-info">{{$t('兑换')}} {{ info.data.length }}/{{ info.limit }}, 99.8547/{{ info.amount }}</div>
+    <div class="amount-info">{{$t('兑换')}} {{ info.log.length }}/{{ info.limit }}, {{ receiveAmount }}/{{ info.amount }}</div>
     <ul class="receive-list">
-      <li v-for="(item, key) in info.data" :key="key" :class="item.isCurUser ? 'active' : ''"><div>HIf528fed125</div><div>0.1254 EOS</div></li>
+      <li v-for="(item, key) in info.log" :key="key" :class="item.isCurUser ? 'active' : ''"><div>{{ item.who }}</div><div>{{ item.amount }}</div></li>
     </ul>
     <loading v-if='showLoading'></loading>
   </div>
@@ -44,6 +44,7 @@ export default {
       showLoading: true,
       curAccountName: '',
       claimAmount: '',
+      receiveAmount: 0,
       info: {
         id: '',
         type: '',
@@ -53,7 +54,7 @@ export default {
         amount: '',
         memo: '',
         expire: 0,
-        data: []
+        log: []
       }
     }
   },
@@ -64,7 +65,7 @@ export default {
       json: true,
       code: this.$store.state.tranAccountName,
       scope: this.$store.state.tranAccountName,
-      table: 'coupons',
+      table: 'redpacket',
       lower_bound: query.id,
       limit: 1,
       key_type: 'i64',
@@ -76,21 +77,27 @@ export default {
   methods: {
     async getTableRows (rpc, params) {
       const response = await rpc.get_table_rows(params)
+
       if (response.rows) {
         let result = response.rows[0]
         let nowTime = parseInt((new Date()).getTime() / 1000)
         if (result.expire > nowTime) {
           result.countDate = result.expire - nowTime
         }
+
         result.expire = result.expire - 24 * 60 * 60
-        result.data.map(item => {
-          if (item.user === this.curAccountName) {
+        result.log.map(item => {
+          if (item.who === this.curAccountName) {
             item.isCurUser = true
             this.claimAmount = item.amount
           }
+          this.receiveAmount += parseFloat(item.amount)
           return item
         })
         this.info = result
+        this.showLoading = false
+      } else {
+        window.tip(response.error)
         this.showLoading = false
       }
     }
@@ -156,7 +163,7 @@ export default {
   .receive-info
     padding-top rem(6)
     background url(../../assets/success-bg.png) no-repeat 0 0
-    height rem(94)
+    height rem(80)
     margin 0 rem(16)
     background-size cover
     border 1px dashed #E6DFD9
@@ -165,7 +172,7 @@ export default {
     text-align center
     & > div:first-child
       margin-top rem(8)
-      font-size rem(44)
+      font-size rem(32)
       color #5D4220
       span
         font-size 12px

@@ -1,6 +1,6 @@
 <template>
   <div class="account-warrap">
-    <topBar title="创建账号"></topBar>
+    <topBar :title="$t('创建EOS账号')" :showHome="showHome"></topBar>
     <div class="account-content">
       <div class="title"><p>{{$t('账号')}}</p></div>
       <LimitInput :placeholder="$t('请输入您的账号')" :isNumber="false" v-model="userInput.accountName"/>
@@ -8,8 +8,8 @@
       <div class="input-tip">{{$t('12位字符，需包含数字1-5和字母a-z两种元素')}}</div>
 
       <div class="title"><p>{{$t('公钥')}}</p><p class="copy" @click="createKey">{{$t('生成新公钥')}}</p></div>
-      <textarea class="public-key common-input" placeholder="请输入新账号所有者的公钥" v-model="userInput.publicKey"></textarea>
-      <div class="input-tip">所有者和使用者公钥相同</div>
+      <textarea class="public-key common-input" :placeholder="$t('请输入公钥')" v-model="userInput.publicKey"></textarea>
+      <div class="input-tip">{{$t('所有者和使用者公钥相同')}}</div>
 
       <div class="title">
         <p>{{$t('私钥')}}</p>
@@ -18,25 +18,25 @@
       <div class="private-key common-input">{{ userInput.privateKey }}</div>
       <div class="input-tip red">{{$t('不要透露给任何人')}}</div>
 
-      <div class="title"><p>红包串号(选填)</p></div>
+      <div class="title"><p>{{$t('红包串号')}}({{$t('选填')}})</p></div>
       <textarea class="packet-number common-input" v-model="packetNumber"></textarea>
 
       <div class="account-tip">
-        <p>创建提示</p>
-        <p>创建账号会扣除部分EOS，剩余部分会转入账号内</p>
+        <p>{{$t('创建提示')}})</p>
+        <p>{{$t('创建账号会扣除部分EOS，剩余部分会转入账号内')}})</p>
       </div>
 
       <div class="account-tip">
-        <p>离线保存</p>
-        <p>建议抄写或打印私钥后放置在安全地点保存</p>
+        <p>{{$t('离线保存')}})</p>
+        <p>{{$t('建议抄写或打印私钥后放置在安全地点保存')}})</p>
       </div>
 
       <div class="account-tip">
-        <p>请勿使用网络传输</p>
-        <p>请勿通过网络工具传输私钥，例如用微信发送到电脑。一旦被黑 客获取造成不可挽回的资产损失</p>
+        <p>{{$t('请勿使用网络传输')}})</p>
+        <p>{{$t('请勿通过网络工具传输私钥，例如用微信发送到电脑。一旦被黑客获取造成不可挽回的资产损失')}})</p>
       </div>
 
-      <div class="button" @click="create">创建账号</div>
+      <div class="button" @click="create">{{$t('创建账号')}}</div>
     </div>
     <modal v-show="modalData.showDailog" :modalData="modalData" @leftBtnAction="leftBtnAction" @rightBtnAction="rightBtnAction"></modal>
     <loading v-if='showLoading'></loading>
@@ -59,6 +59,7 @@ export default {
   components: { topBar, modal, loading, LimitInput },
   data () {
     return {
+      showHome: true,
       modalData: {
         'showDailog': false,
         'title': this.$t('提示'),
@@ -90,7 +91,7 @@ export default {
     },
     create () {
       if (!this.userInput.accountName) {
-        window.tip(this.$t('请输入账号名称'))
+        window.tip(this.$t('请输入您的账号'))
         return false
       } else if (this.userInput.accountName.length !== 12) {
         window.tip(this.$t('请输入12位有效账号'))
@@ -99,17 +100,28 @@ export default {
         window.tip(this.$t('请输入公钥'))
         return false
       }
-      let formatCode = formatePacket(this.packetNumber)
-      if (this.userInput.privateKey) {
-        this.modalData.content = this.$t('确定私钥已保存安全位置')
-        this.modalData.showDailog = true
-      } else if (formatCode.isMemo) {
-        this.packetCreate()
+
+      if (this.packetNumber) {
+        let formatCode = formatePacket(this.packetNumber)
+        if (!formatCode.isMemo) {
+          window.tip(this.$t('请正确输入红包串号'))
+          return false
+        } else if (formatCode.isMemo) {
+          this.modalData.content = this.$t('确定要用改红包创建账号')
+          this.modalData.showDailog = true
+        }
       } else {
-        this.$router.push({path: 'acTransfer', query: this.userInput})
+        if (this.userInput.privateKey) {
+          this.modalData.content = this.$t('确定私钥已保存安全位置')
+          this.modalData.showDailog = true
+        } else {
+          this.$router.push({path: 'acTransfer', query: this.userInput})
+        }
       }
     },
     packetCreate () {
+      this.modalData.showDailog = false
+      this.showLoading = true
       const rpc = new JsonRpc(this.$store.state.eosjsConfig.endpoint)
       const signatureProvider = new JsSignatureProvider([this.$store.state.defaultPrivateKey])
       const api = new Api({rpc, signatureProvider, textDecoder: new TextDecoder(), textEncoder: new TextEncoder()})
@@ -122,9 +134,10 @@ export default {
         account_to_create: this.userInput.accountName,
         owner_key: this.userInput.publicKey,
         active_key: this.userInput.publicKey,
-        id: formatCode.uuid,
+        id: +formatCode.uuid,
         sig: formatCode.sign
       }
+
       const result = await api.transact({
         actions: [{
           account: this.$store.state.tranAccountName,
@@ -134,8 +147,12 @@ export default {
         }]
       }, {blocksBehind: 3, expireSeconds: 300})
       // 跳转
+      this.showLoading = false
       if (result && result.transaction_id) {
-        this.$router.push({path: 'acTransfer', query: this.userInput})
+        window.tip(this.$t('创建账号成功'))
+        // this.$router.push({path: 'acTransfer', query: this.userInput})
+      } else {
+        window.tip(result.error)
       }
     },
     createKey () {
@@ -159,7 +176,7 @@ export default {
       })
       clipboard.on('error', e => {
         // 不支持复制
-        window.tip('该浏览器不支持自动复制')
+        window.tip(this.$t('该浏览器不支持自动复制'))
         // 释放内存
         clipboard.destroy()
       })

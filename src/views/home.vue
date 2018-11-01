@@ -2,18 +2,18 @@
   <div class="home-warrap">
     <div class="top">
       <img class="bg" src="../assets/home.png" />
-      <div class="code"><textarea placeholder="请输入" v-model="code"></textarea></div>
+      <div class="code"><textarea :placeholder="$t('请输入')" v-model="code"></textarea></div>
       <div class="button" @click="go">GO!</div>
       <img class="logo" src="../assets/logo.png"/>
     </div>
     <div class="title">EOS {{$t('红包')}}</div>
-    <router-link to="red"><div class="send-packet">发红包</div></router-link>
-    <div class="sum-info">红包数:12993  &nbsp;&nbsp;&nbsp;红包总额:21212EOS</div>
+    <router-link to="red"><div class="send-packet">{{$t('发红包')}}</div></router-link>
+    <!-- <div class="sum-info">红包数:12993  &nbsp;&nbsp;&nbsp;红包总额:21212EOS</div> -->
     <div class="lang" @click="setLang">EN/CN</div>
     <div class="action">
-      <span><router-link to="redlist">我塞的红包</router-link></span><span class="tip">|</span>
-      <span @click="linkToCreateAccount">创建EOS账号</span><span class="tip">|</span>
-      <span><router-link to="about">关于我们</router-link></span>
+      <span><router-link to="redlist">{{$t('我塞的红包')}}</router-link></span><span class="tip">|</span>
+      <span @click="linkToCreateAccount">{{$t('创建EOS账号')}}</span><span class="tip">|</span>
+      <span><router-link to="about">{{$t('关于我们')}}</router-link></span>
     </div>
     <div class="decoration"><img src="../assets/decoration.png" /></div>
   </div>
@@ -21,9 +21,11 @@
 
 <script>
 import { formatePacket } from '@/utils/'
+import { JsonRpc } from 'eosjs'
 
 export default {
   name: 'home',
+  inject: ['reload'],
   data () {
     return {
       code: ''
@@ -31,19 +33,40 @@ export default {
   },
   methods: {
     go () {
+      let formatCodeJson = formatePacket(this.code)
       if (!this.code) {
-        window.tip('请输入code')
-      } else if (!formatePacket(this.code).isMemo) {
-        window.tip('请输入有效code值')
+        window.tip(this.$t('请输入'))
+      } else if (!formatCodeJson.isMemo) {
+        window.tip(this.$t('请输入有效值'))
       } else {
+        let params = {
+          json: true,
+          code: this.$store.state.tranAccountName,
+          scope: this.$store.state.tranAccountName,
+          table: 'redpacket',
+          lower_bound: formatCodeJson.uuid,
+          limit: 1,
+          key_type: 'i64',
+          index_position: '1'
+        }
+        this.rpcJson = new JsonRpc(this.$store.state.eosjsConfig.endpoint)
+        this.getTableRows(this.rpcJson, params)
+      }
+    },
+    async getTableRows (rpc, params) {
+      const response = await rpc.get_table_rows(params)
+
+      if (response.rows && response.rows.length === 1) {
         this.$store.commit('setCode', {code: this.code})
         this.$router.push('receive')
+      } else {
+        window.tip(this.$t('您输入的内容无效或者红包已失效'))
       }
     },
     setLang () {
       let lang = localStorage.getItem('redLang') || 'cn'
       localStorage.setItem('redLang', lang === 'cn' ? 'en' : 'cn')
-      this.$router.go(0)
+      this.$i18n.locale = lang === 'cn' ? 'en' : 'cn'
     },
     linkToCreateAccount () {
       this.$store.commit('setCode', {code: ''})

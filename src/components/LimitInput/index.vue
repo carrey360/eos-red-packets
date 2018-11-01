@@ -1,10 +1,10 @@
 <template>
   <div class="limit-input">
     <div v-if="isNumber" class="red-input">
-      <span>{{leftLabel}}</span>
+      <span v-if='leftLabel'>{{leftLabel}}</span>
       <div>
         <input :placeholder="placeholder" type="text" :value="inputVal" @input="handleInput"/>
-        <span>{{rightLabel}}</span>
+        <span v-if='rightLabel'>{{rightLabel}}</span>
       </div>
     </div>
     <input v-else class="account-name common-input"
@@ -64,7 +64,7 @@ export default {
           val = oVal
         }
       } else if (this.numberType === 'float') {
-        let reg = /^(0|[1-9]+\d*)([.]{1}[0-9]{0,3}){0,1}$/ // 小数最多三位
+        let reg = /^(0|[1-9]+\d*)([.]{1}[0-9]{0,4}){0,1}$/ // 小数最多四位
         if (!reg.test(val)) {
           val = oVal
         }

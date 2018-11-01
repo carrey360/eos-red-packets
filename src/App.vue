@@ -1,6 +1,6 @@
 <template>
   <div id="app">
-    <router-view/>
+    <router-view v-if="isRouterAlive"/>
   </div>
 </template>
 
@@ -10,6 +10,16 @@ import ecc from 'eosjs-ecc'
 
 export default {
   name: 'App',
+  provide () {
+    return {
+      reload: this.reload
+    }
+  },
+  data () {
+    return {
+      isRouterAlive: true
+    }
+  },
   mounted () {
     window['tip'] = tip
     // 如果第一次进来系统生成唯一的key
@@ -17,6 +27,14 @@ export default {
       ecc.randomKey().then(privateKey => {
         localStorage.setItem(this.$store.state.redPriKeyName, privateKey)
         localStorage.setItem(this.$store.state.redPubKeyName, ecc.privateToPublic(privateKey))
+      })
+    }
+  },
+  methods: {
+    reload () {
+      this.isRouterAlive = false
+      this.$nextTick(() => {
+        this.isRouterAlive = true
       })
     }
   }

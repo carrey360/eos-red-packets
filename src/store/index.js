@@ -8,7 +8,7 @@ const store = new Vuex.Store({
     code: '',
     redPubKeyName: 'redPublicKey',
     redPriKeyName: 'redPriateKey',
-    tranAccountName: 'huobi',
+    tranAccountName: 'red.huobi',
     projectName: 'red-packets',
     scatterNetwork: {
       blockchain: 'eos',

@@ -1,37 +1,37 @@
 <template>
   <div class="my-red">
-    <top-bar title="发红包" />
+    <top-bar :title="$t('发红包')" :showHome="showHome"/>
     <div class="my-red_wrap">
-      <p>请让朋友按照以下信息转账 </p>
-      <small>或</small>
-      <p>从交易所提币 </p>
+      <p>{{$t('请让朋友按照以下信息转账')}} </p>
+      <small>{{$t('或')}}</small>
+      <p>{{$t('从交易所提币')}}</p>
       <div class="warn_user">
-        目前明确支持的交易所有 OTCBTC、Gate.io、Chaince、 Bitfinex、OKcoin，请不要从其他交易所转入，避免财产损失
+        {{$t('目前明确支持的交易所有')}} OTCBTC、Gate.io、Chaince、 Bitfinex、OKcoin，{{$t('请不要从其他交易所转入，避免财产损失')}}
       </div>
       <div class="text-box">
-        <p><span>收款账户</span><span class="account" :data-clipboard-text="account" @click="copy('.account')">{{$t('复制')}}</span></p>
+        <p><span>{{$t('收款账户')}}</span><span class="account" :data-clipboard-text="account" @click="copy('.account')">{{$t('复制')}}</span></p>
         <div class="text">
           <input disabled="disabled" type="text" :value="account" />
         </div>
       </div>
       <div class="text-box">
-        <p><span>备注</span><span class="remark" :data-clipboard-text="remark" @click="copy('.remark')">{{$t('复制')}}</span></p>
+        <p><span>{{$t('备注')}}</span><span class="remark" :data-clipboard-text="remark" @click="copy('.remark')">{{$t('复制')}}</span></p>
         <div class="text">
           <textarea disabled="disabled" cols="3" rows="6" v-model="remark"></textarea>
         </div>
       </div>
       <div class="text-box" v-show="packetStr">
-        <p><span>红包串号</span><span class="packetStr" :data-clipboard-text="packetStr" @click="copy('.packetStr')">{{$t('复制')}}</span></p>
+        <p><span>{{$t('红包串号')}}</span><span class="packetStr" :data-clipboard-text="packetStr" @click="copy('.packetStr')">{{$t('复制')}}</span></p>
         <div class="text">
           <textarea disabled="disabled" cols="3" rows="6" v-model="packetStr"></textarea>
         </div>
       </div>
       <div class="my-red_btn_wrapp">
         <div v-show="showScatterTransform" @click="transform">
-          <my-button label="转账" />
+          <my-button :label="$t('转账')" />
         </div>
         <div>
-          <router-link to="redlist"><my-button label="我塞的红包"/></router-link>
+          <router-link to="redlist"><my-button :label="$t('我塞的红包')"/></router-link>
         </div>
       </div>
     </div>
@@ -51,6 +51,7 @@ export default {
   },
   data () {
     return {
+      showHome: true,
       remark: '',
       packetStr: '',
       showScatterTransform: false,
@@ -82,7 +83,7 @@ export default {
       })
       clipboard.on('error', e => {
         // 不支持复制
-        window.tip('该浏览器不支持自动复制')
+        window.tip(this.$t('该浏览器不支持自动复制'))
         // 释放内存
         clipboard.destroy()
       })
@@ -93,12 +94,12 @@ export default {
         if (result && result.transaction_id) {
           window.tip('转账成功')
           let query = this.$route.query
-          let params = query.uuid + '_' + query.type + '_queqiqueqiaa_' + query.blessing
+          let params = query.uuid + '_' + query.type + '_' + query.blessing
           let privarekey = localStorage.getItem(this.$store.state.redPriKeyName)
-          this.packetStr = ecc.sign(params, privarekey)
+          this.packetStr = query.blessing + '-' + query.type + '-' + query.uuid + '-' + query.limit + '-' + ecc.sign(params, privarekey)
           this.showScatterTransform = false
         } else {
-          window.tip(result.error || '创建失败')
+          window.tip(result.error)
         }
       })
     }

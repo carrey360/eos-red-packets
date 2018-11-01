@@ -18,20 +18,22 @@
     </div>
 
     <div class="copy-content">
-      <!-- <div class="title"><p>红包ID</p><p class="copy account" :data-clipboard-text="redID" @click="copy('.account')">{{$t('复制')}}</p></div>
-      <div class="common-input">{{ redID }}</div> -->
+      <div class="title"><p>{{$t('红包')}}ID</p><p class="copy account" :data-clipboard-text="redID" @click="copy('.account')">{{$t('复制')}}</p></div>
+      <div class="tip">{{$t('通过该ID可以查看红包信息')}}</div>
+      <div class="common-input">{{ redID }}</div>
 
-      <div class="title"><p>红包串号</p><p class="copy packetStr" :data-clipboard-text="packetStr" @click="copy('.packetStr')">{{$t('复制')}}</p></div>
-      <div class="tip">分享该串给您朋友，让你朋友领取红包</div>
+      <div class="title"><p>{{$t('红包串号')}}</p><p class="copy packetStr" :data-clipboard-text="packetStr" @click="copy('.packetStr')">{{$t('复制')}}</p></div>
+      <div class="tip">{{$t('分享该串给您朋友，让你朋友领取红包')}}</div>
       <div class="packet-number common-input">{{ packetStr }}</div>
     </div>
 
     <div class="fengeline"></div>
 
-    <div class="amount-info">{{$t('兑换')}} {{ info.data.length }}/{{ info.limit }}, 99.8547/{{ info.amount }}</div>
+    <div class="amount-info">{{$t('兑换')}} {{ info.log.length }}/{{ info.limit }}, {{receiveAmount}}/{{ info.amount }}</div>
     <ul class="receive-list">
-      <li v-for="(item, key) in info.data" :key="key"><div>HIf528fed125</div><div>0.1254 EOS</div></li>
+      <li v-for="(item, key) in info.log" :key="key"><div>{{ item.who }}</div><div>{{ item.amount }}</div></li>
     </ul>
+    <div v-show="info.log.length == 0" class="list-noData">{{$t('暂无数据')}}</div>
     <loading v-if='showLoading'></loading>
   </div>
 </template>
@@ -55,6 +57,7 @@ export default {
       redID: '',
       packetStr: '',
       showLoading: true,
+      receiveAmount: 0,
       info: {
         id: '',
         type: '',
@@ -64,7 +67,7 @@ export default {
         amount: '',
         memo: '',
         expire: 0,
-        data: []
+        log: []
       }
     }
   },
@@ -74,7 +77,7 @@ export default {
       json: true,
       code: this.$store.state.tranAccountName,
       scope: this.$store.state.tranAccountName,
-      table: 'coupons',
+      table: 'redpacket',
       lower_bound: query.id,
       limit: 1,
       key_type: 'i64',
@@ -94,7 +97,7 @@ export default {
       })
       clipboard.on('error', e => {
         // 不支持复制
-        window.tip('该浏览器不支持自动复制')
+        window.tip(this.$t('该浏览器不支持自动复制'))
         // 释放内存
         clipboard.destroy()
       })
@@ -107,11 +110,14 @@ export default {
         if (result.expire > nowTime) {
           result.countDate = result.expire - nowTime
         }
+        result.log.map(item => {
+          this.receiveAmount += parseFloat(item.amount)
+        })
         result.expire = result.expire - 24 * 60 * 60
         //  红包串
-        let params = result.id + '_' + result.type + '_queqiqueqiaa_' + result.memo
+        let params = result.id + '_' + result.type + result.memo
         let privarekey = localStorage.getItem(this.$store.state.redPriKeyName)
-        this.packetStr = result.memo + '-' + result.id + '-' + result.type + '-' + result.limit + '-' + ecc.sign(params, privarekey)
+        this.packetStr = result.memo + '-' + result.type + '-' + result.id + '-' + result.limit + '-' + ecc.sign(params, privarekey)
         this.info = result
         this.showLoading = false
       }
