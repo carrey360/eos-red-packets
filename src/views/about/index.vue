@@ -1,10 +1,10 @@
 <template>
   <div>
-    <topBar :showHome='showHome' title="关于我们"></topBar>
+    <topBar :showHome='showHome' :title="$t('关于我们')"></topBar>
     <div class="content">
-      <div>2.0阶段。2018年5月14日推出EOS超级社区，POW机制和DPOS机制双面开花，2018年6月19日实现</div>
-      <div>2.0阶段。2018年5月14日推出EOS超级社区，POW机制和DPOS机制双面开花，2018年6月19日实现</div>
-      <div>2.0阶段。2018年5月14日推出EOS超级社区，POW机制和DPOS机制双面开花，2018年6月19日实现</div>
+      <div>{{$t('EOS红包是由火币矿池（www.huobipool.com）和麒麟社区开发的在线领取和派发EOS红包的平台')}}</div>
+      <div>{{$t('用户可以凭口令领取红包，也可以派发普通红包和拼手气红包')}}</div>
+      <div>{{$t('目前支持EOS币种、中英文版本')}}</div>
     </div>
   </div>
 </template>

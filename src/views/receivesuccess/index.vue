@@ -1,6 +1,6 @@
 <template>
   <div class="receive-warrap">
-    <topBar title="领红包" :showHome="showHome"></topBar>
+    <topBar :title="$t('红包')" :showHome="showHome"></topBar>
     <div class="dispatch-info">
       <img src="@/assets/red-top.png"/>
       <div class="from">From {{ info.sender }}</div>

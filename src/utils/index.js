@@ -41,3 +41,16 @@ export function formatePacket (str = '') {
 
   return result
 }
+
+export function ajaxPost (url, data, fn) {
+  var _data = JSON.stringify(data)
+  var xhr = new XMLHttpRequest()
+  xhr.open('POST', url, true)
+  // xhr.setRequestHeader("Content-Type", "application/json");
+  xhr.onreadystatechange = function () {
+    if (xhr.readyState === 4 && (xhr.status === 200 || xhr.status === 304)) {
+      fn.call(this, xhr.responseText)
+    }
+  }
+  xhr.send(_data)
+}

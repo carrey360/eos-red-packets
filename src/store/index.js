@@ -8,7 +8,7 @@ const store = new Vuex.Store({
     code: '',
     redPubKeyName: 'redPublicKey',
     redPriKeyName: 'redPriateKey',
-    tranAccountName: 'red.huobi',
+    tranAccountName: 'redpacketeos',
     projectName: 'red-packets',
     scatterNetwork: {
       blockchain: 'eos',
@@ -20,8 +20,8 @@ const store = new Vuex.Store({
     eosjsConfig: {
       endpoint: 'http://52.194.36.198:8888'
     },
-    defaultPrivateKey: '5K3PYvv9bZNxGtt4MmL6UAg2bABmwcYVBmLJdHWmC6Eus34yCfY',
-    defaultAccount: 'hb.huobi'
+    defaultPrivateKey: '5Jq1XzuZ1dsGb2LSgsfA9nmpSEUpo3NnRkAYb9MdzRuFoTHZsEC',
+    defaultAccount: 'eosfreetouse'
   },
   getters: {
     getCode: (state) => state.code

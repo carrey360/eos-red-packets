@@ -1,13 +1,13 @@
 <template>
   <div class="receive-warrap">
-    <topBar title="红包详情" :showHome="showHome"></topBar>
+    <topBar :title="$t('红包详情')" :showHome="showHome"></topBar>
     <div class="dispatch-info">
       <img src="@/assets/red-top.png"/>
       <div class="from">From {{ info.sender }}</div>
       <div class="total">
         Total<span class="amount">{{ info.amount }}</span>
-        <span v-if="info.type == 3" class="luck">{{$t('普')}}</span>
-        <span class="share" v-if="info.type == 4">{{$t('拼')}}</span>
+        <span v-if="info.type == 1" class="luck">{{$t('普')}}</span>
+        <span class="share" v-if="info.type == 2">{{$t('拼')}}</span>
       </div>
       <div class="blessing">{{ info.memo }}</div>
       <div class="send-time">
@@ -114,10 +114,11 @@ export default {
           this.receiveAmount += parseFloat(item.amount)
         })
         result.expire = result.expire - 24 * 60 * 60
+        let strType = result.type === 1 ? 'MULTY_NORMAL_ACCOUNT' : 'MULTY_RANDOM_ACCOUNT'
         //  红包串
-        let params = result.id + '_' + result.type + result.memo
+        let params = result.id + '_' + strType + '_' + result.memo
         let privarekey = localStorage.getItem(this.$store.state.redPriKeyName)
-        this.packetStr = result.memo + '-' + result.type + '-' + result.id + '-' + result.limit + '-' + ecc.sign(params, privarekey)
+        this.packetStr = result.memo + '-' + strType + '-' + result.id + '-' + result.limit + '-' + ecc.sign(params, privarekey)
         this.info = result
         this.showLoading = false
       }
@@ -202,8 +203,8 @@ export default {
     border 0 none
     padding 10px
     margin-top 4px
-    height rem(48)
-    line-height rem(48)
+    height rem(26)
+    line-height rem(26)
     background-color #F8F8F8
     word-break break-all
   .packet-number

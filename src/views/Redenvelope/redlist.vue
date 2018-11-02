@@ -1,46 +1,9 @@
 <template>
   <div class="red-list">
-    <top-bar title="红包列表" />
+    <top-bar :title="$t('红包列表')" />
     <div class="red-list_wrap">
       <div class="item_header"><span>EOS {{$t('数量')}}</span><span>{{$t('状态')}}</span></div>
-      <!-- <div class="item" @click="detail(1)">
-        <div class="item_left">
-          <span>--</span>
-          <span class="luck">Luck</span>
-        </div>
-        <div class="item_right">
-          <span class="await_pay">Awaiting payment</span>
-        </div>
-      </div>
-      <div class="item" @click="detail(2)">
-        <div class="item_left">
-          <span class="num">2.24325</span><span class="coin">EOS</span>
-          <span class="share">Share</span>
-          <count-down :count-date="44296" />
-        </div>
-        <div class="item_right">
-          <span>2/12</span>
-        </div>
-      </div>
-      <div class="item" @click="detail(2)">
-        <div class="item_left">
-          <span class="num">2.24325</span><span class="coin">EOS</span>
-          <span class="luck">Luck</span>
-        </div>
-        <div class="item_right">
-          <span>6/6</span>
-        </div>
-      </div>
-      <div class="item" @click="detail(2)">
-        <div class="item_left">
-          <span class="num">2.24325</span><span class="coin">EOS</span>
-          <span class="share">Share</span>
-          <count-down :count-date="44296" />
-        </div>
-        <div class="item_right">
-          <span class="expired">Expired</span>
-        </div>
-      </div> -->
+
       <div class="item" @click="detail(item.id)" v-for="(item, key) in historyList" :key="key">
         <div class="item_left">
           <span class="num">{{ item.amount }}</span>
@@ -49,16 +12,20 @@
           <count-down v-if="item.countDate" :count-date="item.countDate"/>
         </div>
         <div class="item_right">
-          <span>{{ item.data.length }}/{{ item.limit }}</span>
+          <span>{{ item.log.length }}/{{ item.limit }}</span>
         </div>
       </div>
+
     </div>
   </div>
 </template>
 <script>
 import TopBar from '@/components/topBar'
 import CountDown from '@/components/Countdown'
-import { JsonRpc } from 'eosjs'
+import {hash2Ggc} from '@/utils/murmurhash2_gc'
+import { ajaxPost } from '@/utils/'
+// import { JsonRpc } from 'eosjs'
+import ecc from 'eosjs-ecc'
 
 export default {
   name: 'red-list',
@@ -71,18 +38,29 @@ export default {
     }
   },
   created () {
+    let publicKeyBuffer = ecc.PublicKey(localStorage.getItem(this.$store.state.redPubKeyName)).toBuffer()
+    let publicKeyArray = Array.prototype.slice.call(publicKeyBuffer)
+
+    let lowerBoundArray = []
+    publicKeyArray.map(item => {
+      lowerBoundArray.push(String.fromCharCode(item))
+    })
+
+    let hash = hash2Ggc(lowerBoundArray.join(''), 0)
+
     let params = {
       json: true,
       code: this.$store.state.tranAccountName,
       scope: this.$store.state.tranAccountName,
-      table: 'coupons',
-      // lower_bound: '1146',
-      // limit: 1,
+      table: 'redpacket',
+      lower_bound: hash,
       key_type: 'i64',
-      index_position: '1'
+      index_position: 1,
+      limit: 20
     }
-    const rpc = new JsonRpc(this.$store.state.eosjsConfig.endpoint)
-    this.getTableRows(rpc, params)
+    this.getTableRowsForAjax(params)
+    // const rpc = new JsonRpc(this.$store.state.eosjsConfig.endpoint)
+    // this.getTableRows(rpc, params)
   },
   methods: {
     detail (id) {
@@ -90,6 +68,17 @@ export default {
     },
     async getTableRows (rpc, params) {
       const response = await rpc.get_table_rows(params)
+      this.handleResponse(response)
+    },
+    getTableRowsForAjax (params) {
+      let url = this.$store.state.eosjsConfig.endpoint + '/v1/chain/get_table_rows'
+      let _that = this
+      ajaxPost(url, params, function (res) {
+        let response = JSON.parse(res)
+        _that.handleResponse(response)
+      })
+    },
+    handleResponse (response) {
       if (response.rows) {
         let result = response.rows.map(item => {
           let nowTime = parseInt((new Date()).getTime() / 1000)
@@ -99,6 +88,8 @@ export default {
           return item
         })
         this.historyList = result
+      } else {
+        window.tip(response.error)
       }
     }
   }

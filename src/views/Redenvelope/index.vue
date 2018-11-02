@@ -2,8 +2,8 @@
   <div class="red-envelope">
     <top-bar :title="$t('发红包')" />
     <tab :card-show="false" @click="handleTabClick">
-      <tab-item name="MULTY_NORMAL" :label="$t('普通红包')" />
-      <tab-item name="MULTY_RANDOM" :label="$t('拼手气红包')" />
+      <tab-item name="MULTY_NORMAL_ACCOUNT" :label="$t('普通红包')" />
+      <tab-item name="MULTY_RANDOM_ACCOUNT" :label="$t('拼手气红包')" />
     </tab>
     <div class="red-envelope_wrap">
       <LimitInput v-show="scatterIsConnect" numberType="float" :placeholder="$t('填写红包金额')" :left-label="$t('红包金额')" right-label="EOS" v-model="redInfo.amount" />
@@ -11,7 +11,7 @@
       <div class="red-textarea">
         <textarea :placeholder="$t('恭喜发财，大吉大利')" v-model="redInfo.blessing" maxLength="30"></textarea>
       </div>
-      <p class="warn-title"><span>{{$t('红包金额以实际转账为准')}}</span><a href="/redabout"><Iconfont name="icon-bangzhutishi" class="iconfont"/></a></p>
+      <p class="warn-title"><span>{{$t('红包金额以实际转账为准')}}</span><router-link to='redabout'><Iconfont name="icon-bangzhutishi" class="iconfont"/></router-link></p>
 
       <div class="submit">
         <my-button @click="handleSubmit" :label="$t('塞钱进红包')" />
@@ -39,7 +39,7 @@ export default {
   },
   data () {
     return {
-      curTab: 'MULTY_NORMAL',
+      curTab: 'MULTY_NORMAL_ACCOUNT',
       scatterIsConnect: false,
       redInfo: {
         number: '',

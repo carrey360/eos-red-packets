@@ -36,7 +36,8 @@
         <p>{{$t('请勿通过网络工具传输私钥，例如用微信发送到电脑。一旦被黑客获取造成不可挽回的资产损失')}})</p>
       </div>
 
-      <div class="button" @click="create">{{$t('创建账号')}}</div>
+      <div v-show="!hasRedCreateSuc" class="button" @click="create">{{$t('创建账号')}}</div>
+      <div v-show="hasRedCreateSuc" class="button disabled">{{$t('创建账号')}}</div>
     </div>
     <modal v-show="modalData.showDailog" :modalData="modalData" @leftBtnAction="leftBtnAction" @rightBtnAction="rightBtnAction"></modal>
     <loading v-if='showLoading'></loading>
@@ -60,6 +61,7 @@ export default {
   data () {
     return {
       showHome: true,
+      hasRedCreateSuc: false,
       modalData: {
         'showDailog': false,
         'title': this.$t('提示'),
@@ -122,10 +124,12 @@ export default {
     packetCreate () {
       this.modalData.showDailog = false
       this.showLoading = true
-      const rpc = new JsonRpc(this.$store.state.eosjsConfig.endpoint)
-      const signatureProvider = new JsSignatureProvider([this.$store.state.defaultPrivateKey])
-      const api = new Api({rpc, signatureProvider, textDecoder: new TextDecoder(), textEncoder: new TextEncoder()})
-      this.packetCreateAction(api)
+      this.$nextTick(() => {
+        const rpc = new JsonRpc(this.$store.state.eosjsConfig.endpoint)
+        const signatureProvider = new JsSignatureProvider([this.$store.state.defaultPrivateKey])
+        const api = new Api({rpc, signatureProvider, textDecoder: new TextDecoder(), textEncoder: new TextEncoder()})
+        this.packetCreateAction(api)
+      })
     },
     async packetCreateAction (api) {
       let formatCode = formatePacket(this.packetNumber)
@@ -142,7 +146,7 @@ export default {
         actions: [{
           account: this.$store.state.tranAccountName,
           name: 'create',
-          authorization: [{actor: this.$store.state.defaultAccount, permission: 'active'}],
+          authorization: [{actor: this.$store.state.defaultAccount, permission: 'redpacket'}],
           data: params
         }]
       }, {blocksBehind: 3, expireSeconds: 300})
@@ -150,6 +154,7 @@ export default {
       this.showLoading = false
       if (result && result.transaction_id) {
         window.tip(this.$t('创建账号成功'))
+        this.hasRedCreateSuc = true
         // this.$router.push({path: 'acTransfer', query: this.userInput})
       } else {
         window.tip(result.error)

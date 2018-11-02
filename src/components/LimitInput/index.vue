@@ -54,7 +54,7 @@ export default {
     limit (val, oVal) {
       if (!val) return
       if (this.numberType === 'string') {
-        let reg = /^[a-z1-5]{0,12}$/i // 数字1-5 字符a-z大小写 最多12位
+        let reg = /^[a-z1-5]{0,12}$/ // 数字1-5 字符a-z大小写 最多12位
         if (!reg.test(val)) {
           val = oVal
         }

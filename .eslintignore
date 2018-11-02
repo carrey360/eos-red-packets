@@ -3,3 +3,4 @@
 /dist/
 /*.js
 /src/utils/tips.js
+/src/utils/murmurhash2_gc.js

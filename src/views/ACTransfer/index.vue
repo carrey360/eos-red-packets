@@ -145,7 +145,7 @@ export default {
       background-color #F8F8F8
   .button
     margin rem(24) auto
-    margin-bottom 0
+    margin-bottom 50px
     height 50px
     line-height 50px
     color #5D4220

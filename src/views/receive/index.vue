@@ -1,13 +1,13 @@
 <template>
   <div class="receive-warrap">
-    <topBar title="领红包"></topBar>
+    <topBar :title="$t('红包')"></topBar>
     <div class="dispatch-info">
       <img src="@/assets/red-top.png"/>
       <div class="from">From {{ info.sender }}</div>
       <div class="total">
         Total<span class="amount">{{ info.amount }}</span>
-        <span v-if="info.type == 3" class="luck">{{$t('普')}}</span>
-        <span class="share" v-else>{{$t('拼')}}</span></div>
+        <span v-if="info.type == 1" class="luck">{{$t('普')}}</span>
+        <span class="share" v-if="info.type == 2">{{$t('拼')}}</span></div>
       <div class="blessing">{{ info.memo }}</div>
       <div class="send-time">
         <div>{{$t('创建时间')}}：{{ info.expire | formatDate('YYYY-MM-DD HH:mm') }}</div>
@@ -103,6 +103,7 @@ export default {
     },
     // 执行动作
     getTransact () {
+      this.showLoading = true
       const signatureProvider = new JsSignatureProvider([this.$store.state.defaultPrivateKey])
       const api = new Api({rpc: this.rpcJson, signatureProvider, textDecoder: new TextDecoder(), textEncoder: new TextEncoder()})
       this.getTransactAction(api)
@@ -121,11 +122,12 @@ export default {
         actions: [{
           account: this.$store.state.tranAccountName,
           name: 'get',
-          authorization: [{actor: this.$store.state.defaultAccount, permission: 'active'}],
+          authorization: [{actor: this.$store.state.defaultAccount, permission: 'redpacket'}],
           data: params
         }]
       }, {blocksBehind: 3, expireSeconds: 300})
 
+      this.showLoading = false
       if (result && result.transaction_id) {
         this.$router.push({path: 'success', query: {id: this.info.id, accountName: this.account}})
       } else {
