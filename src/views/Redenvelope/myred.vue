@@ -20,10 +20,10 @@
           <textarea disabled="disabled" cols="3" rows="6" v-model="remark"></textarea>
         </div>
       </div>
-      <div class="text-box" v-show="packetStr">
+      <div class="text-box">
         <p><span>{{$t('红包串号')}}</span><span class="packetStr" :data-clipboard-text="packetStr" @click="copy('.packetStr')">{{$t('复制')}}</span></p>
-        <div class="text">
-          <textarea disabled="disabled" cols="3" rows="6" v-model="packetStr"></textarea>
+        <div class="text packetStr">
+          <textarea class="packetStr" disabled="disabled" cols="3" rows="6" v-model="packetStr"></textarea>
         </div>
       </div>
       <div class="my-red_btn_wrapp">
@@ -63,6 +63,9 @@ export default {
   created () {
     let query = this.$route.query
     this.remark = query.packetStr
+    let params = query.uuid + '_' + query.type + '_' + query.blessing
+    let privarekey = localStorage.getItem(this.$store.state.redPriKeyName)
+    this.packetStr = query.blessing + '-' + query.type + '-' + query.uuid + '-' + query.limit + '-' + ecc.sign(params, privarekey)
 
     ScatterJS.scatter.connect(this.$store.state.projectName).then(connected => {
       if (!connected) return false
@@ -92,11 +95,7 @@ export default {
       const tokenDetails = {contract: 'eosio.token', symbol: 'EOS', memo: this.remark, decimals: 4}
       this.scatter.requestTransfer(this.scatterNetwork, this.account, this.$route.query.amount + '', tokenDetails).then(result => {
         if (result && result.transaction_id) {
-          window.tip('转账成功')
-          let query = this.$route.query
-          let params = query.uuid + '_' + query.type + '_' + query.blessing
-          let privarekey = localStorage.getItem(this.$store.state.redPriKeyName)
-          this.packetStr = query.blessing + '-' + query.type + '-' + query.uuid + '-' + query.limit + '-' + ecc.sign(params, privarekey)
+          window.tip(this.$t('转账成功'))
           this.showScatterTransform = false
         } else {
           window.tip(result.error)
@@ -136,6 +135,8 @@ export default {
         width 100%
         margin-top 4px
         background-color #F8F8F8
+        &.packetStr
+          background-color #fffcdd
         input, textarea
           background-color #F8F8F8
           padding 13px 15px
@@ -145,6 +146,8 @@ export default {
           width 100%
           height 100%
           resize none
+          &.packetStr
+            background-color #fffcdd
     .my-red_btn_wrapp
       margin-top 32px
       display flex

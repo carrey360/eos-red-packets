@@ -47,11 +47,13 @@ export default {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   color: #2c3e50;
+  height: 100%;
 }
 body{
   padding: 0;
   margin: 0;
-  max-width: 750px;
+  max-width: 640px;
   margin: 0 auto;
+  height: 100%
 }
 </style>

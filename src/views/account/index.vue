@@ -22,18 +22,18 @@
       <textarea class="packet-number common-input" v-model="packetNumber"></textarea>
 
       <div class="account-tip">
-        <p>{{$t('创建提示')}})</p>
-        <p>{{$t('创建账号会扣除部分EOS，剩余部分会转入账号内')}})</p>
+        <p>{{$t('创建提示')}}</p>
+        <p>{{$t('创建账号会扣除部分EOS，剩余部分会转入账号内')}}</p>
       </div>
 
       <div class="account-tip">
-        <p>{{$t('离线保存')}})</p>
-        <p>{{$t('建议抄写或打印私钥后放置在安全地点保存')}})</p>
+        <p>{{$t('离线保存')}}</p>
+        <p>{{$t('建议抄写或打印私钥后放置在安全地点保存')}}</p>
       </div>
 
       <div class="account-tip">
-        <p>{{$t('请勿使用网络传输')}})</p>
-        <p>{{$t('请勿通过网络工具传输私钥，例如用微信发送到电脑。一旦被黑客获取造成不可挽回的资产损失')}})</p>
+        <p>{{$t('请勿使用网络传输')}}</p>
+        <p>{{$t('请勿通过网络工具传输私钥，例如用微信发送到电脑。一旦被黑客获取造成不可挽回的资产损失')}}</p>
       </div>
 
       <div v-show="!hasRedCreateSuc" class="button" @click="create">{{$t('创建账号')}}</div>
@@ -77,8 +77,6 @@ export default {
       }
     }
   },
-  created () {
-  },
   methods: {
     leftBtnAction () {
       this.modalData.showDailog = false
@@ -109,7 +107,7 @@ export default {
           window.tip(this.$t('请正确输入红包串号'))
           return false
         } else if (formatCode.isMemo) {
-          this.modalData.content = this.$t('确定要用改红包创建账号')
+          this.modalData.content = this.$t('确定要用该红包创建账号')
           this.modalData.showDailog = true
         }
       } else {
@@ -123,12 +121,25 @@ export default {
     },
     packetCreate () {
       this.modalData.showDailog = false
-      this.showLoading = true
       this.$nextTick(() => {
+        this.showLoading = true
         const rpc = new JsonRpc(this.$store.state.eosjsConfig.endpoint)
         const signatureProvider = new JsSignatureProvider([this.$store.state.defaultPrivateKey])
         const api = new Api({rpc, signatureProvider, textDecoder: new TextDecoder(), textEncoder: new TextEncoder()})
-        this.packetCreateAction(api)
+        this.packetCreateAction(api).then(result => {
+          // 跳转
+          this.showLoading = false
+          if (result && result.transaction_id) {
+            window.tip(this.$t('创建账号成功'))
+            this.hasRedCreateSuc = true
+            // this.$router.push({path: 'acTransfer', query: this.userInput})
+          } else {
+            window.tip(result.error)
+          }
+        }).catch(() => {
+          this.showLoading = false
+          window.tip(this.$t('服务异常，请稍后'))
+        })
       })
     },
     async packetCreateAction (api) {
@@ -142,7 +153,7 @@ export default {
         sig: formatCode.sign
       }
 
-      const result = await api.transact({
+      let result = await api.transact({
         actions: [{
           account: this.$store.state.tranAccountName,
           name: 'create',
@@ -150,15 +161,7 @@ export default {
           data: params
         }]
       }, {blocksBehind: 3, expireSeconds: 300})
-      // 跳转
-      this.showLoading = false
-      if (result && result.transaction_id) {
-        window.tip(this.$t('创建账号成功'))
-        this.hasRedCreateSuc = true
-        // this.$router.push({path: 'acTransfer', query: this.userInput})
-      } else {
-        window.tip(result.error)
-      }
+      return result
     },
     createKey () {
       this.showLoading = true

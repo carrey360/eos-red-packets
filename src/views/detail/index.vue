@@ -22,9 +22,11 @@
       <div class="tip">{{$t('通过该ID可以查看红包信息')}}</div>
       <div class="common-input">{{ redID }}</div>
 
-      <div class="title"><p>{{$t('红包串号')}}</p><p class="copy packetStr" :data-clipboard-text="packetStr" @click="copy('.packetStr')">{{$t('复制')}}</p></div>
-      <div class="tip">{{$t('分享该串给您朋友，让你朋友领取红包')}}</div>
-      <div class="packet-number common-input">{{ packetStr }}</div>
+      <div v-show="curUserPublik == info.pubkey">
+        <div class="title"><p>{{$t('红包串号')}}</p><p class="copy packetStr" :data-clipboard-text="packetStr" @click="copy('.packetStr')">{{$t('复制')}}</p></div>
+        <div class="tip">{{$t('分享该串给您朋友，让你朋友领取红包')}}</div>
+        <div class="packet-number common-input">{{ packetStr }}</div>
+      </div>
     </div>
 
     <div class="fengeline"></div>
@@ -58,6 +60,7 @@ export default {
       packetStr: '',
       showLoading: true,
       receiveAmount: 0,
+      curUserPublik: localStorage.getItem(this.$store.state.redPubKeyName),
       info: {
         id: '',
         type: '',
@@ -85,7 +88,29 @@ export default {
     }
     this.redID = query.id
     const rpc = new JsonRpc(this.$store.state.eosjsConfig.endpoint)
-    this.getTableRows(rpc, params)
+    this.getTableRows(rpc, params).then(response => {
+      this.showLoading = false
+      if (response.rows) {
+        let result = response.rows[0]
+        let nowTime = parseInt((new Date()).getTime() / 1000)
+        if (result.expire > nowTime) {
+          result.countDate = result.expire - nowTime
+        }
+        result.log.map(item => {
+          this.receiveAmount += parseFloat(item.amount)
+        })
+        result.expire = result.expire - 24 * 60 * 60
+        let strType = result.type === 1 ? 'MULTY_NORMAL_ACCOUNT' : 'MULTY_RANDOM_ACCOUNT'
+        //  红包串
+        let params = result.id + '_' + strType + '_' + result.memo
+        let privarekey = localStorage.getItem(this.$store.state.redPriKeyName)
+        this.packetStr = result.memo + '-' + strType + '-' + result.id + '-' + result.limit + '-' + ecc.sign(params, privarekey)
+        this.info = result
+      }
+    }).catch(() => {
+      this.showLoading = false
+      window.tip(this.$t('服务异常，请稍后'))
+    })
   },
   methods: {
     copy (className) {
@@ -104,24 +129,7 @@ export default {
     },
     async getTableRows (rpc, params) {
       const response = await rpc.get_table_rows(params)
-      if (response.rows) {
-        let result = response.rows[0]
-        let nowTime = parseInt((new Date()).getTime() / 1000)
-        if (result.expire > nowTime) {
-          result.countDate = result.expire - nowTime
-        }
-        result.log.map(item => {
-          this.receiveAmount += parseFloat(item.amount)
-        })
-        result.expire = result.expire - 24 * 60 * 60
-        let strType = result.type === 1 ? 'MULTY_NORMAL_ACCOUNT' : 'MULTY_RANDOM_ACCOUNT'
-        //  红包串
-        let params = result.id + '_' + strType + '_' + result.memo
-        let privarekey = localStorage.getItem(this.$store.state.redPriKeyName)
-        this.packetStr = result.memo + '-' + strType + '-' + result.id + '-' + result.limit + '-' + ecc.sign(params, privarekey)
-        this.info = result
-        this.showLoading = false
-      }
+      return response
     }
   },
   filters: {

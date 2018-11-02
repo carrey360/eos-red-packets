@@ -27,6 +27,7 @@ let enConfig = {
   '是': 'YES',
   '否': 'NO',
   '确定私钥已保存安全位置': 'Confirm that the private key has secured the security location',
+  '确定要用该红包创建账号': 'Make sure you use the red packet to create accounts',
   '请输入公钥': 'Please enter the public key',
   '复制成功': 'Copy Success',
   '关于我们': 'About us',
@@ -85,7 +86,9 @@ let enConfig = {
   '简介普通红包': 'Ordinary Red Packets',
   '普通红包可以一对一或者一对多发送，用户设置好红包总金额和红包个数后，会生成一串字符串，可分享至各个社交平台，每个被领取的红包金额相同': 'Ordinary Red Packets can be sent one-to-one or one-to-many. After the user sets the total value of Red Packets and the number of Red Packets, a string will be generated, which can be shared to various social platforms. Everyone will receive the same value of Red Packets',
   '简介拼手气红包': 'Lucky Red Packets',
-  '拼手气红包可以一对多发送，用户设置好红包总金额和红包个数后，会生成一串字符串，可分享至各个社交平台，每个被领取的红包金额随机不等': 'Lucky Red Packets can be sent one-to-many. After the user sets the total value of Red Packets and the number of Red Packets, a string will be generated, which can be shared to various social platforms. Everyone will receive a random value of Red Packets'
+  '拼手气红包可以一对多发送，用户设置好红包总金额和红包个数后，会生成一串字符串，可分享至各个社交平台，每个被领取的红包金额随机不等': 'Lucky Red Packets can be sent one-to-many. After the user sets the total value of Red Packets and the number of Red Packets, a string will be generated, which can be shared to various social platforms. Everyone will receive a random value of Red Packets',
+  '服务异常，请稍后': 'Service exception, please wait',
+  '领取失败': 'Failed'
 }
 
 let cnConfig = {
@@ -113,6 +116,7 @@ let cnConfig = {
   '是': '是',
   '否': '否',
   '确定私钥已保存安全位置': '确定私钥已保存安全位置',
+  '确定要用该红包创建账号': '确定要用该红包创建账号',
   '请输入公钥': '请输入公钥',
   '复制成功': '复制成功',
   '关于我们': '关于我们',
@@ -171,7 +175,9 @@ let cnConfig = {
   '简介普通红包': '普通红包',
   '普通红包可以一对一或者一对多发送，用户设置好红包总金额和红包个数后，会生成一串字符串，可分享至各个社交平台，每个被领取的红包金额相同': '普通红包可以一对一或者一对多发送，用户设置好红包总金额和红包个数后，会生成一串字符串，可分享至各个社交平台，每个被领取的红包金额相同',
   '简介拼手气红包': '拼手气红包',
-  '拼手气红包可以一对多发送，用户设置好红包总金额和红包个数后，会生成一串字符串，可分享至各个社交平台，每个被领取的红包金额随机不等': '拼手气红包可以一对多发送，用户设置好红包总金额和红包个数后，会生成一串字符串，可分享至各个社交平台，每个被领取的红包金额随机不等'
+  '拼手气红包可以一对多发送，用户设置好红包总金额和红包个数后，会生成一串字符串，可分享至各个社交平台，每个被领取的红包金额随机不等': '拼手气红包可以一对多发送，用户设置好红包总金额和红包个数后，会生成一串字符串，可分享至各个社交平台，每个被领取的红包金额随机不等',
+  '服务异常，请稍后': '服务异常，请稍后',
+  '领取失败': '领取失败'
 }
 
 const messages = {

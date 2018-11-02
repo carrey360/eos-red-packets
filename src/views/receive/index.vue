@@ -106,7 +106,17 @@ export default {
       this.showLoading = true
       const signatureProvider = new JsSignatureProvider([this.$store.state.defaultPrivateKey])
       const api = new Api({rpc: this.rpcJson, signatureProvider, textDecoder: new TextDecoder(), textEncoder: new TextEncoder()})
-      this.getTransactAction(api)
+      this.getTransactAction(api).then((result) => {
+        this.showLoading = false
+        if (result && result.transaction_id) {
+          this.$router.push({path: 'success', query: {id: this.info.id, accountName: this.account}})
+        } else {
+          window.tip(result.error)
+        }
+      }).catch(() => {
+        this.showLoading = false
+        window.tip(this.$t('领取失败'))
+      })
     },
     // 调用eosjs-api-get
     async getTransactAction (api) {
@@ -118,7 +128,7 @@ export default {
         sig: formatCodeJson.sign
       }
 
-      const result = await api.transact({
+      let result = await api.transact({
         actions: [{
           account: this.$store.state.tranAccountName,
           name: 'get',
@@ -126,13 +136,7 @@ export default {
           data: params
         }]
       }, {blocksBehind: 3, expireSeconds: 300})
-
-      this.showLoading = false
-      if (result && result.transaction_id) {
-        this.$router.push({path: 'success', query: {id: this.info.id, accountName: this.account}})
-      } else {
-        window.tip(result.error)
-      }
+      return result
     },
     receive () {
       // 验证输入账号是否正确
@@ -229,7 +233,7 @@ export default {
   .inner-div
     height rem(160)
   .error-tip
-    max-width 750px
+    max-width 640px
     background-color #FFEAED
     text-align center
     color #CE2344
@@ -243,11 +247,11 @@ export default {
   .input-account
     text-align center
     position fixed
-    max-width 750px
+    max-width 640px
     // left 0
     bottom 0
     -webkit-transform translateZ(0)
-    height rem(160)
+    height rem(174)
     width 100%
     background-color #CE2344
     .input

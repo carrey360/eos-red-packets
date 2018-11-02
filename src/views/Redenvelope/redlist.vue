@@ -15,13 +15,16 @@
           <span>{{ item.log.length }}/{{ item.limit }}</span>
         </div>
       </div>
+      <div v-show="historyList.length == 0" class="list-noData">{{$t('暂无数据')}}</div>
 
     </div>
+    <loading v-if='showLoading'></loading>
   </div>
 </template>
 <script>
 import TopBar from '@/components/topBar'
 import CountDown from '@/components/Countdown'
+import loading from '@/components/loading'
 import {hash2Ggc} from '@/utils/murmurhash2_gc'
 import { ajaxPost } from '@/utils/'
 // import { JsonRpc } from 'eosjs'
@@ -30,10 +33,12 @@ import ecc from 'eosjs-ecc'
 export default {
   name: 'red-list',
   components: {
-    TopBar, CountDown
+    TopBar, CountDown, loading
   },
   data () {
     return {
+      curUserPublik: localStorage.getItem(this.$store.state.redPubKeyName),
+      showLoading: true,
       historyList: []
     }
   },
@@ -80,7 +85,9 @@ export default {
     },
     handleResponse (response) {
       if (response.rows) {
-        let result = response.rows.map(item => {
+        let filterArray = response.rows.filter(item => item.pubkey === this.curUserPublik)
+        console.log(filterArray)
+        let result = filterArray.map(item => {
           let nowTime = parseInt((new Date()).getTime() / 1000)
           if (item.expire > nowTime) {
             item.countDate = item.expire - nowTime
@@ -91,6 +98,7 @@ export default {
       } else {
         window.tip(response.error)
       }
+      this.showLoading = false
     }
   }
 }

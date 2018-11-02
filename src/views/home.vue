@@ -16,6 +16,7 @@
       <span><router-link to="about">{{$t('关于我们')}}</router-link></span>
     </div>
     <div class="decoration"><img src="../assets/decoration.png" /></div>
+    <div style="height: 20px"></div>
   </div>
 </template>
 
@@ -80,6 +81,7 @@ export default {
 .home-warrap
   background-color #CF2546
   text-align center
+  height 100%
   a
     text-decoration none
   .top
@@ -90,7 +92,7 @@ export default {
       width 100%
     .code
       position absolute
-      top 24px
+      top 10%
       left 50%
       transform translateX(-50%)
       width 100%

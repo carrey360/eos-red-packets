@@ -156,4 +156,7 @@ export default {
     font-size 16px
     text-align center
     border-radius 2px
+    a
+      text-decoration none
+      color #5D4220
 </style>
