@@ -23,15 +23,28 @@ For a detailed explanation on how things work, check out the [guide](http://vuej
 
 ## 目录介绍
 views
-     -----home              #首页
-     ----about              #关于我们
-     ----account            #创建账号
-     ----AcTransfer         #创建账号第二步（转账）
-     ----detail             #红包详情
-     ----receiver           #查看红包或者领取红包入口
-     ----receiversuccess    #领取红包成功
+    # 首页
+      -----home
+    # 关于我们
+      ----about
+    # 创建账号
+      ----account
+    # 创建账号第二步（转账）            
+      ----AcTransfer  
+    # 红包详情
+      ----detail
+    # 查看红包或者领取红包入口 
+      ----receiver
+    # 领取红包成功           
+      ----receiversuccess
+    
+    # 发红包
      ----redenvelope
-         ------index        #发红包
-         ------myred        #发红包转账
-         ------redabout     #红包类型介绍
-         ------redlist      #我塞的红包
+    # 发红包
+         ------index
+    # 发红包转账      
+         ------myred 
+    # 红包类型介绍       
+         ------redabout
+    # 我塞的红包   
+         ------redlist      
