@@ -57,7 +57,7 @@ export default {
         let jsonRpcObj = new JsonRpc(this.$store.state.eosjsConfig.endpoint)
         this.getTableRows(jsonRpcObj, params).then(response => {
           this.showLoading = false
-          if (response.rows && response.rows.length === 1) {
+          if (response.rows && response.rows.length === 1 && response.rows[0].id === formatCodeJson.uuid) {
             this.$store.commit('setCode', {code: this.code})
             // 成后跳转到领取红包页面
             this.$router.push({path: 'receive', query: {uuid: formatCodeJson.uuid, sign: formatCodeJson.sign}})

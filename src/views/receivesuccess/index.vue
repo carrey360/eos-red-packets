@@ -19,7 +19,7 @@
         <div class="status"><count-down v-if="info.countDate" :count-date="info.countDate"/></div>
       </div>
     </div>
-    <div class="amount-info">{{$t('兑换')}} {{ info.log.length }}/{{ info.limit }}, {{ receiveAmount }}/{{ info.amount }}</div>
+    <div class="amount-info">{{$t('兑换')}} {{ info.log.length }}/{{ info.limit }}, {{ receiveAmount.toFixed(4) }}/{{ info.amount }}</div>
     <ul class="receive-list">
       <li v-for="(item, key) in info.log" :key="key" :class="item.isCurUser ? 'active' : ''"><div>{{ item.who }}</div><div>{{ item.amount }}</div></li>
     </ul>
