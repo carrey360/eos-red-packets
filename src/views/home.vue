@@ -16,22 +16,25 @@
       <span><router-link to="about">{{$t('关于我们')}}</router-link></span>
     </div>
     <div class="decoration"><img src="../assets/decoration.png" /></div>
-    <div style="height: 20px"></div>
+    <div style="height: 2px"></div>
+    <loading v-show='showLoading'></loading>
   </div>
 </template>
 
 <script>
 import { formatePacket } from '@/utils/'
 import { JsonRpc } from 'eosjs'
+import loading from '@/components/loading'
 
 export default {
   name: 'home',
-  inject: ['reload'],
   data () {
     return {
+      showLoading: false,
       code: ''
     }
   },
+  components: {loading},
   methods: {
     go () {
       let formatCodeJson = formatePacket(this.code)
@@ -40,6 +43,7 @@ export default {
       } else if (!formatCodeJson.isMemo) {
         window.tip(this.$t('请输入有效值'))
       } else {
+        this.showLoading = true
         let params = {
           json: true,
           code: this.$store.state.tranAccountName,
@@ -50,19 +54,25 @@ export default {
           key_type: 'i64',
           index_position: '1'
         }
-        this.rpcJson = new JsonRpc(this.$store.state.eosjsConfig.endpoint)
-        this.getTableRows(this.rpcJson, params)
+        let jsonRpcObj = new JsonRpc(this.$store.state.eosjsConfig.endpoint)
+        this.getTableRows(jsonRpcObj, params).then(response => {
+          this.showLoading = false
+          if (response.rows && response.rows.length === 1) {
+            this.$store.commit('setCode', {code: this.code})
+            // 成后跳转到领取红包页面
+            this.$router.push({path: 'receive', query: {uuid: formatCodeJson.uuid, sign: formatCodeJson.sign}})
+          } else {
+            window.tip(this.$t('您输入的内容无效或者红包已失效'))
+          }
+        }).catch(() => {
+          window.tip(this.$t('失败'))
+          this.showLoading = false
+        })
       }
     },
     async getTableRows (rpc, params) {
-      const response = await rpc.get_table_rows(params)
-
-      if (response.rows && response.rows.length === 1) {
-        this.$store.commit('setCode', {code: this.code})
-        this.$router.push('receive')
-      } else {
-        window.tip(this.$t('您输入的内容无效或者红包已失效'))
-      }
+      let response = await rpc.get_table_rows(params)
+      return response
     },
     setLang () {
       let lang = localStorage.getItem('redLang') || 'cn'
@@ -118,7 +128,7 @@ export default {
       background-color rgba(221,36,54,1)
       border 0 none
       border-radius rem(40)
-      font-size rem(14)
+      font-size rem(16)
       font-weight 400
       color rgba(255,247,193,1)
       position absolute

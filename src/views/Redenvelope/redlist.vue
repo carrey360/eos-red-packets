@@ -81,12 +81,14 @@ export default {
       ajaxPost(url, params, function (res) {
         let response = JSON.parse(res)
         _that.handleResponse(response)
+      }, function () {
+        window.tip(_that.$t('失败'))
+        _that.showLoading = false
       })
     },
     handleResponse (response) {
       if (response.rows) {
         let filterArray = response.rows.filter(item => item.pubkey === this.curUserPublik)
-        console.log(filterArray)
         let result = filterArray.map(item => {
           let nowTime = parseInt((new Date()).getTime() / 1000)
           if (item.expire > nowTime) {

@@ -4,10 +4,13 @@
     <div class="account-content">
       <div class="title"><p>{{$t('账号')}}</p></div>
       <LimitInput :placeholder="$t('请输入您的账号')" :isNumber="false" v-model="userInput.accountName"/>
-      <!-- <input class="account-name common-input" type="text" placeholder="请输入账号名称" v-model="userInput.accountName"/> -->
       <div class="input-tip">{{$t('12位字符，需包含数字1-5和字母a-z两种元素')}}</div>
 
-      <div class="title"><p>{{$t('公钥')}}</p><p class="copy" @click="createKey">{{$t('生成新公钥')}}</p></div>
+      <div class="title">
+        <p>{{$t('公钥')}}</p>
+        <p v-if="!hasRedCreateSuc" class="copy" @click="createKey">{{$t('生成新公钥')}}</p>
+        <p v-else class="copy publickey" :data-clipboard-text="userInput.publickey" @click="copy('.publickey')">{{$t('复制')}}</p>
+      </div>
       <textarea class="public-key common-input" :placeholder="$t('请输入公钥')" v-model="userInput.publicKey"></textarea>
       <div class="input-tip">{{$t('所有者和使用者公钥相同')}}</div>
 
@@ -50,8 +53,7 @@ import modal from '@/components/dialog'
 import loading from '@/components/loading'
 import ecc from 'eosjs-ecc'
 import LimitInput from '@/components/LimitInput'
-import { formatePacket } from '@/utils/'
-import Clipboard from 'clipboard'
+import { formatePacket, copy } from '@/utils/'
 import { Api, JsonRpc, JsSignatureProvider } from 'eosjs'
 import { TextDecoder, TextEncoder } from 'text-encoding'
 
@@ -83,7 +85,7 @@ export default {
     },
     rightBtnAction () {
       let formatCode = formatePacket(this.packetNumber)
-      if (formatCode.isMemo) {
+      if (this.packetNumber && formatCode.isMemo) {
         this.packetCreate()
       } else {
         this.$router.push({path: 'acTransfer', query: this.userInput})
@@ -100,7 +102,7 @@ export default {
         window.tip(this.$t('请输入公钥'))
         return false
       }
-
+      // 通过红包串创建账号
       if (this.packetNumber) {
         let formatCode = formatePacket(this.packetNumber)
         if (!formatCode.isMemo) {
@@ -132,13 +134,12 @@ export default {
           if (result && result.transaction_id) {
             window.tip(this.$t('创建账号成功'))
             this.hasRedCreateSuc = true
-            // this.$router.push({path: 'acTransfer', query: this.userInput})
           } else {
             window.tip(result.error)
           }
         }).catch(() => {
           this.showLoading = false
-          window.tip(this.$t('服务异常，请稍后'))
+          window.tip(this.$t('失败'))
         })
       })
     },
@@ -176,18 +177,7 @@ export default {
       })
     },
     copy (className) {
-      var clipboard = new Clipboard(className)
-      clipboard.on('success', e => {
-        window.tip(this.$t('复制成功'))
-        // 释放内存
-        clipboard.destroy()
-      })
-      clipboard.on('error', e => {
-        // 不支持复制
-        window.tip(this.$t('该浏览器不支持自动复制'))
-        // 释放内存
-        clipboard.destroy()
-      })
+      copy(className, this)
     }
   }
 }

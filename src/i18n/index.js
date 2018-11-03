@@ -88,7 +88,8 @@ let enConfig = {
   '简介拼手气红包': 'Lucky Red Packets',
   '拼手气红包可以一对多发送，用户设置好红包总金额和红包个数后，会生成一串字符串，可分享至各个社交平台，每个被领取的红包金额随机不等': 'Lucky Red Packets can be sent one-to-many. After the user sets the total value of Red Packets and the number of Red Packets, a string will be generated, which can be shared to various social platforms. Everyone will receive a random value of Red Packets',
   '服务异常，请稍后': 'Service exception, please wait',
-  '领取失败': 'Failed'
+  '领取失败': 'Failed',
+  '失败': 'Failed'
 }
 
 let cnConfig = {
@@ -177,7 +178,8 @@ let cnConfig = {
   '简介拼手气红包': '拼手气红包',
   '拼手气红包可以一对多发送，用户设置好红包总金额和红包个数后，会生成一串字符串，可分享至各个社交平台，每个被领取的红包金额随机不等': '拼手气红包可以一对多发送，用户设置好红包总金额和红包个数后，会生成一串字符串，可分享至各个社交平台，每个被领取的红包金额随机不等',
   '服务异常，请稍后': '服务异常，请稍后',
-  '领取失败': '领取失败'
+  '领取失败': '领取失败',
+  '失败': '操作异常'
 }
 
 const messages = {

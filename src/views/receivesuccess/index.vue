@@ -41,17 +41,17 @@ export default {
   data () {
     return {
       showHome: true,
-      showLoading: true,
+      showLoading: false,
       curAccountName: '',
       claimAmount: '',
       receiveAmount: 0,
       info: {
         id: '',
         type: '',
-        limit: '',
+        limit: 0,
         sender: '',
         pubkey: '',
-        amount: '',
+        amount: 0,
         memo: '',
         expire: 0,
         log: []
@@ -61,6 +61,10 @@ export default {
   created () {
     let query = this.$route.query
     this.curAccountName = query.accountName
+    if (!query.id) {
+      return
+    }
+    this.showLoading = true
     let params = {
       json: true,
       code: this.$store.state.tranAccountName,
@@ -72,12 +76,7 @@ export default {
       index_position: '1'
     }
     const rpc = new JsonRpc(this.$store.state.eosjsConfig.endpoint)
-    this.getTableRows(rpc, params)
-  },
-  methods: {
-    async getTableRows (rpc, params) {
-      const response = await rpc.get_table_rows(params)
-
+    this.getTableRows(rpc, params).then(response => {
       if (response.rows) {
         let result = response.rows[0]
         let nowTime = parseInt((new Date()).getTime() / 1000)
@@ -95,11 +94,19 @@ export default {
           return item
         })
         this.info = result
-        this.showLoading = false
       } else {
         window.tip(response.error)
-        this.showLoading = false
       }
+      this.showLoading = false
+    }).catch(() => {
+      window.tip(this.$t('失败'))
+      this.showLoading = false
+    })
+  },
+  methods: {
+    async getTableRows (rpc, params) {
+      const response = await rpc.get_table_rows(params)
+      return response
     }
   },
   filters: {

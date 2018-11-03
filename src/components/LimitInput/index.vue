@@ -3,7 +3,7 @@
     <div v-if="isNumber" class="red-input">
       <span v-if='leftLabel'>{{leftLabel}}</span>
       <div>
-        <input :placeholder="placeholder" type="text" :value="inputVal" @input="handleInput"/>
+        <input :placeholder="placeholder" :type="setInputType" :value="inputVal" @input="handleInput"/>
         <span v-if='rightLabel'>{{rightLabel}}</span>
       </div>
     </div>
@@ -40,6 +40,15 @@ export default {
     numberType: {
       type: String,
       default: 'string' // string,int,float
+    },
+    maxValue: {
+      type: String,
+      default: '0'
+    }
+  },
+  computed: {
+    setInputType () {
+      return this.numberType === 'int' ? 'number' : 'text'
     }
   },
   data () {
@@ -62,6 +71,10 @@ export default {
         let reg = /^[1-9]{1}\d*$/ // 大于零正整数
         if (!reg.test(val)) {
           val = oVal
+        }
+
+        if (+this.maxValue > 0 && val > +this.maxValue) {
+          val = +this.maxValue
         }
       } else if (this.numberType === 'float') {
         let reg = /^(0|[1-9]+\d*)([.]{1}[0-9]{0,4}){0,1}$/ // 小数最多四位

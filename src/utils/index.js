@@ -1,7 +1,4 @@
-// return (S4() + S4() + S4() + S4() + S4() + S4() + S4() + S4())
-// function S4 () {
-//   return (((1 + Math.random()) * 0x10000) | 0).toString(16).substring(1)
-// }
+import Clipboard from 'clipboard'
 
 // 生成UUID
 export function getUUID () {
@@ -42,15 +39,34 @@ export function formatePacket (str = '') {
   return result
 }
 
-export function ajaxPost (url, data, fn) {
+export function ajaxPost (url, data, success, error) {
   var _data = JSON.stringify(data)
   var xhr = new XMLHttpRequest()
   xhr.open('POST', url, true)
-  // xhr.setRequestHeader("Content-Type", "application/json");
+  xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded')
   xhr.onreadystatechange = function () {
-    if (xhr.readyState === 4 && (xhr.status === 200 || xhr.status === 304)) {
-      fn.call(this, xhr.responseText)
+    if (xhr.readyState === 4) {
+      if (xhr.status === 200 || xhr.status === 304) {
+        success.call(this, xhr.responseText)
+      } else {
+        error && error(xhr.responseText)
+      }
     }
   }
   xhr.send(_data)
+}
+
+export function copy (className, that) {
+  var clipboard = new Clipboard(className)
+  clipboard.on('success', e => {
+    window.tip(that.$t('复制成功'))
+    // 释放内存
+    clipboard.destroy()
+  })
+  clipboard.on('error', e => {
+    // 不支持复制
+    window.tip(that.$t('该浏览器不支持自动复制'))
+    // 释放内存
+    clipboard.destroy()
+  })
 }

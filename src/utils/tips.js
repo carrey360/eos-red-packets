@@ -2,11 +2,11 @@ module.exports = function (text,callback) {
 	var tipHTML = ''
 	var autoHide = true
 	var tipBody = ''
-	var tipHTML = "<div style='padding:15px 20px;background:rgba(0,0,0,.75);color:#fff;border-radius:4px;text-align:center;min-width:160px;'><p data-label='tip-text' style='font-size: 14px;line-height:20px;margin:0;'>"+text+"</p></div>"
+	var tipHTML = "<div style='padding:15px 20px;background:rgba(0,0,0,.75);color:#fff;border-radius:4px;text-align:center;min-width:120px;'><p data-label='tip-text' style='font-size: 14px;line-height:20px;margin:0;'>"+text+"</p></div>"
 	if (callback) {
 		autoHide = false
 		//文本加按钮
-		tipHTML = "<div style='padding:15px 20px;background:rgba(0,0,0,.75);color:#fff;border-radius:4px;text-align:center;min-width:160px;'><p data-label='tip-text' style='font-size: 14px;line-height:20px;margin:0;'>"+text+"</p><button data-label='tip-ok'>确定,我知道了</button></div>"
+		tipHTML = "<div style='padding:15px 20px;background:rgba(0,0,0,.75);color:#fff;border-radius:4px;text-align:center;min-width:120px;'><p data-label='tip-text' style='font-size: 14px;line-height:20px;margin:0;'>"+text+"</p><button data-label='tip-ok'>确定,我知道了</button></div>"
 	}
 
 	if(tipBody = document.body.querySelector('[data-label="tip"]')) {

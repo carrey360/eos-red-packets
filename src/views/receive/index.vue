@@ -36,7 +36,6 @@ import IconFont from '@/components/Iconfont'
 import loading from '@/components/loading'
 import LimitInput from '@/components/LimitInput'
 import { formatDate } from '@/utils/filter'
-import { formatePacket } from '@/utils/'
 import CountDown from '@/components/Countdown'
 import { Api, JsonRpc, JsSignatureProvider } from 'eosjs'
 import { TextDecoder, TextEncoder } from 'text-encoding'
@@ -51,15 +50,15 @@ export default {
       errorMsg: '',
       showLoading: false,
       rpcJson: '',
-      receiveAmount: 0,
+      receiveAmount: 0, // 已领取金额
       isIputCodeNumber: false, // 通过红包id进来
-      info: {
+      info: { // 红包信息
         id: '',
         type: '',
-        limit: '',
+        limit: 0,
         sender: '',
         pubkey: '',
-        amount: '',
+        amount: 0,
         memo: '',
         expire: 0,
         log: []
@@ -67,27 +66,26 @@ export default {
     }
   },
   created () {
-    let formatCodeJson = formatePacket(this.$store.state.code)
-
-    if (!formatCodeJson.sign) {
+    let query = this.$route.query
+    if (!query.sign) {
       this.isIputCodeNumber = true
     }
+    if (!query.uuid) {
+      return
+    }
+    this.showLoading = true
     let params = {
       json: true,
       code: this.$store.state.tranAccountName,
       scope: this.$store.state.tranAccountName,
       table: 'redpacket',
-      lower_bound: formatCodeJson.uuid,
+      lower_bound: query.uuid,
       limit: 1,
       key_type: 'i64',
       index_position: '1'
     }
     this.rpcJson = new JsonRpc(this.$store.state.eosjsConfig.endpoint)
-    this.getTableRows(this.rpcJson, params)
-  },
-  methods: {
-    async getTableRows (rpc, params) {
-      const response = await rpc.get_table_rows(params)
+    this.getTableRows(this.rpcJson, params).then(response => {
       if (response.rows) {
         let result = response.rows[0]
         let nowTime = parseInt((new Date()).getTime() / 1000)
@@ -100,13 +98,34 @@ export default {
         result.expire = result.expire - 24 * 60 * 60
         this.info = result
       }
+      this.showLoading = false
+    }).catch(() => {
+      window.tip(this.$t('失败'))
+      this.showLoading = false
+    })
+  },
+  methods: {
+    async getTableRows (rpc, params) {
+      const response = await rpc.get_table_rows(params)
+      return response
+    },
+    receive () {
+      // 验证输入账号是否正确
+      if (!this.account) {
+        this.doShowError(this.$t('请输入账号名称'))
+      } else if (this.account.length !== 12) {
+        this.doShowError(this.$t('请输入12位有效账号'))
+      } else {
+        // 有账号领取
+        this.doTransact()
+      }
     },
     // 执行动作
-    getTransact () {
+    doTransact () {
       this.showLoading = true
       const signatureProvider = new JsSignatureProvider([this.$store.state.defaultPrivateKey])
       const api = new Api({rpc: this.rpcJson, signatureProvider, textDecoder: new TextDecoder(), textEncoder: new TextEncoder()})
-      this.getTransactAction(api).then((result) => {
+      this.transactGetAction(api).then((result) => {
         this.showLoading = false
         if (result && result.transaction_id) {
           this.$router.push({path: 'success', query: {id: this.info.id, accountName: this.account}})
@@ -119,13 +138,13 @@ export default {
       })
     },
     // 调用eosjs-api-get
-    async getTransactAction (api) {
-      let formatCodeJson = formatePacket(this.$store.state.code)
+    async transactGetAction (api) {
+      let query = this.$route.query
 
       let params = {
         receiver: this.account,
-        id: +formatCodeJson.uuid,
-        sig: formatCodeJson.sign
+        id: +query.uuid,
+        sig: query.sign
       }
 
       let result = await api.transact({
@@ -138,28 +157,14 @@ export default {
       }, {blocksBehind: 3, expireSeconds: 300})
       return result
     },
-    receive () {
-      // 验证输入账号是否正确
-      if (!this.account) {
-        this.showError = true
-        this.errorMsg = this.$t('请输入账号名称')
-        let timeout = ''
-        timeout = setTimeout(() => {
-          this.showError = false
-          clearTimeout(timeout)
-        }, 1000)
-      } else if (this.account.length !== 12) {
-        this.showError = true
-        this.errorMsg = this.$t('请输入12位有效账号')
-        let timeout = ''
-        timeout = setTimeout(() => {
-          this.showError = false
-          clearTimeout(timeout)
-        }, 1000)
-      } else {
-        // 有账号领取
-        this.getTransact()
-      }
+    doShowError (message) {
+      this.showError = true
+      this.errorMsg = message
+      let timeout = ''
+      timeout = setTimeout(() => {
+        this.showError = false
+        clearTimeout(timeout)
+      }, 1000)
     }
   },
   filters: {
@@ -231,7 +236,7 @@ export default {
       justify-content space-between
       border-bottom 1px solid #F9F9F9
   .inner-div
-    height rem(160)
+    height rem(174)
   .error-tip
     max-width 640px
     background-color #FFEAED
@@ -240,7 +245,7 @@ export default {
     font-size 12px
     position fixed
     // left 0
-    bottom rem(160)
+    bottom rem(174)
     height rem(34)
     line-height rem(34)
     width 100%

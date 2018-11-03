@@ -7,7 +7,7 @@
     </tab>
     <div class="red-envelope_wrap">
       <LimitInput v-show="scatterIsConnect" numberType="float" :placeholder="$t('填写红包金额')" :left-label="$t('红包金额')" right-label="EOS" v-model="redInfo.amount" />
-      <LimitInput numberType="int" :placeholder="$t('填写个数')" :left-label="$t('红包个数')" :right-label="$t('个')" v-model="redInfo.number" />
+      <LimitInput numberType="int" :placeholder="$t('填写个数')" maxValue='100' :left-label="$t('红包个数')" :right-label="$t('个')" v-model="redInfo.number" />
       <div class="red-textarea">
         <textarea :placeholder="$t('恭喜发财，大吉大利')" v-model="redInfo.blessing" maxLength="30"></textarea>
       </div>
@@ -73,10 +73,8 @@ export default {
         return false
       }
       let uuid = utils.getUUID()
-      // COUPONCREATE-红包id-红包类型-红包个数-pubkey-祝福语
-      let packetStr = 'REDPACKET-' + this.curTab + '-' + uuid + '-' + this.redInfo.number + '-' + localStorage.getItem(this.$store.state.redPubKeyName) + '-' + (this.redInfo.blessing || this.defaultBlessing)
-
-      this.$router.push({path: 'myred', query: {packetStr, amount: this.redInfo.amount, uuid: uuid, type: this.curTab, limit: this.redInfo.number, blessing: (this.redInfo.blessing || this.defaultBlessing)}})
+      let blessing = this.redInfo.blessing || this.defaultBlessing
+      this.$router.push({path: 'myred', query: {amount: this.redInfo.amount, uuid: uuid, type: this.curTab, limit: this.redInfo.number, blessing: blessing}})
     },
     handleTabClick (value) {
       this.curTab = value

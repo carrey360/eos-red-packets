@@ -27,7 +27,7 @@
         </div>
       </div>
       <div class="my-red_btn_wrapp">
-        <div v-show="showScatterTransform" @click="transform">
+        <div v-show="showScatterTransfer" @click="transfer">
           <my-button :label="$t('转账')" />
         </div>
         <div>
@@ -40,7 +40,7 @@
 <script>
 import TopBar from '@/components/topBar'
 import MyButton from '@/components/Button'
-import Clipboard from 'clipboard'
+import { copy } from '@/utils/'
 import ScatterJS from 'scatterjs-core'
 import ecc from 'eosjs-ecc'
 
@@ -54,7 +54,7 @@ export default {
       showHome: true,
       remark: '',
       packetStr: '',
-      showScatterTransform: false,
+      showScatterTransfer: false,
       scatter: '',
       account: this.$store.state.tranAccountName,
       scatterNetwork: this.$store.state.scatterNetwork
@@ -62,41 +62,33 @@ export default {
   },
   created () {
     let query = this.$route.query
-    this.remark = query.packetStr
+    // REDPACKET-红包类型-红包id-红包个数-pubkey-祝福语
+    this.remark = 'REDPACKET-' + query.type + '-' + query.uuid + '-' + query.limit + '-' + localStorage.getItem(this.$store.state.redPubKeyName) + '-' + query.blessing
+    // 签名
     let params = query.uuid + '_' + query.type + '_' + query.blessing
     let privarekey = localStorage.getItem(this.$store.state.redPriKeyName)
+    // 生成红包串号
     this.packetStr = query.blessing + '-' + query.type + '-' + query.uuid + '-' + query.limit + '-' + ecc.sign(params, privarekey)
-
+    // scatter链接
     ScatterJS.scatter.connect(this.$store.state.projectName).then(connected => {
       if (!connected) return false
       this.scatter = ScatterJS.scatter
       window.scatter = null
-      this.showScatterTransform = true
+      this.showScatterTransfer = true
     }).catch(e => {
-      this.showScatterTransform = false
+      this.showScatterTransfer = false
     })
   },
   methods: {
     copy (className) {
-      var clipboard = new Clipboard(className)
-      clipboard.on('success', e => {
-        window.tip(this.$t('复制成功'))
-        // 释放内存
-        clipboard.destroy()
-      })
-      clipboard.on('error', e => {
-        // 不支持复制
-        window.tip(this.$t('该浏览器不支持自动复制'))
-        // 释放内存
-        clipboard.destroy()
-      })
+      copy(className, this)
     },
-    transform () {
+    transfer () {
       const tokenDetails = {contract: 'eosio.token', symbol: 'EOS', memo: this.remark, decimals: 4}
       this.scatter.requestTransfer(this.scatterNetwork, this.account, this.$route.query.amount + '', tokenDetails).then(result => {
         if (result && result.transaction_id) {
           window.tip(this.$t('转账成功'))
-          this.showScatterTransform = false
+          this.showScatterTransfer = false
         } else {
           window.tip(result.error)
         }

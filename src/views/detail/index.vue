@@ -12,7 +12,6 @@
       <div class="blessing">{{ info.memo }}</div>
       <div class="send-time">
         <div>{{$t('创建时间')}}：{{ info.expire | formatDate('YYYY-MM-DD HH:mm') }}</div>
-        <!-- <div class="status"><IconFont name="icon-loudoudaojishi" type="svg" class="iconfont"/> 12:35</div> -->
         <div class="status"><count-down v-if="info.countDate" :count-date="info.countDate"/></div>
       </div>
     </div>
@@ -43,7 +42,7 @@
 <script>
 import topBar from '@/components/topBar'
 import IconFont from '@/components/Iconfont'
-import Clipboard from 'clipboard'
+import { copy } from '@/utils/'
 import CountDown from '@/components/Countdown'
 import loading from '@/components/loading'
 import ecc from 'eosjs-ecc'
@@ -59,15 +58,15 @@ export default {
       redID: '',
       packetStr: '',
       showLoading: true,
-      receiveAmount: 0,
+      receiveAmount: 0, // 已领取金额
       curUserPublik: localStorage.getItem(this.$store.state.redPubKeyName),
       info: {
         id: '',
         type: '',
-        limit: '',
+        limit: 0,
         sender: '',
         pubkey: '',
-        amount: '',
+        amount: 0,
         memo: '',
         expire: 0,
         log: []
@@ -87,9 +86,8 @@ export default {
       index_position: '1'
     }
     this.redID = query.id
-    const rpc = new JsonRpc(this.$store.state.eosjsConfig.endpoint)
-    this.getTableRows(rpc, params).then(response => {
-      this.showLoading = false
+    let jsonRpc = new JsonRpc(this.$store.state.eosjsConfig.endpoint)
+    this.getTableRows(jsonRpc, params).then(response => {
       if (response.rows) {
         let result = response.rows[0]
         let nowTime = parseInt((new Date()).getTime() / 1000)
@@ -101,31 +99,22 @@ export default {
         })
         result.expire = result.expire - 24 * 60 * 60
         let strType = result.type === 1 ? 'MULTY_NORMAL_ACCOUNT' : 'MULTY_RANDOM_ACCOUNT'
+
         //  红包串
         let params = result.id + '_' + strType + '_' + result.memo
         let privarekey = localStorage.getItem(this.$store.state.redPriKeyName)
         this.packetStr = result.memo + '-' + strType + '-' + result.id + '-' + result.limit + '-' + ecc.sign(params, privarekey)
         this.info = result
       }
+      this.showLoading = false
     }).catch(() => {
       this.showLoading = false
-      window.tip(this.$t('服务异常，请稍后'))
+      window.tip(this.$t('失败'))
     })
   },
   methods: {
     copy (className) {
-      var clipboard = new Clipboard(className)
-      clipboard.on('success', e => {
-        window.tip(this.$t('复制成功'))
-        // 释放内存
-        clipboard.destroy()
-      })
-      clipboard.on('error', e => {
-        // 不支持复制
-        window.tip(this.$t('该浏览器不支持自动复制'))
-        // 释放内存
-        clipboard.destroy()
-      })
+      copy(className, this)
     },
     async getTableRows (rpc, params) {
       const response = await rpc.get_table_rows(params)

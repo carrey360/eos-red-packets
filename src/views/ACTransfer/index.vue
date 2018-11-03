@@ -18,14 +18,14 @@
       <div class="title"><p>{{$t('备注')}}</p><p class="copy remark" :data-clipboard-text="remark" @click="copy('.remark')">{{$t('复制')}}</p></div>
       <div class="packet-number common-content">{{ remark }}</div>
     </div>
-    <div v-show="showScatterTransform" class="button" @click="transform">{{$t('转账')}}</div>
+    <div v-show="showScatterTransfer" class="button" @click="doTransfer">{{$t('转账')}}</div>
     <div v-show="wantSentPacket" class="button"><router-link to="red">{{$t('发红包')}}</router-link></div>
   </div>
 </template>
 
 <script>
 import topBar from '@/components/topBar'
-import Clipboard from 'clipboard'
+import { copy } from '@/utils/'
 import LimitInput from '@/components/LimitInput'
 import ScatterJS from 'scatterjs-core'
 
@@ -39,7 +39,7 @@ export default {
       account: this.$store.state.tranAccountName,
       scatter: '',
       eosClient: '',
-      showScatterTransform: false,
+      showScatterTransfer: false,
       wantSentPacket: false,
       scatterNetwork: this.$store.state.scatterNetwork,
       amount: ''
@@ -54,27 +54,16 @@ export default {
       if (!connected) return false
       this.scatter = ScatterJS.scatter
       window.scatter = null
-      this.showScatterTransform = true
+      this.showScatterTransfer = true
     }).catch(e => {
-      this.showScatterTransform = false
+      this.showScatterTransfer = false
     })
   },
   methods: {
     copy (className) {
-      var clipboard = new Clipboard(className)
-      clipboard.on('success', e => {
-        window.tip(this.$t('复制成功'))
-        // 释放内存
-        clipboard.destroy()
-      })
-      clipboard.on('error', e => {
-        // 不支持复制
-        window.tip(this.$t('该浏览器不支持自动复制'))
-        // 释放内存
-        clipboard.destroy()
-      })
+      copy(className, this)
     },
-    transform () {
+    doTransfer () {
       if (!this.amount && this.amount !== 0) {
         window.tip(this.$t('请输入转账金额'))
         return false
@@ -83,7 +72,7 @@ export default {
       this.scatter.requestTransfer(this.scatterNetwork, this.account, this.amount || '0', tokenDetails).then(result => {
         if (result && result.transaction_id) {
           window.tip('创建账号成功')
-          this.showScatterTransform = false
+          this.showScatterTransfer = false
           this.wantSentPacket = true
         } else {
           window.tip(result.error)
