@@ -16,7 +16,6 @@
       <span><router-link to="about">{{$t('关于我们')}}</router-link></span>
     </div>
     <div class="decoration"><img src="../assets/decoration.png" /></div>
-    <div style="height: 2px"></div>
     <loading v-show='showLoading'></loading>
   </div>
 </template>
@@ -128,7 +127,7 @@ export default {
       background-color rgba(221,36,54,1)
       border 0 none
       border-radius rem(40)
-      font-size rem(16)
+      font-size 16px
       font-weight 400
       color rgba(255,247,193,1)
       position absolute
@@ -174,7 +173,7 @@ export default {
     background rgba(0,0,0,0.09)
     color rgba(235,160,142,1)
     border-radius 10px
-    margin-top 32px
+    margin-top 40px
     font-size 12px
     text-align center
     margin-left 50%
@@ -182,7 +181,7 @@ export default {
   .action
     position relative
     z-index 2
-    margin-top 15px
+    margin-top 30px
     color rgba(252,219,178,1)
     font-size 12px
     opacity 0.7

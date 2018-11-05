@@ -27,10 +27,10 @@ export default {
     padding 24px 16px
     h2
       color #5D4220
-      font-size rem(16)
+      font-size 16px
       margin-bottom 12px
     p
       color #5D4220
-      font-size rem(14)
+      font-size 14px
       margin-bottom 40px
 </style>

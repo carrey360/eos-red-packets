@@ -54,6 +54,7 @@ body{
   margin: 0;
   max-width: 640px;
   margin: 0 auto;
-  height: 100%
+  height: 100%;
+  font-size: 12px;
 }
 </style>

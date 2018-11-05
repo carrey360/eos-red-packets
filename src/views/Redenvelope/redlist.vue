@@ -37,13 +37,14 @@ export default {
   },
   data () {
     return {
-      curUserPublik: localStorage.getItem(this.$store.state.redPubKeyName),
+      // curUserPublik: localStorage.getItem(this.$store.state.redPubKeyName),
+      curUserPublik: '5JZv5GQxHcv6PoTZuVPYG3nvrFLHbykyPAty2DUmTX782JpcMy',
       showLoading: true,
       historyList: []
     }
   },
   created () {
-    let publicKeyBuffer = ecc.PublicKey(localStorage.getItem(this.$store.state.redPubKeyName)).toBuffer()
+    let publicKeyBuffer = ecc.PublicKey(this.curUserPublik).toBuffer()
     let publicKeyArray = Array.prototype.slice.call(publicKeyBuffer)
 
     let lowerBoundArray = []
@@ -52,7 +53,7 @@ export default {
     })
 
     let hash = hash2Ggc(lowerBoundArray.join(''), 0)
-
+    console.log(hash)
     let params = {
       json: true,
       code: this.$store.state.tranAccountName,
@@ -109,13 +110,13 @@ export default {
 .red-list
   &_wrap
     .item_header
-      height rem(26)
+      height 30px
       padding 0 rem(15)
       display flex
       justify-content space-between
       align-items center
       background-color #F8F8F8
-      font-size rem(12)
+      font-size 14px
     .item
       display flex
       justify-content space-between

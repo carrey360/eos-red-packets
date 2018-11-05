@@ -110,14 +110,14 @@ export default {
     align-items center
     justify-content space-between
     padding 16px
-    font-size rem(16)
+    font-size 16px
     border-radius 3px
     margin-bottom rem(20)
     ::placeholder
       color #C9C2B7
     span
       color #5D4220
-      font-size rem(16)
+      font-size 16px
     input
       border-radius 4px
       border none

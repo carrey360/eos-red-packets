@@ -136,30 +136,30 @@ export default {
   .dispatch-info
     background-color #F8F8F8
     .from
-      font-size rem(12)
+      font-size 12px
       color #5D4220
       text-align center
       margin-top rem(8)
     .total
-      font-size rem(12)
+      font-size 12px
       color #5D4220
       margin-top rem(8)
       text-align center
       .amount
-        font-size rem(16)
+        font-size 16px
         margin 0 rem(6)
       .luck
         background-color #E4F1FE
-        font-size rem(12)
+        font-size 12px
         color #288EFB
         padding 0 2px
       .share
         background-color #DCF2E8
-        font-size rem(12)
+        font-size 12px
         color #3ECF8B
         padding 0 2px
     .blessing
-      font-size rem(12)
+      font-size 12px
       color #5D4220
       line-height rem(18)
       text-align center
@@ -168,7 +168,7 @@ export default {
       display flex
       justify-content space-between
       padding rem(16)
-      font-size rem(12)
+      font-size 12px
       color #C9C2B7
       .status
         color #FF9200
@@ -216,7 +216,7 @@ export default {
     li
       padding 0 rem(16)
       color #5D4220
-      font-size rem(14)
+      font-size 14px
       display flex
       height rem(50)
       align-items center

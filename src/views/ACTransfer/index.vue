@@ -95,7 +95,7 @@ export default {
       margin 5px 0
     p:last-child
       color #A69987
-      font-size rem(12)
+      font-size 12px
       line-height rem(17)
       margin-top 10px
   .exchange-content

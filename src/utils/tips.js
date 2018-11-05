@@ -16,7 +16,7 @@ module.exports = function (text,callback) {
 		tipBody.className = 'ofo-iff'
 		tipBody.setAttribute('data-label', 'tip')
 		document.body.appendChild(tipBody)
-		tipBody.setAttribute("style", "position:fixed;width:100%;height:100%;z-index:9999999; justify-content:center;align-items:center;display: flex;top:0;opacity:0;padding:0 20px;box-sizing:border-box !important;-webkit-transition: opacity 0.2s linear 0s, height 0s linear 0s;")
+		tipBody.setAttribute("style", "position:fixed;width:100%;height:100%;z-index:9999999; justify-content:center;align-items:center;display: flex;top:0;left: 0;opacity:0;padding:0 20px;box-sizing:border-box !important;-webkit-transition: opacity 0.2s linear 0s, height 0s linear 0s;")
 	}
 
 	tipBody.innerHTML = tipHTML

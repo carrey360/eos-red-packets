@@ -107,9 +107,9 @@ export default {
       color #5D4220
     & > p
       color #5D4220
-      font-size rem(16)
+      font-size 16px
     .warn_user
-      font-size rem(12)
+      font-size 12px
       color #A69987
       margin 12px 0 24px
     .text-box
@@ -117,7 +117,7 @@ export default {
       & > p
         display flex
         justify-content space-between
-        font-size rem(12)
+        font-size 12px
         & > span:first-child
           color #5D4220
         & > span:last-child

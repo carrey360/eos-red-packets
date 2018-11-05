@@ -187,25 +187,25 @@ export default {
       text-align center
       margin-top rem(8)
     .total
-      font-size rem(12)
+      font-size 12px
       color #5D4220
       margin-top rem(8)
       text-align center
       .amount
-        font-size rem(16)
+        font-size 16px
         margin 0 rem(6)
       .luck
         background-color #E4F1FE
-        font-size rem(12)
+        font-size 12px
         color #288EFB
         padding 0 2px
       .share
         background-color #DCF2E8
-        font-size rem(12)
+        font-size 12px
         color #3ECF8B
         padding 0 2px
     .blessing
-      font-size rem(12)
+      font-size 12px
       color #5D4220
       line-height rem(18)
       text-align center
@@ -214,7 +214,7 @@ export default {
       display flex
       justify-content space-between
       padding rem(16)
-      font-size rem(12)
+      font-size 12px
       color #C9C2B7
       .status
         color #FF9200
@@ -229,9 +229,10 @@ export default {
     li
       padding 0 rem(16)
       color #5D4220
-      font-size rem(14)
+      font-weight 500
+      font-size 14px
       display flex
-      height rem(50)
+      height 50px
       align-items center
       justify-content space-between
       border-bottom 1px solid #F9F9F9
@@ -259,31 +260,34 @@ export default {
     height rem(174)
     width 100%
     background-color #CE2344
-    .input
-      margin-top rem(16)
-      // padding rem(18) rem(16)
-      padding-left 16px
-      height 56px
-      width calc(100% - 30px)
+    >>>input
+      height 36px
+      line-height 36px
+      width calc(100% - 60px)
+      margin-top 12px
       border 0 none
       border-radius 2px
+      padding 10px 15px
+      font-size 14px
+      &::placeholder
+        font-size 14px
     .no-account
       text-align right
       color #ffffff
-      margin-top 4px
+      margin-top 2px
       padding-right rem(16)
       font-size 12px
       a
         text-decoration none
         color #FFF7C1
-        font-size rem(12)
+        font-size 12px
     .button
       background-color #FCDBB2
-      height rem(38)
-      line-height rem(38)
-      width rem(120)
-      border-radius rem(20)
+      height 38px
+      line-height 38px
+      width 120px
+      border-radius 20px
       color #5D4220
-      font-size rem(14)
+      font-size 14px
       margin 10px auto
 </style>

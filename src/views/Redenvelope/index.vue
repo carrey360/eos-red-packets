@@ -89,7 +89,7 @@ export default {
     .red-textarea
       margin-top 24px
       background-color #F8F8F8
-      font-size rem(16)
+      font-size 16px
       height 48px
       padding 16px
       border-radius 3px
@@ -104,7 +104,7 @@ export default {
         resize none
     .warn-title
       color #5D4220
-      font-size rem(12)
+      font-size 12px
       margin-top 4px
       display flex
       justify-content space-between
@@ -120,6 +120,6 @@ export default {
     bottom 16px
     text-align center
     width 100%
-    font-size rem(12)
+    font-size 12px
     color #C9C2B7
 </style>
