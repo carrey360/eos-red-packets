@@ -219,6 +219,7 @@ export default {
       padding 0 rem(16)
       color #5D4220
       font-size 14px
+      font-weight 500
       display flex
       height rem(50)
       align-items center

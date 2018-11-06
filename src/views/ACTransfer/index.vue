@@ -86,7 +86,7 @@ export default {
             window.tip(result.error)
           }
         }).catch(() => {
-          window.tip(this.$t('失败'))
+          window.tip(this.$t('创建账号失败，可能账号已存在或转账金额不足'))
         })
       })
     }
@@ -136,6 +136,8 @@ export default {
       padding 10px
       div
         width 100%
+        display flex
+        justify-content space-between
       input
         text-align left
         padding 0

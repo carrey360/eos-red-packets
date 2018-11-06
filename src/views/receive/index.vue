@@ -82,7 +82,7 @@ export default {
       lower_bound: query.uuid,
       limit: 1,
       key_type: 'i64',
-      index_position: '1'
+      index_position: 1
     }
 
     let _that = this

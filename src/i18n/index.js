@@ -92,7 +92,9 @@ let enConfig = {
   '领取失败': 'Failed',
   '失败': 'Failed',
   '红包已无效': 'Invalid Red Packet',
-  '转账成功': 'Successed'
+  '转账成功': 'Successed',
+  '创建账号失败，可能账号已存在或转账金额不足': 'Create account failed, account already exists or insufficient transfer amount',
+  '创建账号失败，可能账号已存在或红包金额不足': 'Create account failed, account already exists or insufficient balance'
 }
 
 let cnConfig = {
@@ -185,7 +187,9 @@ let cnConfig = {
   '领取失败': '领取失败',
   '失败': '失败',
   '红包已无效': '红包已无效',
-  '转账成功': '转账成功'
+  '转账成功': '转账成功',
+  '创建账号失败，可能账号已存在或转账金额不足': '创建账号失败，可能账号已存在或转账金额不足',
+  '创建账号失败，可能账号已存在或红包金额不足': '创建账号失败，可能账号已存在或红包金额不足'
 }
 
 const messages = {

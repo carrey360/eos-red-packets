@@ -65,14 +65,12 @@ export default {
       return
     }
     this.showLoading = true
-    let id = parseInt(query.id)
     let params = {
       json: true,
       code: this.$store.state.tranAccountName,
       scope: this.$store.state.tranAccountName,
       table: 'redpacket',
-      lower_bound: id,
-      upper_bound: (id + 1),
+      lower_bound: query.id,
       limit: 1,
       key_type: 'i64',
       index_position: 1
@@ -195,6 +193,7 @@ export default {
       padding 0 rem(16)
       color #5D4220
       font-size 14px
+      font-weight 500
       display flex
       height rem(50)
       align-items center

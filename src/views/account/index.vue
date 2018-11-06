@@ -137,7 +137,7 @@ export default {
           this.showLoading = false
           // let err = JSON.parse(String(res))
           // window.tip((err.error.details && err.error.details[0] && err.error.details[0].message) || this.$t('失败'))
-          window.tip(this.$t('失败'))
+          window.tip(this.$t('创建账号失败，可能账号已存在或红包金额不足'))
         })
       })
     },
