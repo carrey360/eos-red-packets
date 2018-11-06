@@ -26,8 +26,7 @@ import TopBar from '@/components/topBar'
 import CountDown from '@/components/Countdown'
 import loading from '@/components/loading'
 import {hash2Ggc} from '@/utils/murmurhash2_gc'
-import { ajaxPost } from '@/utils/'
-// import { JsonRpc } from 'eosjs'
+import { getTableRow } from '@/utils/'
 import ecc from 'eosjs-ecc'
 
 export default {
@@ -37,8 +36,7 @@ export default {
   },
   data () {
     return {
-      // curUserPublik: localStorage.getItem(this.$store.state.redPubKeyName),
-      curUserPublik: '5JZv5GQxHcv6PoTZuVPYG3nvrFLHbykyPAty2DUmTX782JpcMy',
+      curUserPublik: localStorage.getItem(this.$store.state.redPubKeyName),
       showLoading: true,
       historyList: []
     }
@@ -53,39 +51,42 @@ export default {
     })
 
     let hash = hash2Ggc(lowerBoundArray.join(''), 0)
-    console.log(hash)
+
     let params = {
       json: true,
       code: this.$store.state.tranAccountName,
       scope: this.$store.state.tranAccountName,
       table: 'redpacket',
       lower_bound: hash,
+      upper_bound: hash + 1,
       key_type: 'i64',
-      index_position: 1,
+      index_position: 4,
       limit: 20
     }
     this.getTableRowsForAjax(params)
-    // const rpc = new JsonRpc(this.$store.state.eosjsConfig.endpoint)
-    // this.getTableRows(rpc, params)
   },
   methods: {
     detail (id) {
       this.$router.push({path: 'detail', query: {id: id}})
     },
-    async getTableRows (rpc, params) {
-      const response = await rpc.get_table_rows(params)
-      this.handleResponse(response)
-    },
     getTableRowsForAjax (params) {
-      let url = this.$store.state.eosjsConfig.endpoint + '/v1/chain/get_table_rows'
       let _that = this
-      ajaxPost(url, params, function (res) {
-        let response = JSON.parse(res)
+      getTableRow(this, params, function (response) {
         _that.handleResponse(response)
       }, function () {
         window.tip(_that.$t('失败'))
         _that.showLoading = false
       })
+      // let url = this.$store.state.eosjsConfig.endpoint + '/v1/chain/get_table_rows'
+      // let _that = this
+      // ajaxPost(url, params, function (res) {
+      //   let response = JSON.parse(res)
+
+      //   _that.handleResponse(response)
+      // }, function () {
+      //   window.tip(_that.$t('失败'))
+      //   _that.showLoading = false
+      // })
     },
     handleResponse (response) {
       if (response.rows) {

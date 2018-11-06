@@ -39,11 +39,11 @@ export function formatePacket (str = '') {
   return result
 }
 
-export function ajaxPost (url, data, success, error) {
+function ajaxPost (url, data, success, error) {
   var _data = JSON.stringify(data)
   var xhr = new XMLHttpRequest()
   xhr.open('POST', url, true)
-  xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded')
+  // xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded')
   xhr.onreadystatechange = function () {
     if (xhr.readyState === 4) {
       if (xhr.status === 200 || xhr.status === 304) {
@@ -69,4 +69,13 @@ export function copy (className, that) {
     // 释放内存
     clipboard.destroy()
   })
+}
+
+export function getTableRow (_this, params, success, error) {
+  let url = _this.$store.state.eosjsConfig.endpoint + '/v1/chain/get_table_rows'
+
+  ajaxPost(url, params, function (res) {
+    let response = JSON.parse(res)
+    success && success.call(this, response)
+  }, error)
 }

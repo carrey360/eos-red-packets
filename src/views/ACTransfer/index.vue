@@ -12,7 +12,6 @@
       <div class="common-content">{{ account }}</div>
 
       <div class="title"><p>{{$t('转账金额')}}</p></div>
-      <!-- <div><input class="common-content" type='text' /><span class="unit">EOS</span></div> -->
       <LimitInput numberType="float" :placeholder="$t('请输入转账金额')" left-label="" right-label="EOS" v-model="amount"/>
 
       <div class="title"><p>{{$t('备注')}}</p><p class="copy remark" :data-clipboard-text="remark" @click="copy('.remark')">{{$t('复制')}}</p></div>
@@ -28,6 +27,8 @@ import topBar from '@/components/topBar'
 import { copy } from '@/utils/'
 import LimitInput from '@/components/LimitInput'
 import ScatterJS from 'scatterjs-core'
+import ScatterEOS from 'scatterjs-plugin-eosjs'
+import Eos from 'eosjs'
 
 export default {
   name: 'exchange',
@@ -42,10 +43,11 @@ export default {
       showScatterTransfer: false,
       wantSentPacket: false,
       scatterNetwork: this.$store.state.scatterNetwork,
-      amount: ''
+      amount: '0.8000'
     }
   },
   created () {
+    ScatterJS.plugins(new ScatterEOS())
     let query = this.$route.query
     // ACCOUNTCREATE-账号名-公钥
     this.remark = 'ACCOUNT-' + query.accountName + '-' + query.publicKey + '-' + query.publicKey
@@ -64,19 +66,28 @@ export default {
       copy(className, this)
     },
     doTransfer () {
-      if (!this.amount && this.amount !== 0) {
+      if (!this.amount) {
         window.tip(this.$t('请输入转账金额'))
         return false
       }
-      const tokenDetails = {contract: 'eosio.token', symbol: 'EOS', memo: this.remark, decimals: 4}
-      this.scatter.requestTransfer(this.scatterNetwork, this.account, this.amount || '0', tokenDetails).then(result => {
-        if (result && result.transaction_id) {
-          window.tip('创建账号成功')
-          this.showScatterTransfer = false
-          this.wantSentPacket = true
-        } else {
-          window.tip(result.error)
-        }
+      const requiredFields = {accounts: [this.scatterNetwork]}
+      this.scatter.getIdentity(requiredFields).then(() => {
+        const account = this.scatter.identity.accounts.find(x => x.blockchain === 'eos')
+        const eosOptions = {expireInSeconds: 60 * 2}
+        const eos = this.scatter.eos(this.$store.state.scatterNetwork, Eos, eosOptions)
+        const transactionOptions = { authorization: [`${account.name}@${account.authority}`] }
+
+        eos.transfer(account.name, this.account, (+this.amount).toFixed(4) + ' EOS', this.remark, transactionOptions).then(result => {
+          if (result && result.transaction_id) {
+            window.tip('创建账号成功')
+            this.showScatterTransfer = false
+            this.wantSentPacket = true
+          } else {
+            window.tip(result.error)
+          }
+        }).catch(() => {
+          window.tip(this.$t('失败'))
+        })
       })
     }
   }
@@ -128,7 +139,7 @@ export default {
       input
         text-align left
         padding 0
-        width 90%
+        width 88%
     .packet-number
       height rem(92)
       background-color #F8F8F8

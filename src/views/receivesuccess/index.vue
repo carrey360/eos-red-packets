@@ -6,8 +6,8 @@
       <div class="from">From {{ info.sender }}</div>
       <div class="total">
         Total<span class="amount">{{ info.amount }}</span>
-        <span v-if="info.type == 3" class="luck">{{$t('普')}}</span>
-        <span class="share" v-if="info.type == 4">{{$t('拼')}}</span>
+        <span v-if="info.type == 1" class="luck">{{$t('普')}}</span>
+        <span class="share" v-if="info.type == 2">{{$t('拼')}}</span>
       </div>
       <div class="blessing">{{ info.memo }}</div>
       <div class="receive-info">
@@ -33,7 +33,7 @@ import IconFont from '@/components/Iconfont'
 import CountDown from '@/components/Countdown'
 import loading from '@/components/loading'
 import { formatDate } from '@/utils/filter'
-import { JsonRpc } from 'eosjs'
+import { getTableRow } from '@/utils/'
 
 export default {
   name: 'receive',
@@ -65,19 +65,30 @@ export default {
       return
     }
     this.showLoading = true
+    let id = parseInt(query.id)
     let params = {
       json: true,
       code: this.$store.state.tranAccountName,
       scope: this.$store.state.tranAccountName,
       table: 'redpacket',
-      lower_bound: query.id,
+      lower_bound: id,
+      upper_bound: (id + 1),
       limit: 1,
       key_type: 'i64',
-      index_position: '1'
+      index_position: 1
     }
-    const rpc = new JsonRpc(this.$store.state.eosjsConfig.endpoint)
-    this.getTableRows(rpc, params).then(response => {
-      if (response.rows) {
+
+    let _that = this
+    getTableRow(this, params, (response) => {
+      _that.handleResponse(response)
+    }, () => {
+      window.tip(this.$t('红包已无效'))
+      _that.showLoading = false
+    })
+  },
+  methods: {
+    handleResponse (response) {
+      if (response.rows && response.rows.length === 1) {
         let result = response.rows[0]
         let nowTime = parseInt((new Date()).getTime() / 1000)
         if (result.expire > nowTime) {
@@ -98,12 +109,7 @@ export default {
         window.tip(response.error)
       }
       this.showLoading = false
-    }).catch(() => {
-      window.tip(this.$t('失败'))
-      this.showLoading = false
-    })
-  },
-  methods: {
+    },
     async getTableRows (rpc, params) {
       const response = await rpc.get_table_rows(params)
       return response

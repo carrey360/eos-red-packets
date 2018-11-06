@@ -54,8 +54,7 @@ import loading from '@/components/loading'
 import ecc from 'eosjs-ecc'
 import LimitInput from '@/components/LimitInput'
 import { formatePacket, copy } from '@/utils/'
-import { Api, JsonRpc, JsSignatureProvider } from 'eosjs'
-import { TextDecoder, TextEncoder } from 'text-encoding'
+import Eos from 'eosjs'
 
 export default {
   name: 'account',
@@ -125,10 +124,7 @@ export default {
       this.modalData.showDailog = false
       this.$nextTick(() => {
         this.showLoading = true
-        const rpc = new JsonRpc(this.$store.state.eosjsConfig.endpoint)
-        const signatureProvider = new JsSignatureProvider([this.$store.state.defaultPrivateKey])
-        const api = new Api({rpc, signatureProvider, textDecoder: new TextDecoder(), textEncoder: new TextEncoder()})
-        this.packetCreateAction(api).then(result => {
+        this.packetCreateAction().then(result => {
           // 跳转
           this.showLoading = false
           if (result && result.transaction_id) {
@@ -137,13 +133,16 @@ export default {
           } else {
             window.tip(result.error)
           }
-        }).catch(() => {
+        }).catch((res) => {
           this.showLoading = false
+          // let err = JSON.parse(String(res))
+          // window.tip((err.error.details && err.error.details[0] && err.error.details[0].message) || this.$t('失败'))
           window.tip(this.$t('失败'))
         })
       })
     },
-    async packetCreateAction (api) {
+    packetCreateAction () {
+      let eos = Eos(this.$store.state.eosConfig)
       let formatCode = formatePacket(this.packetNumber)
 
       let params = {
@@ -154,14 +153,14 @@ export default {
         sig: formatCode.sign
       }
 
-      let result = await api.transact({
+      let result = eos.transaction({
         actions: [{
           account: this.$store.state.tranAccountName,
           name: 'create',
           authorization: [{actor: this.$store.state.defaultAccount, permission: 'redpacket'}],
           data: params
         }]
-      }, {blocksBehind: 3, expireSeconds: 300})
+      })
       return result
     },
     createKey () {

@@ -42,6 +42,8 @@ import TopBar from '@/components/topBar'
 import MyButton from '@/components/Button'
 import { copy } from '@/utils/'
 import ScatterJS from 'scatterjs-core'
+import ScatterEOS from 'scatterjs-plugin-eosjs'
+import Eos from 'eosjs'
 import ecc from 'eosjs-ecc'
 
 export default {
@@ -61,6 +63,7 @@ export default {
     }
   },
   created () {
+    ScatterJS.plugins(new ScatterEOS())
     let query = this.$route.query
     // REDPACKET-红包类型-红包id-红包个数-pubkey-祝福语
     this.remark = 'REDPACKET-' + query.type + '-' + query.uuid + '-' + query.limit + '-' + localStorage.getItem(this.$store.state.redPubKeyName) + '-' + query.blessing
@@ -84,14 +87,22 @@ export default {
       copy(className, this)
     },
     transfer () {
-      const tokenDetails = {contract: 'eosio.token', symbol: 'EOS', memo: this.remark, decimals: 4}
-      this.scatter.requestTransfer(this.scatterNetwork, this.account, this.$route.query.amount + '', tokenDetails).then(result => {
-        if (result && result.transaction_id) {
-          window.tip(this.$t('转账成功'))
-          this.showScatterTransfer = false
-        } else {
-          window.tip(result.error)
-        }
+      const requiredFields = {accounts: [this.scatterNetwork]}
+      this.scatter.getIdentity(requiredFields).then(() => {
+        const account = this.scatter.identity.accounts.find(x => x.blockchain === 'eos')
+        const eosOptions = {expireInSeconds: 60 * 2}
+        const eos = this.scatter.eos(this.$store.state.scatterNetwork, Eos, eosOptions)
+        const transactionOptions = { authorization: [`${account.name}@${account.authority}`] }
+        eos.transfer(account.name, this.account, (+this.$route.query.amount).toFixed(4) + ' EOS', this.remark, transactionOptions).then(result => {
+          if (result && result.transaction_id) {
+            window.tip(this.$t('转账成功'))
+            this.showScatterTransfer = false
+          } else {
+            window.tip(result.error)
+          }
+        }).catch(() => {
+          window.tip(this.$t('失败'))
+        })
       })
     }
   }

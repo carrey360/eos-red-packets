@@ -117,7 +117,7 @@ export default {
       color #C9C2B7
     span
       color #5D4220
-      font-size 16px
+      font-size rem(16)
     input
       border-radius 4px
       border none

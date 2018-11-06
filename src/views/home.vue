@@ -21,8 +21,7 @@
 </template>
 
 <script>
-import { formatePacket } from '@/utils/'
-import { JsonRpc } from 'eosjs'
+import { formatePacket, getTableRow } from '@/utils/'
 import loading from '@/components/loading'
 
 export default {
@@ -51,27 +50,27 @@ export default {
           lower_bound: formatCodeJson.uuid,
           limit: 1,
           key_type: 'i64',
-          index_position: '1'
+          index_position: 1
         }
-        let jsonRpcObj = new JsonRpc(this.$store.state.eosjsConfig.endpoint)
-        this.getTableRows(jsonRpcObj, params).then(response => {
-          this.showLoading = false
-          if (response.rows && response.rows.length === 1 && response.rows[0].id === formatCodeJson.uuid) {
-            this.$store.commit('setCode', {code: this.code})
-            // 成后跳转到领取红包页面
-            this.$router.push({path: 'receive', query: {uuid: formatCodeJson.uuid, sign: formatCodeJson.sign}})
-          } else {
-            window.tip(this.$t('您输入的内容无效或者红包已失效'))
-          }
-        }).catch(() => {
+
+        let _that = this
+        getTableRow(this, params, function (response) {
+          _that.handleResponse(response, formatCodeJson)
+        }, () => {
           window.tip(this.$t('失败'))
-          this.showLoading = false
+          _that.showLoading = false
         })
       }
     },
-    async getTableRows (rpc, params) {
-      let response = await rpc.get_table_rows(params)
-      return response
+    handleResponse (response, formatCodeJson) {
+      this.showLoading = false
+      if (response.rows && response.rows.length === 1 && response.rows[0].id === formatCodeJson.uuid) {
+        this.$store.commit('setCode', {code: this.code})
+        // 成后跳转到领取红包页面
+        this.$router.push({path: 'receive', query: {uuid: formatCodeJson.uuid, sign: formatCodeJson.sign}})
+      } else {
+        window.tip(this.$t('您输入的内容无效或者红包已失效'))
+      }
     },
     setLang () {
       let lang = localStorage.getItem('redLang') || 'cn'

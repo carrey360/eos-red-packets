@@ -42,12 +42,11 @@
 <script>
 import topBar from '@/components/topBar'
 import IconFont from '@/components/Iconfont'
-import { copy } from '@/utils/'
+import { copy, getTableRow } from '@/utils/'
 import CountDown from '@/components/Countdown'
 import loading from '@/components/loading'
 import ecc from 'eosjs-ecc'
 import { formatDate } from '@/utils/filter'
-import { JsonRpc } from 'eosjs'
 
 export default {
   name: 'detail',
@@ -83,11 +82,19 @@ export default {
       lower_bound: query.id,
       limit: 1,
       key_type: 'i64',
-      index_position: '1'
+      index_position: 1
     }
     this.redID = query.id
-    let jsonRpc = new JsonRpc(this.$store.state.eosjsConfig.endpoint)
-    this.getTableRows(jsonRpc, params).then(response => {
+    let _that = this
+    getTableRow(this, params, (response) => {
+      _that.handleResponse(response)
+    }, () => {
+      window.tip(this.$t('失败'))
+      _that.showLoading = false
+    })
+  },
+  methods: {
+    handleResponse (response) {
       if (response.rows) {
         let result = response.rows[0]
         let nowTime = parseInt((new Date()).getTime() / 1000)
@@ -107,12 +114,7 @@ export default {
         this.info = result
       }
       this.showLoading = false
-    }).catch(() => {
-      this.showLoading = false
-      window.tip(this.$t('失败'))
-    })
-  },
-  methods: {
+    },
     copy (className) {
       copy(className, this)
     },

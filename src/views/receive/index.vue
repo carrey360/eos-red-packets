@@ -37,8 +37,8 @@ import loading from '@/components/loading'
 import LimitInput from '@/components/LimitInput'
 import { formatDate } from '@/utils/filter'
 import CountDown from '@/components/Countdown'
-import { Api, JsonRpc, JsSignatureProvider } from 'eosjs'
-import { TextDecoder, TextEncoder } from 'text-encoding'
+import { getTableRow } from '@/utils/'
+import Eos from 'eosjs'
 
 export default {
   name: 'receive',
@@ -84,8 +84,17 @@ export default {
       key_type: 'i64',
       index_position: '1'
     }
-    this.rpcJson = new JsonRpc(this.$store.state.eosjsConfig.endpoint)
-    this.getTableRows(this.rpcJson, params).then(response => {
+
+    let _that = this
+    getTableRow(this, params, (response) => {
+      _that.handleResponse(response)
+    }, () => {
+      window.tip(this.$t('失败'))
+      _that.showLoading = false
+    })
+  },
+  methods: {
+    handleResponse (response) {
       if (response.rows) {
         let result = response.rows[0]
         let nowTime = parseInt((new Date()).getTime() / 1000)
@@ -99,15 +108,6 @@ export default {
         this.info = result
       }
       this.showLoading = false
-    }).catch(() => {
-      window.tip(this.$t('失败'))
-      this.showLoading = false
-    })
-  },
-  methods: {
-    async getTableRows (rpc, params) {
-      const response = await rpc.get_table_rows(params)
-      return response
     },
     receive () {
       // 验证输入账号是否正确
@@ -123,9 +123,7 @@ export default {
     // 执行动作
     doTransact () {
       this.showLoading = true
-      const signatureProvider = new JsSignatureProvider([this.$store.state.defaultPrivateKey])
-      const api = new Api({rpc: this.rpcJson, signatureProvider, textDecoder: new TextDecoder(), textEncoder: new TextEncoder()})
-      this.transactGetAction(api).then((result) => {
+      this.transactGetAction().then((result) => {
         this.showLoading = false
         if (result && result.transaction_id) {
           this.$router.push({path: 'success', query: {id: this.info.id, accountName: this.account}})
@@ -138,7 +136,8 @@ export default {
       })
     },
     // 调用eosjs-api-get
-    async transactGetAction (api) {
+    transactGetAction (api) {
+      let eos = Eos(this.$store.state.eosConfig)
       let query = this.$route.query
 
       let params = {
@@ -147,14 +146,14 @@ export default {
         sig: query.sign
       }
 
-      let result = await api.transact({
+      let result = eos.transaction({
         actions: [{
           account: this.$store.state.tranAccountName,
           name: 'get',
           authorization: [{actor: this.$store.state.defaultAccount, permission: 'redpacket'}],
           data: params
         }]
-      }, {blocksBehind: 3, expireSeconds: 300})
+      })
       return result
     },
     doShowError (message) {
