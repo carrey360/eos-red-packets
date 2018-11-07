@@ -2,7 +2,7 @@
   <div class="home-warrap">
     <div class="top">
       <img class="bg" src="../assets/home.png" />
-      <div class="code"><textarea :placeholder="$t('请输入')" v-model="code"></textarea></div>
+      <div class="code"><textarea :placeholder="$t('请输入红包串号或者红包ID来领取和查看红包')" v-model="code"></textarea></div>
       <div class="button" @click="go">GO!</div>
       <img class="logo" src="../assets/logo.png"/>
     </div>
@@ -37,7 +37,7 @@ export default {
     go () {
       let formatCodeJson = formatePacket(this.code)
       if (!this.code) {
-        window.tip(this.$t('请输入'))
+        window.tip(this.$t('请输入红包ID或者红包串号'))
       } else if (!formatCodeJson.isMemo) {
         window.tip(this.$t('请输入有效值'))
       } else {

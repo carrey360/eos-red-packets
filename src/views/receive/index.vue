@@ -113,8 +113,6 @@ export default {
       // 验证输入账号是否正确
       if (!this.account) {
         this.doShowError(this.$t('请输入账号名称'))
-      } else if (this.account.length !== 12) {
-        this.doShowError(this.$t('请输入12位有效账号'))
       } else {
         // 有账号领取
         this.doTransact()
@@ -250,6 +248,8 @@ export default {
     line-height rem(34)
     width 100%
   .input-account
+    padding-bottom constant(safe-area-inset-bottom)
+    padding-bottom env(safe-area-inset-bottom)
     text-align center
     position fixed
     max-width 640px

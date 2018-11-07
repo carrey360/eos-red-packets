@@ -2,13 +2,13 @@
   <div class="limit-input">
     <div v-if="isNumber" class="red-input">
       <span v-if='leftLabel'>{{leftLabel}}</span>
-      <div>
+      <div class="inputwrapp">
         <input :placeholder="placeholder" :type="setInputType" :value="inputVal" @input="handleInput"/>
         <span v-if='rightLabel'>{{rightLabel}}</span>
       </div>
     </div>
-    <input v-else class="account-name common-input"
-            type="text" :placeholder="placeholder" :value="inputVal" @input="handleInput"/>
+    <input v-else class="account-name common-input" autocorrect="off" autocapitalize="off" autocomplete="off"
+            type="email" :placeholder="placeholder" :value="inputVal" @input="handleInput"/>
   </div>
 </template>
 <script>
@@ -63,7 +63,7 @@ export default {
     limit (val, oVal) {
       if (!val) return
       if (this.numberType === 'string') {
-        let reg = /^[a-z1-5]{0,12}$/ // 数字1-5 字符a-z大小写 最多12位
+        let reg = /^[a-z1-5.]{0,12}$/ // 数字1-5 字符a-z大小写 最多12位
         if (!reg.test(val)) {
           val = oVal
         }
@@ -106,7 +106,9 @@ export default {
   .red-input
     background-color #F8F8F8
     height rem(26)
+    line-height rem(26)
     display flex
+    flex-wrap nowrap
     align-items center
     justify-content space-between
     padding 16px
@@ -117,7 +119,11 @@ export default {
       color #C9C2B7
     span
       color #5D4220
-      font-size rem(16)
+      font-size 16px
+      white-space nowrap
+    .inputwrapp
+      display flex
+      align-items center
     input
       border-radius 4px
       border none
@@ -130,6 +136,7 @@ export default {
       padding 0 10px 0 15px
       background-color #F8F8F8
       text-align right
+      width 95%
     input::-webkit-outer-spin-button, input::-webkit-inner-spin-button
       -webkit-appearance none
     input[type="number"]

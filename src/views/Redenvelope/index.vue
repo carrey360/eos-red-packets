@@ -116,10 +116,10 @@ export default {
     .submit
       margin-top 70px
   .warn-foot
-    position fixed
+    // position absolute
     bottom 16px
     text-align center
     width 100%
-    font-size 12px
+    font-size 14px
     color #C9C2B7
 </style>
