@@ -5,6 +5,7 @@
       <tab-item name="MULTY_NORMAL_ACCOUNT" :label="$t('普通红包')" />
       <tab-item name="MULTY_RANDOM_ACCOUNT" :label="$t('拼手气红包')" />
     </tab>
+    <div class="sendPacket"><router-link to="redlist">{{$t('我塞的红包')}}</router-link></div>
     <div class="red-envelope_wrap">
       <LimitInput v-show="scatterIsConnect" numberType="float" :placeholder="$t('填写红包金额')" :left-label="$t('红包金额')" right-label="EOS" v-model="redInfo.amount" />
       <LimitInput numberType="int" :placeholder="$t('填写个数')" maxValue='100' :left-label="$t('红包个数')" :right-label="$t('个')" v-model="redInfo.number" />
@@ -84,6 +85,15 @@ export default {
 </script>
 <style lang="stylus" scoped>
 .red-envelope
+  .sendPacket
+    position absolute
+    right 16px
+    top 55px
+    z-index 100
+    a
+      font-size 14px
+      text-decoration none
+      color #288EFB
   &_wrap
     padding 24px 16px
     .red-textarea

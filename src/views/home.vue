@@ -7,11 +7,12 @@
       <img class="logo" src="../assets/logo.png"/>
     </div>
     <div class="title">EOS {{$t('红包')}}</div>
-    <router-link to="red"><div class="send-packet">{{$t('发红包')}}</div></router-link>
+    <!-- <router-link to="red"><div class="send-packet">{{$t('发红包')}}</div></router-link> -->
     <!-- <div class="sum-info">红包数:12993  &nbsp;&nbsp;&nbsp;红包总额:21212EOS</div> -->
     <div class="lang" @click="setLang">EN/CN</div>
     <div class="action">
-      <span><router-link to="redlist">{{$t('我塞的红包')}}</router-link></span><span class="tip">|</span>
+      <!-- <span><router-link to="redlist">{{$t('我塞的红包')}}</router-link></span><span class="tip">|</span> -->
+      <span><router-link to="red">{{$t('发红包')}}</router-link></span><span class="tip">|</span>
       <span @click="linkToCreateAccount">{{$t('创建EOS账号')}}</span><span class="tip">|</span>
       <span><router-link to="about">{{$t('关于我们')}}</router-link></span>
     </div>
@@ -198,7 +199,7 @@ export default {
       color rgba(252,219,178,1)
   .decoration
     background-color #CF2546
-    margin-top -50px
+    margin-top -58px
     img
       width 90%
 </style>

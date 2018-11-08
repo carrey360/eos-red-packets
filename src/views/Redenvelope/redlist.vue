@@ -1,6 +1,6 @@
 <template>
   <div class="red-list">
-    <top-bar :title="$t('红包列表')" />
+    <top-bar :title="$t('红包列表')" :showHome="showHome"/>
     <div class="red-list_wrap">
       <div class="item_header"><span>EOS {{$t('数量')}}</span><span>{{$t('状态')}}</span></div>
 
@@ -36,6 +36,7 @@ export default {
   },
   data () {
     return {
+      showHome: true,
       curUserPublik: localStorage.getItem(this.$store.state.redPubKeyName),
       showLoading: true,
       historyList: []
@@ -77,16 +78,6 @@ export default {
         window.tip(_that.$t('失败'))
         _that.showLoading = false
       })
-      // let url = this.$store.state.eosjsConfig.endpoint + '/v1/chain/get_table_rows'
-      // let _that = this
-      // ajaxPost(url, params, function (res) {
-      //   let response = JSON.parse(res)
-
-      //   _that.handleResponse(response)
-      // }, function () {
-      //   window.tip(_that.$t('失败'))
-      //   _that.showLoading = false
-      // })
     },
     handleResponse (response) {
       if (response.rows) {

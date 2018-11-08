@@ -269,6 +269,7 @@ export default {
       border-radius 2px
       padding 10px 15px
       font-size 14px
+      transform translateZ(0)
       &::placeholder
         font-size 14px
     .no-account
