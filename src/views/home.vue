@@ -1,7 +1,7 @@
 <template>
   <div class="home-warrap">
     <div class="top">
-      <img class="bg" src="../assets/home.png" />
+      <img class="bg" src="@/assets/home.png" />
       <div class="code"><textarea :placeholder="$t('请输入红包串号或者红包ID来领取和查看红包')" v-model="code"></textarea></div>
       <div class="button" @click="go">GO!</div>
       <img class="logo" src="../assets/logo.png"/>
@@ -16,6 +16,8 @@
       <span><router-link to="about">{{$t('关于我们')}}</router-link></span>
     </div>
     <div class="decoration"><img src="../assets/decoration.png" /></div>
+    <img v-if="zzsFlag == 1" class="zzs" src="../assets/cn.png"/>
+    <img v-else class="zzs" src="../assets/en.png"/>
     <loading v-show='showLoading'></loading>
   </div>
 </template>
@@ -29,7 +31,8 @@ export default {
   data () {
     return {
       showLoading: false,
-      code: ''
+      code: '',
+      zzsFlag: 1
     }
   },
   components: {loading},
@@ -76,6 +79,7 @@ export default {
       let lang = localStorage.getItem('redLang') || 'cn'
       localStorage.setItem('redLang', lang === 'cn' ? 'en' : 'cn')
       this.$i18n.locale = lang === 'cn' ? 'en' : 'cn'
+      this.zzsFlag = lang === 'cn' ? 2 : 1
     },
     linkToCreateAccount () {
       this.$store.commit('setCode', {code: ''})
@@ -90,6 +94,9 @@ export default {
   background-color #CF2546
   text-align center
   height 100%
+  .zzs
+    width 100%
+    display flex
   a
     text-decoration none
   .top

@@ -22,7 +22,7 @@
     <div class="inner-div"></div>
     <div class="error-tip" v-if="showError">{{ errorMsg }}</div>
     <div class="input-account" v-if="!isIputCodeNumber">
-      <LimitInput class="input" :placeholder="$t('请输入您的账号')" :isNumber="false" v-model="account"/>
+      <LimitInput class="input" :placeholder="$t('请输入您的账号')" :isNumber="false" isFrom='receive' v-model="account"/>
       <div class="no-account">{{$t('还没有EOS账号')}} ? <router-link to="account">{{$t('创建')}}</router-link></div>
       <div class="button" @click="receive">{{$t('领取')}}</div>
     </div>
@@ -174,6 +174,7 @@ export default {
 
 <style lang="stylus" scoped>
 .receive-warrap
+  -webkit-overflow-scrolling touch
   img
     width 100%
   .dispatch-info

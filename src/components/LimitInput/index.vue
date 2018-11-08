@@ -3,12 +3,12 @@
     <div v-if="isNumber" class="red-input">
       <span v-if='leftLabel'>{{leftLabel}}</span>
       <div class="inputwrapp">
-        <input :placeholder="placeholder" :type="setInputType" :value="inputVal" @input="handleInput"/>
+        <input :placeholder="placeholder" :type="setInputType" :value="inputVal" @input="numberHandleInput"/>
         <span v-if='rightLabel'>{{rightLabel}}</span>
       </div>
     </div>
-    <input v-else class="account-name common-input" autocorrect="off" autocapitalize="off" autocomplete="off"
-            type="email" :placeholder="placeholder" :value="inputVal" @input="handleInput"/>
+    <input v-else class="account-name common-input" autocorrect="off" autocapitalize="off" autocomplete="off" @compositionstart="compositionstart"
+      @compositionend='compositionend' type="text" :placeholder="placeholder" :value="inputVal" @input="handleInput" maxlength="12" @blur="handleInput"/>
   </div>
 </template>
 <script>
@@ -44,6 +44,10 @@ export default {
     maxValue: {
       type: String,
       default: '0'
+    },
+    isFrom: {
+      type: String,
+      default: ''
     }
   },
   computed: {
@@ -53,12 +57,33 @@ export default {
   },
   data () {
     return {
+      inputFlag: true,
       inputVal: this.value === 0 ? 0 : this.value || ''
     }
   },
   methods: {
-    handleInput (e) {
+    numberHandleInput (e) {
       this.inputVal = e.target.value
+    },
+    handleInput (e) {
+      if (this.inputFlag) {
+        this.inputVal = e.target.value
+        let u = navigator.userAgent
+        let isiOS = !!u.match(/\(i[^;]+;( U;)? CPU.+Mac OS X/)
+        if (isiOS && this.isFrom === 'receive') {
+          let timeout = ''
+          timeout = setTimeout(() => {
+            window.scrollTo(0, document.body.clientHeight)
+            clearTimeout(timeout)
+          }, 100)
+        }
+      }
+    },
+    compositionstart () {
+      this.inputFlag = false
+    },
+    compositionend () {
+      this.inputFlag = true
     },
     limit (val, oVal) {
       if (!val) return
@@ -136,6 +161,7 @@ export default {
       padding 0 10px 0 15px
       background-color #F8F8F8
       text-align right
+      ime-mode disabled
       width 95%
     input::-webkit-outer-spin-button, input::-webkit-inner-spin-button
       -webkit-appearance none
