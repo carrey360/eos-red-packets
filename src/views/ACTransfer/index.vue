@@ -8,7 +8,7 @@
       <p>{{$t('目前明确支持的交易所有')}} OTCBTC、Gate.io、Chaince、 Bitfinex、OKcoin，{{$t('请不要从其他交易所转入，避免财产损失')}}</p>
     </div>
     <div class="exchange-content">
-      <div class="title"><p>{{$t('收款账号')}}</p><p class="copy account" :data-clipboard-text="account" @click="copy('.account')">{{$t('复制')}}</p></div>
+      <div class="title"><p>{{$t('收款账户')}}</p><p class="copy account" :data-clipboard-text="account" @click="copy('.account')">{{$t('复制')}}</p></div>
       <div class="common-content">{{ account }}</div>
 
       <div class="title"><p>{{$t('转账金额')}}</p></div>
@@ -116,7 +116,7 @@ export default {
       margin-top rem(24)
       display flex
       justify-content space-between
-      font-size 12px
+      font-size 14px
       color #5D4220
       .copy
         color #288EFB

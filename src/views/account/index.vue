@@ -21,7 +21,7 @@
       <div class="private-key common-input">{{ userInput.privateKey }}</div>
       <div class="input-tip red">{{$t('不要透露给任何人')}}</div>
 
-      <div class="title"><p>{{$t('红包串号')}}({{$t('选填')}})</p></div>
+      <div class="title"><p>{{$t('红包串')}}({{$t('选填')}})</p></div>
       <textarea class="packet-number common-input" v-model="packetNumber"></textarea>
 
       <div class="account-tip">
@@ -105,7 +105,7 @@ export default {
       if (this.packetNumber) {
         let formatCode = formatePacket(this.packetNumber)
         if (!formatCode.isMemo) {
-          window.tip(this.$t('请正确输入红包串号'))
+          window.tip(this.$t('请正确输入红包串'))
           return false
         } else if (formatCode.isMemo) {
           this.modalData.content = this.$t('确定要用该红包创建账号')

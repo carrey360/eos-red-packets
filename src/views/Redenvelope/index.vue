@@ -7,8 +7,8 @@
     </tab>
     <div class="sendPacket"><router-link to="redlist">{{$t('我塞的红包')}}</router-link></div>
     <div class="red-envelope_wrap">
-      <LimitInput v-show="scatterIsConnect" numberType="float" :placeholder="$t('填写红包金额')" :left-label="$t('红包金额')" right-label="EOS" v-model="redInfo.amount" />
-      <LimitInput numberType="int" :placeholder="$t('填写个数')" maxValue='100' :left-label="$t('红包个数')" :right-label="$t('个')" v-model="redInfo.number" />
+      <LimitInput v-show="scatterIsConnect" numberType="float" :placeholder="$t('最少0.1')" :left-label="$t('红包金额')" right-label="EOS" v-model="redInfo.amount" />
+      <LimitInput numberType="int" :placeholder="$t('最多100')" maxValue='100' :left-label="$t('红包个数')" :right-label="$t('个')" v-model="redInfo.number" />
       <div class="red-textarea">
         <textarea :placeholder="$t('恭喜发财，大吉大利')" v-model="redInfo.blessing" maxLength="30"></textarea>
       </div>

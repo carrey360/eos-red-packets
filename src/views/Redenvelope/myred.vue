@@ -21,7 +21,7 @@
         </div>
       </div>
       <div class="text-box">
-        <p><span>{{$t('红包串号')}}</span><span class="packetStr" :data-clipboard-text="packetStr" @click="copy('.packetStr')">{{$t('复制')}}</span></p>
+        <p><span>{{$t('红包串')}}</span><span class="packetStr" :data-clipboard-text="packetStr" @click="copy('.packetStr')">{{$t('复制')}}</span></p>
         <div class="text packetStr">
           <textarea class="packetStr" disabled="disabled" cols="3" rows="6" v-model="packetStr"></textarea>
         </div>
@@ -70,7 +70,7 @@ export default {
     // 签名
     let params = query.uuid + '_' + query.type + '_' + query.blessing
     let privarekey = localStorage.getItem(this.$store.state.redPriKeyName)
-    // 生成红包串号
+    // 生成红包串
     this.packetStr = query.blessing + '-' + query.type + '-' + query.uuid + '-' + query.limit + '-' + ecc.sign(params, privarekey)
     // scatter链接
     ScatterJS.scatter.connect(this.$store.state.projectName).then(connected => {
@@ -128,7 +128,7 @@ export default {
       & > p
         display flex
         justify-content space-between
-        font-size 12px
+        font-size 14px
         & > span:first-child
           color #5D4220
         & > span:last-child
@@ -149,6 +149,8 @@ export default {
           width 100%
           height 100%
           resize none
+          font-size 14px
+          font-weight 300
           &.packetStr
             background-color #fffcdd
     .my-red_btn_wrapp

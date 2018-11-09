@@ -22,7 +22,7 @@
       <div class="common-input">{{ redID }}</div>
 
       <div v-show="curUserPublik == info.pubkey">
-        <div class="title"><p>{{$t('红包串号')}}</p><p class="copy packetStr" :data-clipboard-text="packetStr" @click="copy('.packetStr')">{{$t('复制')}}</p></div>
+        <div class="title"><p>{{$t('红包串')}}</p><p class="copy packetStr" :data-clipboard-text="packetStr" @click="copy('.packetStr')">{{$t('复制')}}</p></div>
         <div class="tip">{{$t('分享该串给您朋友，让你朋友领取红包')}}</div>
         <div class="packet-number common-input">{{ packetStr }}</div>
       </div>
