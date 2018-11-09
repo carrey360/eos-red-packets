@@ -112,6 +112,7 @@ export default {
         height 100%
         outline none
         resize none
+        font-size 14px
     .warn-title
       color #5D4220
       font-size 12px

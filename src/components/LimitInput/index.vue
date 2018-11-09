@@ -128,6 +128,9 @@ export default {
 </script>
 <style lang="stylus" scoped>
 .limit-input
+  input
+    font-size 14px
+    font-weight 300
   .red-input
     background-color #F8F8F8
     height rem(26)
