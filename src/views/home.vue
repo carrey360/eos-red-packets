@@ -9,16 +9,23 @@
     <div class="title">EOS {{$t('红包')}}</div>
     <!-- <router-link to="red"><div class="send-packet">{{$t('发红包')}}</div></router-link> -->
     <!-- <div class="sum-info">红包数:12993  &nbsp;&nbsp;&nbsp;红包总额:21212EOS</div> -->
-    <div class="lang" @click="setLang">EN/CN</div>
-    <div class="action">
-      <!-- <span><router-link to="redlist">{{$t('我塞的红包')}}</router-link></span><span class="tip">|</span> -->
-      <span><router-link to="red">{{$t('发红包')}}</router-link></span><span class="tip">|</span>
-      <span @click="linkToCreateAccount">{{$t('创建EOS账号')}}</span><span class="tip">|</span>
-      <span><router-link to="about">{{$t('关于我们')}}</router-link></span>
+    <div class="postion-box">
+      <div class="lang" @click="setLang">EN/CN</div>
+      <div class="action">
+        <!-- <span><router-link to="redlist">{{$t('我塞的红包')}}</router-link></span><span class="tip">|</span> -->
+        <span><router-link to="red">{{$t('发红包')}}</router-link></span><span class="tip">|</span>
+        <span @click="linkToCreateAccount">{{$t('创建EOS账号')}}</span><span class="tip">|</span>
+        <span><router-link to="about">{{$t('关于我们')}}</router-link></span>
+      </div>
+      <!-- <div class="decoration"><img src="../assets/decoration.png" /></div> -->
     </div>
-    <div class="decoration"><img src="../assets/decoration.png" /></div>
-    <img v-if="zzsFlag == 1" class="zzs" src="../assets/cn.png"/>
-    <img v-else class="zzs" src="../assets/en.png"/>
+    <div class="glide-position">
+      <i class="glide_box" />
+    </div>
+    <div class="sponsor">
+      <img v-if="zzsFlag == 1" class="zzs" src="../assets/cn.png"/>
+      <img v-else class="zzs" src="../assets/en.png"/>
+    </div>
     <loading v-show='showLoading'></loading>
   </div>
 </template>
@@ -33,7 +40,8 @@ export default {
     return {
       showLoading: false,
       code: '',
-      zzsFlag: 1
+      zzsFlag: 1,
+      sponsor: false
     }
   },
   components: {loading},
@@ -190,7 +198,7 @@ export default {
     z-index 2
     margin-top 30px
     color rgba(252,219,178,1)
-    font-size 12px
+    font-size 14px
     opacity 0.7
     .tip
       margin 0 10px
@@ -202,4 +210,33 @@ export default {
     margin-top -58px
     img
       width 90%
+  .glide-position
+  .postion-box
+    position absolute
+    bottom 46px
+    width 100%
+    max-width 640px
+  .glide-position
+    position absolute
+    bottom 5px
+    display flex
+    justify-content center
+    width 100%
+    @keyframes glide
+      0%
+        -webkit-transform: translatey(0) rotate(180deg)
+      50%
+        -webkit-transform: translatey(-6px) rotate(180deg)
+      100%
+        -webkit-transform: translatey(0) rotate(180deg)
+    .glide_box
+      display inline-block
+      width 26px
+      height 26px
+      background-image url('../assets/glide.png')
+      -webkit-animation glide 1s infinite linear
+  .sponsor
+    position absolute
+    top 100%
+    max-width 640px
 </style>

@@ -203,6 +203,8 @@ export default {
       margin-top 4px
       word-break break-all
       resize none
+      font-size 14px
+      font-weight 300
       &:focus
         outline none
       &::placeholder
@@ -238,6 +240,7 @@ export default {
       font-weight 400
       p:first-child
         font-weight 500
+        font-size 14px
     .button
       margin rem(24) auto
       margin-bottom 0

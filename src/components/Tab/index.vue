@@ -90,7 +90,7 @@ export default {
       .activate
         color #5D4220
       & > div
-        font-size rem(14)
+        font-size 14px
         color #A69987
         padding 0 12px
         height 40px

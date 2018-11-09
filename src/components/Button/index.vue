@@ -25,7 +25,7 @@ export default {
   text-align center
   border none
   outline none
-  font-size 16px
+  font-size 14px
   color #5D4220
   font-weight 400
   border-radius 2px

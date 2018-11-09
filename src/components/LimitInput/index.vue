@@ -137,14 +137,14 @@ export default {
     align-items center
     justify-content space-between
     padding 16px
-    font-size 16px
+    font-size 14px
     border-radius 3px
     margin-bottom rem(20)
     ::placeholder
       color #C9C2B7
     span
       color #5D4220
-      font-size 16px
+      font-size 14px
       white-space nowrap
     .inputwrapp
       display flex
@@ -163,6 +163,7 @@ export default {
       text-align right
       ime-mode disabled
       width 95%
+      font-size 14px
     input::-webkit-outer-spin-button, input::-webkit-inner-spin-button
       -webkit-appearance none
     input[type="number"]

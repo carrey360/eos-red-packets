@@ -8,10 +8,10 @@ let scatterHost = 'api-kylin.eosasia.one'
 let scatterPort = 80
 
 if (process.env.NODE_ENV === 'production') {
-  endpoint = 'http://peer1.eoshuobipool.com:80'
+  endpoint = 'https://api.redpacketeos.com'
   chainId = 'aca376f206b8fc25a6ed44dbdc66547c36c6c33e3a119ffbeaef943642f0e906'
-  scatterHost = 'peer1.eoshuobipool.com'
-  scatterPort = 80
+  scatterHost = 'api.redpacketeos.com'
+  scatterPort = 443
 }
 let defaultPrivateKey = '5Jq1XzuZ1dsGb2LSgsfA9nmpSEUpo3NnRkAYb9MdzRuFoTHZsEC'
 
