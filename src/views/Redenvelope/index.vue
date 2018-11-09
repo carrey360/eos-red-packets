@@ -64,7 +64,7 @@ export default {
         if (!this.redInfo.amount) {
           window.tip(this.$t('请输入红包金额'))
           return false
-        } else if ((this.redInfo.amount / this.redInfo.number) < 0.1) {
+        } else if ((this.redInfo.amount) < 0.1) {
           window.tip(this.$t('红包金额不能低于0.1EOS'))
           return false
         }
