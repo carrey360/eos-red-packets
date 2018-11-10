@@ -22,7 +22,7 @@
     <div class="inner-div"></div>
     <div class="error-tip" v-if="showError">{{ errorMsg }}</div>
     <div class="input-account" v-if="!isIputCodeNumber">
-      <LimitInput class="input" :placeholder="$t('请输入您的账号')" :isNumber="false" isFrom='receive' v-model="account"/>
+      <LimitInput numberType="nolimit" class="input" :placeholder="$t('请输入您的账号')" :isNumber="false" isFrom='receive' v-model="account"/>
       <div class="no-account">{{$t('还没有EOS账号')}} ? <router-link to="account">{{$t('创建')}}</router-link></div>
       <div class="button" @click="receive">{{$t('领取')}}</div>
     </div>
@@ -111,8 +111,11 @@ export default {
     },
     receive () {
       // 验证输入账号是否正确
-      if (!this.account) {
-        this.doShowError(this.$t('请输入账号名称'))
+      let reg = /^[a-z1-5.]{0,12}$/
+      if (!reg.test(this.account)) {
+        window.tip(this.$t('请输入正确的EOS账户'))
+      } else if (!this.account) {
+        window.tip(this.$t('请输入正确的EOS账户'))
       } else {
         // 有账号领取
         this.doTransact()

@@ -59,7 +59,8 @@ export default {
       showScatterTransfer: false,
       scatter: '',
       account: this.$store.state.tranAccountName,
-      scatterNetwork: this.$store.state.scatterNetwork
+      scatterNetwork: this.$store.state.scatterNetwork,
+      accounIdentity: {}
     }
   },
   created () {
@@ -76,6 +77,7 @@ export default {
     ScatterJS.scatter.connect(this.$store.state.projectName).then(connected => {
       if (!connected) return false
       this.scatter = ScatterJS.scatter
+      this.getIdentity()
       window.scatter = null
       this.showScatterTransfer = true
     }).catch(e => {
@@ -86,10 +88,19 @@ export default {
     copy (className) {
       copy(className, this)
     },
-    transfer () {
+    getIdentity () {
       const requiredFields = {accounts: [this.scatterNetwork]}
       this.scatter.getIdentity(requiredFields).then(() => {
-        const account = this.scatter.identity.accounts.find(x => x.blockchain === 'eos')
+        this.accounIdentity.name = this.scatter.identity.accounts.find(x => x.blockchain === 'eos')
+      })
+    },
+    transfer () {
+      // const requiredFields = {accounts: [this.scatterNetwork]}
+      // this.scatter.getIdentity(requiredFields).then(() => {
+      //   const account = this.scatter.identity.accounts.find(x => x.blockchain === 'eos')
+      // })
+      if (this.accounIdentity.name) {
+        const account = this.accounIdentity.name
         const eosOptions = {expireInSeconds: 60 * 2}
         const eos = this.scatter.eos(this.$store.state.scatterNetwork, Eos, eosOptions)
         const transactionOptions = { authorization: [`${account.name}@${account.authority}`] }
@@ -103,7 +114,9 @@ export default {
         }).catch(() => {
           window.tip(this.$t('失败'))
         })
-      })
+      } else {
+        window.tip(this.$t('获取账户信息失败'))
+      }
     }
   }
 }

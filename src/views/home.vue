@@ -2,7 +2,7 @@
   <div class="home-warrap">
     <div class="top">
       <img class="bg" src="@/assets/home.png" />
-      <div class="code"><textarea :placeholder="$t('请输入红包串')" v-model="code"></textarea></div>
+      <div class="code"><textarea :placeholder="$t('请输入红包串领取红包')" v-model="code"></textarea></div>
       <div class="button" @click="go">GO</div>
       <img class="logo" src="../assets/logo.png"/>
     </div>
@@ -22,10 +22,10 @@
     <div class="glide-position">
       <i class="glide_box" />
     </div>
-    <div class="sponsor">
+    <!-- <div class="sponsor">
       <img v-if="zzsFlag == 1" class="zzs" src="../assets/cn.png"/>
       <img v-else class="zzs" src="../assets/en.png"/>
-    </div>
+    </div> -->
     <loading v-show='showLoading'></loading>
   </div>
 </template>
@@ -49,7 +49,7 @@ export default {
     go () {
       let formatCodeJson = formatePacket(this.code)
       if (!this.code) {
-        window.tip(this.$t('请输入红包ID或者红包串'))
+        window.tip(this.$t('请输入红包串'))
       } else if (!formatCodeJson.isMemo) {
         window.tip(this.$t('请输入有效值'))
       } else {

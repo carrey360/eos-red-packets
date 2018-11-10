@@ -96,7 +96,9 @@ let enConfig = {
   '红包已无效': 'Invalid Red Packet',
   '转账成功': 'Successed',
   '创建账号失败，可能账号已存在或转账金额不足': 'Create account failed, account already exists or insufficient transfer amount',
-  '创建账号失败，可能账号已存在或红包金额不足': 'Create account failed, account already exists or insufficient balance'
+  '创建账号失败，可能账号已存在或红包金额不足': 'Create account failed, account already exists or insufficient balance',
+  '请输入正确的EOS账户': 'Invalid account',
+  '请输入红包串领取红包': 'Please enter red packet code'
 }
 
 let cnConfig = {
@@ -193,7 +195,9 @@ let cnConfig = {
   '红包已无效': '红包已无效',
   '转账成功': '转账成功',
   '创建账号失败，可能账号已存在或转账金额不足': '创建账号失败，可能账号已存在或转账金额不足',
-  '创建账号失败，可能账号已存在或红包金额不足': '创建账号失败，可能账号已存在或红包金额不足'
+  '创建账号失败，可能账号已存在或红包金额不足': '创建账号失败，可能账号已存在或红包金额不足',
+  '请输入正确的EOS账户': '请输入正确的EOS账户',
+  '请输入红包串领取红包': '请输入红包串领取红包'
 }
 
 const messages = {
