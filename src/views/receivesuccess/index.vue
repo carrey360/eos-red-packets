@@ -188,6 +188,8 @@ export default {
       span
         font-size 12px
         margin-left rem(12)
+    & > div:last-child
+      margin-bottom 5px
   .receive-list
     li
       padding 0 rem(16)

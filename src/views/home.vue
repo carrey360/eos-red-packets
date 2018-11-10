@@ -23,8 +23,7 @@
       <i class="glide_box" />
     </div>
     <div class="sponsor">
-      <img v-if="zzsFlag == 1" class="zzs" data-src="/static/cn.png"/>
-      <img v-else class="zzs" data-src="/static/en.png"/>
+      <img class="zzs" alt="">
     </div>
     <loading v-show='showLoading'></loading>
   </div>
@@ -33,14 +32,14 @@
 <script>
 import { formatePacket, getTableRow } from '@/utils/'
 import loading from '@/components/loading'
-
+import { mapState } from 'vuex'
 export default {
   name: 'home',
   data () {
     return {
       showLoading: false,
       code: '',
-      zzsFlag: 1,
+      lang: localStorage.getItem('redLang') || 'cn',
       sponsor: false
     }
   },
@@ -51,6 +50,9 @@ export default {
         // 延迟加载图片
         this.lazyload()
       }, 0)
+      if (!this.catter) {
+        this.$store.dispatch('connectScatter')
+      }
     })
   },
   methods: {
@@ -96,7 +98,8 @@ export default {
       let lang = localStorage.getItem('redLang') || 'cn'
       localStorage.setItem('redLang', lang === 'cn' ? 'en' : 'cn')
       this.$i18n.locale = lang === 'cn' ? 'en' : 'cn'
-      this.zzsFlag = lang === 'cn' ? 2 : 1
+      this.lang = lang === 'cn' ? 'en' : 'cn'
+      this.lazyload()
     },
     linkToCreateAccount () {
       this.$store.commit('setCode', {code: ''})
@@ -121,9 +124,12 @@ export default {
         obj.src = this.src
       }
       const imgs = document.getElementsByClassName('zzs')
-      const url = imgs[0].dataset.src
+      const url = this.lang === 'cn' ? '/static/cn.png' : '/static/en.png'
       loadImage(imgs[0], url, showImage)
     }
+  },
+  computed: {
+    ...mapState(['scatter'])
   }
 }
 </script>
@@ -159,7 +165,7 @@ export default {
         width 80%
         resize none
         color #5D4220
-        font-size 12px
+        font-size 14px
         outline none
         &::placeholder
           color #C9C2B7

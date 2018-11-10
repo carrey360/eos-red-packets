@@ -2,37 +2,33 @@
   <div class="my-red">
     <top-bar :title="$t('发红包')" :showHome="showHome"/>
     <div class="my-red_wrap">
-      <p>{{$t('请让朋友按照以下信息转账')}} </p>
-      <small>{{$t('或')}}</small>
-      <p>{{$t('从交易所提币')}}</p>
-      <div class="warn_user">
-        {{$t('目前明确支持的交易所有')}} OTCBTC、Gate.io、Chaince、 Bitfinex、OKcoin，{{$t('请不要从其他交易所转入，避免财产损失')}}
+      <div v-show="!showScatterTransfer" class="step_box">
+        <p>{{$t('第一步: 请按下面信息从交易所提币或通过EOS钱包转帐')}} </p>
       </div>
-      <div class="text-box">
+      <div v-show="!showScatterTransfer" class="text-box">
         <p><span>{{$t('收款账户')}}</span><span class="account" :data-clipboard-text="account" @click="copy('.account')">{{$t('复制')}}</span></p>
         <div class="text">
           <input disabled="disabled" type="text" :value="account" />
         </div>
       </div>
-      <div class="text-box">
+      <div v-show="!showScatterTransfer" class="text-box">
         <p><span>{{$t('备注')}}</span><span class="remark" :data-clipboard-text="remark" @click="copy('.remark')">{{$t('复制')}}</span></p>
+        <p class="tip_text">{{$t('转账时复制下面的信息到Memo')}}</p>
+        <!-- <p class="tip_text">Copy the following informarion into Memo</p> -->
         <div class="text">
-          <textarea disabled="disabled" cols="3" rows="6" v-model="remark"></textarea>
+          <textarea disabled="disabled" cols="3" rows="5" v-model="remark"></textarea>
         </div>
+      </div>
+      <div v-show="!showScatterTransfer" class="step_box btm_top">
+        <p>{{$t('第二步: 复制并通过IM工具把[红包串]发送给你的朋友们')}}</p>
       </div>
       <div class="text-box">
         <p><span>{{$t('红包串')}}</span><span class="packetStr" :data-clipboard-text="packetStr" @click="copy('.packetStr')">{{$t('复制')}}</span></p>
+        <p class="tip_text">{{$t('通过IM工具将红包串发送给你的朋友')}}</p>
         <div class="text packetStr">
-          <textarea class="packetStr" disabled="disabled" cols="3" rows="6" v-model="packetStr"></textarea>
+          <textarea class="packetStr" disabled="disabled" cols="3" rows="9" v-model="packetStr"></textarea>
         </div>
-      </div>
-      <div class="my-red_btn_wrapp">
-        <div v-show="showScatterTransfer" @click="transfer">
-          <my-button :label="$t('转账')" />
-        </div>
-        <div>
-          <router-link to="redlist"><my-button :label="$t('我塞的红包')"/></router-link>
-        </div>
+        <div class="router-link"><router-link to="redlist">{{$t('我塞的红包')}}</router-link></div>
       </div>
     </div>
   </div>
@@ -40,11 +36,7 @@
 <script>
 import TopBar from '@/components/topBar'
 import MyButton from '@/components/Button'
-import { copy } from '@/utils/'
-import ScatterJS from 'scatterjs-core'
-import ScatterEOS from 'scatterjs-plugin-eosjs'
-import Eos from 'eosjs'
-import ecc from 'eosjs-ecc'
+import { copy, generatePacketCode } from '@/utils'
 
 export default {
   name: 'my-red',
@@ -54,74 +46,33 @@ export default {
   data () {
     return {
       showHome: true,
-      remark: '',
       packetStr: '',
-      showScatterTransfer: false,
-      scatter: '',
-      account: this.$store.state.tranAccountName,
-      scatterNetwork: this.$store.state.scatterNetwork,
-      accounIdentity: {}
+      showScatterTransfer: !!this.$store.state.scatter,
+      account: this.$store.state.tranAccountName
     }
   },
   created () {
-    ScatterJS.plugins(new ScatterEOS())
     let query = this.$route.query
     // REDPACKET-红包类型-红包id-红包个数-pubkey-祝福语
     this.remark = 'REDPACKET-' + query.type + '-' + query.uuid + '-' + query.limit + '-' + localStorage.getItem(this.$store.state.redPubKeyName) + '-' + query.blessing
     // 签名
-    let params = query.uuid + '_' + query.type + '_' + query.blessing
+    // let params = query.uuid + '_' + query.type + '_' + query.blessing
     let privarekey = localStorage.getItem(this.$store.state.redPriKeyName)
+    const lang = localStorage.getItem('redLang')
     // 生成红包串
-    this.packetStr = query.blessing + '-' + query.type + '-' + query.uuid + '-' + query.limit + '-' + ecc.sign(params, privarekey)
-    // scatter链接
-    ScatterJS.scatter.connect(this.$store.state.projectName).then(connected => {
-      if (!connected) return false
-      this.scatter = ScatterJS.scatter
-      this.getIdentity()
-      window.scatter = null
-      this.showScatterTransfer = true
-    }).catch(e => {
-      this.showScatterTransfer = false
-    })
+    const { blessing, type, uuid, limit } = query
+    // query.blessing + '-' + query.type + '-' + query.uuid + '-' + query.limit + '-' + ecc.sign(params, privarekey)
+    this.packetStr = generatePacketCode(blessing, type, uuid, limit, privarekey, lang)
   },
   methods: {
     copy (className) {
       copy(className, this)
-    },
-    getIdentity () {
-      const requiredFields = {accounts: [this.scatterNetwork]}
-      this.scatter.getIdentity(requiredFields).then(() => {
-        this.accounIdentity.name = this.scatter.identity.accounts.find(x => x.blockchain === 'eos')
-      })
-    },
-    transfer () {
-      // const requiredFields = {accounts: [this.scatterNetwork]}
-      // this.scatter.getIdentity(requiredFields).then(() => {
-      //   const account = this.scatter.identity.accounts.find(x => x.blockchain === 'eos')
-      // })
-      if (this.accounIdentity.name) {
-        const account = this.accounIdentity.name
-        const eosOptions = {expireInSeconds: 60 * 2}
-        const eos = this.scatter.eos(this.$store.state.scatterNetwork, Eos, eosOptions)
-        const transactionOptions = { authorization: [`${account.name}@${account.authority}`] }
-        eos.transfer(account.name, this.account, (+this.$route.query.amount).toFixed(4) + ' EOS', this.remark, transactionOptions).then(result => {
-          if (result && result.transaction_id) {
-            window.tip(this.$t('转账成功'))
-            this.showScatterTransfer = false
-          } else {
-            window.tip(result.error)
-          }
-        }).catch(() => {
-          window.tip(this.$t('失败'))
-        })
-      } else {
-        window.tip(this.$t('获取账户信息失败'))
-      }
     }
   }
 }
 </script>
 <style lang="stylus" scoped>
+@import 'style.styl'
 .my-red
   &_wrap
     padding 24px 16px
@@ -129,43 +80,21 @@ export default {
       margin 6px 0
       display inline-block
       color #5D4220
-    & > p
-      color #5D4220
-      font-size 16px
+    .step_box
+      margin 0 0 18px -8px
+      & > p
+        color #A69987
+        font-size 12px
+        margin-bottom 12px
+    .btm_top
+      margin-top 12px
     .warn_user
       font-size 12px
       color #A69987
       margin 12px 0 24px
     .text-box
       margin-bottom 24px
-      & > p
-        display flex
-        justify-content space-between
-        font-size 14px
-        & > span:first-child
-          color #5D4220
-        & > span:last-child
-          color #288EFB
-      .text
-        min-height 48px
-        width 100%
-        margin-top 4px
-        background-color #F8F8F8
-        &.packetStr
-          background-color #fffcdd
-        input, textarea
-          background-color #F8F8F8
-          padding 13px 15px
-          box-sizing border-box
-          outline none
-          border none
-          width 100%
-          height 100%
-          resize none
-          font-size 14px
-          font-weight 300
-          &.packetStr
-            background-color #fffcdd
+      textBox()
     .my-red_btn_wrapp
       margin-top 32px
       display flex

@@ -1,6 +1,7 @@
 import Vuex from 'vuex'
 import Vue from 'vue'
-
+import ScatterJS from 'scatterjs-core'
+import ScatterEOS from 'scatterjs-plugin-eosjs'
 Vue.use(Vuex)
 let endpoint = 'http://52.194.36.198:8888'
 let chainId = '5fff1dae8dc8e2fc4d5b23b2c7665c97f9e9d8edf2b6485a86ba311c25639191'
@@ -16,7 +17,6 @@ if (process.env.NODE_ENV === 'production') {
   scatterProtocol = 'https'
 }
 let defaultPrivateKey = '5Jq1XzuZ1dsGb2LSgsfA9nmpSEUpo3NnRkAYb9MdzRuFoTHZsEC'
-
 const store = new Vuex.Store({
   state: {
     code: '',
@@ -44,7 +44,22 @@ const store = new Vuex.Store({
       endpoint: endpoint
     },
     defaultPrivateKey: defaultPrivateKey,
-    defaultAccount: 'eosfreetouse'
+    defaultAccount: 'eosfreetouse',
+    scatter: null,
+    accountIdentity: null
+  },
+  actions: {
+    connectScatter ({ commit, state }) {
+      ScatterJS.plugins(new ScatterEOS())
+      ScatterJS.scatter.connect(state.projectName).then(connected => {
+        if (!connected) return false
+        commit('CONNECT_SCATTER', ScatterJS.scatter)
+        const requiredFields = {accounts: [state.scatterNetwork]}
+        ScatterJS.scatter.getIdentity(requiredFields).then(() => {
+          commit('GET_INDENTITY', ScatterJS.scatter.identity.accounts.find(x => x.blockchain === 'eos'))
+        })
+      })
+    }
   },
   getters: {
     getCode: (state) => state.code
@@ -52,6 +67,12 @@ const store = new Vuex.Store({
   mutations: {
     'setCode': (state, data) => {
       state.code = data.code
+    },
+    'CONNECT_SCATTER': (state, data) => {
+      state.scatter = data
+    },
+    'GET_INDENTITY': (state, data) => {
+      state.accountIdentity = data
     }
   }
 })

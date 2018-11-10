@@ -2,7 +2,10 @@
   <div class="account-warrap">
     <topBar :title="$t('创建EOS账号')" :showHome="showHome"></topBar>
     <div class="account-content">
-      <div class="title"><p>{{$t('账号')}}</p></div>
+      <div class="title">
+        <p>{{$t('账号')}}</p>
+        <p class="copy eosAccount" :data-clipboard-text="userInput.accountName" @click="copy('.eosAccount')">{{$t('复制')}}</p>        
+      </div>
       <LimitInput :placeholder="$t('请输入您的账号')" :isNumber="false" v-model="userInput.accountName"/>
       <div class="input-tip">{{$t('12位字符，需包含数字1-5和字母a-z两种元素')}}</div>
 

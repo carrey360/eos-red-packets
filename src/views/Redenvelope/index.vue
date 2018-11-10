@@ -7,7 +7,7 @@
     </tab>
     <div class="sendPacket"><router-link to="redlist">{{$t('我塞的红包')}}</router-link></div>
     <div class="red-envelope_wrap">
-      <LimitInput v-show="scatterIsConnect" numberType="float" :placeholder="$t('最少0.1')" :left-label="$t('红包金额')" right-label="EOS" v-model="redInfo.amount" />
+      <LimitInput v-show="!!scatter" numberType="float" :placeholder="$t('最少0.1')" :left-label="$t('红包金额')" right-label="EOS" v-model="redInfo.amount" />
       <LimitInput numberType="int" :placeholder="$t('最多100')" maxValue='100' :left-label="$t('红包个数')" :right-label="$t('个')" v-model="redInfo.number" />
       <div class="red-textarea">
         <textarea :placeholder="$t('恭喜发财，大吉大利')" v-model="redInfo.blessing" maxLength="30"></textarea>
@@ -31,7 +31,8 @@ import MyButton from '@/components/Button'
 import * as utils from '@/utils/'
 import Iconfont from '@/components/Iconfont'
 import LimitInput from '@/components/LimitInput'
-import ScatterJS from 'scatterjs-core'
+import { transfer, generateMemo } from '@/utils'
+import { mapState } from 'vuex'
 
 export default {
   name: 'red-envelope',
@@ -41,26 +42,23 @@ export default {
   data () {
     return {
       curTab: 'MULTY_NORMAL_ACCOUNT',
-      scatterIsConnect: false,
       redInfo: {
         number: '',
         amount: '',
         blessing: ''
       },
-      defaultBlessing: this.$t('恭喜发财，大吉大利')
+      defaultBlessing: this.$t('恭喜发财，大吉大利'),
+      packetCode: ''
     }
   },
   created () {
-    ScatterJS.scatter.connect(this.$store.state.projectName).then(connected => {
-      if (!connected) return false
-      this.scatterIsConnect = true
-    }).catch(e => {
-      this.scatterIsConnect = false
-    })
+    if (!this.scatter) {
+      this.$store.dispatch('connectScatter')
+    }
   },
   methods: {
     handleSubmit () {
-      if (this.scatterIsConnect) {
+      if (this.scatter) { // 有scatter钱包
         if (!this.redInfo.amount) {
           window.tip(this.$t('请输入红包金额'))
           return false
@@ -75,16 +73,37 @@ export default {
       }
       let uuid = utils.getUUID()
       let blessing = this.redInfo.blessing || this.defaultBlessing
-      this.$router.push({path: 'myred', query: {amount: this.redInfo.amount, uuid: uuid, type: this.curTab, limit: this.redInfo.number, blessing: blessing}})
+      if (blessing.indexOf('-') > -1) {
+        window.tip(this.$t('祝福语中不能包含'))
+        return false
+      }
+      if (this.scatter) {
+        const { scatterNetwork, tranAccountName, redPubKeyName } = this.$store.state
+        const { amount, number } = this.redInfo
+        const type = this.curTab
+        const memo = generateMemo(type, uuid, number, localStorage.getItem(redPubKeyName), blessing)
+        transfer(this.scatter, scatterNetwork, this.accountIdentity, tranAccountName, amount, memo).then(res => {
+          window.tip(this.$t('转账成功'))
+          this.$router.push({path: 'myred', query: {amount, uuid, type, limit: number, blessing}})
+        }).catch(() => {
+          window.tip(this.$t('失败'))
+        })
+      } else {
+        this.$router.push({path: 'myred', query: {amount: this.redInfo.amount, uuid: uuid, type: this.curTab, limit: this.redInfo.number, blessing: blessing}})
+      }
     },
     handleTabClick (value) {
       this.curTab = value
     }
+  },
+  computed: {
+    ...mapState(['scatter', 'accountIdentity'])
   }
 }
 </script>
 <style lang="stylus" scoped>
 .red-envelope
+  position relative
   .sendPacket
     position absolute
     right 16px
