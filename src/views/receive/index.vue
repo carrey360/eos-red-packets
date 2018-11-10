@@ -15,14 +15,15 @@
       </div>
     </div>
     <div class="amount-info">{{$t('兑换')}} {{ info.log.length }}/{{ info.limit }}, {{receiveAmount.toFixed(4)}}/{{ info.amount }}</div>
-    <ul class="receive-list">
+    <!-- <div ref="listUl" class="receive-box"></div> -->
+    <ul ref="listUl" class="receive-list">
       <li v-for="(item, key) in info.log" :key="key"><div>{{ item.who }}</div><div>{{ item.amount }}</div></li>
     </ul>
     <div v-show="info.log.length == 0" class="list-noData">{{$t('暂无数据')}}</div>
-    <div class="inner-div"></div>
+    <!-- <div class="inner-div"></div> -->
     <div class="error-tip" v-if="showError">{{ errorMsg }}</div>
     <div class="input-account" v-if="!isIputCodeNumber">
-      <LimitInput numberType="nolimit" class="input" :placeholder="$t('请输入您的账号')" :isNumber="false" isFrom='receive' v-model="account"/>
+      <LimitInput :maxlength="100" numberType="nolimit" class="input" :placeholder="$t('请输入您的账号')" :isNumber="false" isFrom='receive' v-model="account"/>
       <div class="no-account">{{$t('还没有EOS账号')}} ? <router-link to="account">{{$t('创建')}}</router-link></div>
       <div class="button" @click="receive">{{$t('领取')}}</div>
     </div>
@@ -107,6 +108,10 @@ export default {
         result.expire = result.expire - 24 * 60 * 60
         this.info = result
       }
+      // this.$nextTick(() => {
+      //   const { clientHeight }  = this.$refs.listUl
+      //   this.$refs.listUl.style.height = `${clientHeight}px`
+      // })
       this.showLoading = false
     },
     receive () {
@@ -226,7 +231,14 @@ export default {
     text-align left
     color #A69987
     border-bottom 1px solid #F9F9F9
+  // .receive-box
+  //   position absolute
+  //   overflow-y scroll
+  //   height 1000px
   .receive-list
+    // position absolute
+    // overflow-y scroll
+    // height 1000px
     li
       padding 0 rem(16)
       color #5D4220

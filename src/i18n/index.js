@@ -105,7 +105,8 @@ let enConfig = {
   '第二步: 复制并通过IM工具把[红包串]发送给你的朋友们': '2.Copy the red packet code to your friend in IM tools.',
   '转账时复制下面的信息到Memo': 'Copy the following informarion into Memo.',
   '通过IM工具将红包串发送给你的朋友': 'Copy the red packet code to your friend in IM tools.',
-  '祝福语中不能包含': '"-" cannot be included in the greetings'
+  '祝福语中不能包含': '"-" cannot be included in the greetings',
+  '创建账号成功，请将私钥保存到安全位置': 'Create account successfully，keep your private key safe'
 }
 
 let cnConfig = {
@@ -211,7 +212,8 @@ let cnConfig = {
   '第二步: 复制并通过IM工具把[红包串]发送给你的朋友们': '第二步: 复制并通过IM工具把[红包串]发送给你的朋友们',
   '转账时复制下面的信息到Memo': '转账时复制下面的信息到Memo',
   '通过IM工具将红包串发送给你的朋友': '通过IM工具将红包串发送给你的朋友',
-  '祝福语中不能包含': '祝福语中不能包含"-"'
+  '祝福语中不能包含': '祝福语中不能包含"-"',
+  '创建账号成功，请将私钥保存到安全位置': '创建账号成功，请将私钥保存到安全位置'
 }
 
 const messages = {

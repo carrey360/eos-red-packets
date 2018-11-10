@@ -4,7 +4,7 @@
     <div class="account-content">
       <div class="title">
         <p>{{$t('账号')}}</p>
-        <p class="copy eosAccount" :data-clipboard-text="userInput.accountName" @click="copy('.eosAccount')">{{$t('复制')}}</p>        
+        <p class="copy eosAccount" :data-clipboard-text="userInput.accountName" @click="copy('.eosAccount')">{{$t('复制')}}</p>
       </div>
       <LimitInput :placeholder="$t('请输入您的账号')" :isNumber="false" v-model="userInput.accountName"/>
       <div class="input-tip">{{$t('12位字符，需包含数字1-5和字母a-z两种元素')}}</div>
@@ -131,7 +131,8 @@ export default {
           // 跳转
           this.showLoading = false
           if (result && result.transaction_id) {
-            window.tip(this.$t('创建账号成功'))
+            this.modalData.content = this.$t('创建账号成功，请将私钥保存到安全位置')
+            this.modalData.showDailog = true
             this.hasRedCreateSuc = true
           } else {
             window.tip(result.error)

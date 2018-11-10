@@ -8,7 +8,7 @@
       </div>
     </div>
     <input v-else class="account-name common-input" autocorrect="off" autocapitalize="off" autocomplete="off" @compositionstart="compositionstart"
-      @compositionend='compositionend' type="text" :placeholder="placeholder" :value="inputVal" @input="handleInput" maxlength="12" @blur="handleInput"/>
+      @compositionend='compositionend' type="text" :placeholder="placeholder" :value="inputVal" @input="handleInput" :maxlength="maxlength" @blur="handleInput"/>
   </div>
 </template>
 <script>
@@ -48,6 +48,10 @@ export default {
     isFrom: {
       type: String,
       default: ''
+    },
+    maxlength: {
+      type: Number,
+      default: 12
     }
   },
   computed: {
@@ -86,6 +90,7 @@ export default {
       this.inputFlag = true
     },
     limit (val, oVal) {
+      if (this.numberType === 'nolimit') return val
       if (!val) return
       if (this.numberType === 'string') {
         let reg = /^[a-z1-5.]{0,12}$/ // 数字1-5 字符a-z大小写 最多12位
