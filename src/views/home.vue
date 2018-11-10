@@ -22,10 +22,10 @@
     <div class="glide-position">
       <i class="glide_box" />
     </div>
-    <!-- <div class="sponsor">
-      <img v-if="zzsFlag == 1" class="zzs" src="../assets/cn.png"/>
-      <img v-else class="zzs" src="../assets/en.png"/>
-    </div> -->
+    <div class="sponsor">
+      <img v-if="zzsFlag == 1" class="zzs" data-src="/static/cn.png"/>
+      <img v-else class="zzs" data-src="/static/en.png"/>
+    </div>
     <loading v-show='showLoading'></loading>
   </div>
 </template>
@@ -45,6 +45,14 @@ export default {
     }
   },
   components: {loading},
+  created () {
+    this.$nextTick(() => {
+      setTimeout(() => {
+        // 延迟加载图片
+        this.lazyload()
+      }, 0)
+    })
+  },
   methods: {
     go () {
       let formatCodeJson = formatePacket(this.code)
@@ -93,6 +101,28 @@ export default {
     linkToCreateAccount () {
       this.$store.commit('setCode', {code: ''})
       this.$router.push('account')
+    },
+    // 缓存加载图片
+    lazyload () {
+      function loadImage (obj, url, callback) {
+        let img = new Image()
+        img.src = url
+        // 判断图片是否在缓存中
+        if (img.complete) {
+          callback.call(img, obj)
+          return
+        }
+        // 图片加载到浏览器的缓存中回调函数
+        img.onload = function () {
+          callback.call(img, obj)
+        }
+      }
+      function showImage (obj) {
+        obj.src = this.src
+      }
+      const imgs = document.getElementsByClassName('zzs')
+      const url = imgs[0].dataset.src
+      loadImage(imgs[0], url, showImage)
     }
   }
 }
