@@ -2,7 +2,10 @@
   <div class="account-warrap">
     <topBar :title="$t('创建EOS账号')" :showHome="showHome"></topBar>
     <div class="account-content">
-      <div class="title"><p>{{$t('账号')}}</p></div>
+      <div class="title">
+        <p>{{$t('账号')}}</p>
+        <p class="copy eosAccount" :data-clipboard-text="userInput.accountName" @click="copy('.eosAccount')">{{$t('复制')}}</p>
+      </div>
       <LimitInput :placeholder="$t('请输入您的账号')" :isNumber="false" v-model="userInput.accountName"/>
       <div class="input-tip">{{$t('12位字符，需包含数字1-5和字母a-z两种元素')}}</div>
 
@@ -21,7 +24,7 @@
       <div class="private-key common-input">{{ userInput.privateKey }}</div>
       <div class="input-tip red">{{$t('不要透露给任何人')}}</div>
 
-      <div class="title"><p>{{$t('红包串号')}}({{$t('选填')}})</p></div>
+      <div class="title"><p>{{$t('红包串')}}({{$t('选填')}})</p></div>
       <textarea class="packet-number common-input" v-model="packetNumber"></textarea>
 
       <div class="account-tip">
@@ -83,6 +86,10 @@ export default {
       this.modalData.showDailog = false
     },
     rightBtnAction () {
+      if (this.hasRedCreateSuc) {
+        this.modalData.showDailog = false
+        return false
+      }
       let formatCode = formatePacket(this.packetNumber)
       if (this.packetNumber && formatCode.isMemo) {
         this.packetCreate()
@@ -105,7 +112,7 @@ export default {
       if (this.packetNumber) {
         let formatCode = formatePacket(this.packetNumber)
         if (!formatCode.isMemo) {
-          window.tip(this.$t('请正确输入红包串号'))
+          window.tip(this.$t('请正确输入红包串'))
           return false
         } else if (formatCode.isMemo) {
           this.modalData.content = this.$t('确定要用该红包创建账号')
@@ -128,7 +135,8 @@ export default {
           // 跳转
           this.showLoading = false
           if (result && result.transaction_id) {
-            window.tip(this.$t('创建账号成功'))
+            this.modalData.content = this.$t('创建账号成功，请将私钥保存到安全位置')
+            this.modalData.showDailog = true
             this.hasRedCreateSuc = true
           } else {
             window.tip(result.error)
@@ -203,6 +211,8 @@ export default {
       margin-top 4px
       word-break break-all
       resize none
+      font-size 14px
+      font-weight 300
       &:focus
         outline none
       &::placeholder
@@ -238,6 +248,7 @@ export default {
       font-weight 400
       p:first-child
         font-weight 500
+        font-size 14px
     .button
       margin rem(24) auto
       margin-bottom 0

@@ -8,7 +8,7 @@
       </div>
     </div>
     <input v-else class="account-name common-input" autocorrect="off" autocapitalize="off" autocomplete="off" @compositionstart="compositionstart"
-      @compositionend='compositionend' type="text" :placeholder="placeholder" :value="inputVal" @input="handleInput" maxlength="12" @blur="handleInput"/>
+      @compositionend='compositionend' type="text" :placeholder="placeholder" :value="inputVal" @input="handleInput" :maxlength="maxlength" @blur="handleInput"/>
   </div>
 </template>
 <script>
@@ -48,6 +48,10 @@ export default {
     isFrom: {
       type: String,
       default: ''
+    },
+    maxlength: {
+      type: Number,
+      default: 12
     }
   },
   computed: {
@@ -86,6 +90,7 @@ export default {
       this.inputFlag = true
     },
     limit (val, oVal) {
+      if (this.numberType === 'nolimit') return val
       if (!val) return
       if (this.numberType === 'string') {
         let reg = /^[a-z1-5.]{0,12}$/ // 数字1-5 字符a-z大小写 最多12位
@@ -128,6 +133,9 @@ export default {
 </script>
 <style lang="stylus" scoped>
 .limit-input
+  input
+    font-size 14px
+    font-weight 300
   .red-input
     background-color #F8F8F8
     height rem(26)
@@ -137,15 +145,16 @@ export default {
     align-items center
     justify-content space-between
     padding 16px
-    font-size 16px
+    font-size 14px
     border-radius 3px
     margin-bottom rem(20)
     ::placeholder
       color #C9C2B7
     span
       color #5D4220
-      font-size 16px
+      font-size 14px
       white-space nowrap
+      margin-top 5px
     .inputwrapp
       display flex
       align-items center
@@ -163,6 +172,7 @@ export default {
       text-align right
       ime-mode disabled
       width 95%
+      font-size 14px
     input::-webkit-outer-spin-button, input::-webkit-inner-spin-button
       -webkit-appearance none
     input[type="number"]

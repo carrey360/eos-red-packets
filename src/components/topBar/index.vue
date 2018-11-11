@@ -48,12 +48,12 @@ export default {
     align-items center
     padding 0 rem(15)
     .title
-      font-size rem(16)
+      font-size 14px
       line-height 44px
       color rgba(255,255,255,1)
   .iconfont
     color #fff
-    font-size 16px
+    font-size 14px
     &.home
       font-size 20px
 </style>

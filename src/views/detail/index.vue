@@ -22,7 +22,7 @@
       <div class="common-input">{{ redID }}</div>
 
       <div v-show="curUserPublik == info.pubkey">
-        <div class="title"><p>{{$t('红包串号')}}</p><p class="copy packetStr" :data-clipboard-text="packetStr" @click="copy('.packetStr')">{{$t('复制')}}</p></div>
+        <div class="title"><p>{{$t('红包串')}}</p><p class="copy packetStr" :data-clipboard-text="packetStr" @click="copy('.packetStr')">{{$t('复制')}}</p></div>
         <div class="tip">{{$t('分享该串给您朋友，让你朋友领取红包')}}</div>
         <div class="packet-number common-input">{{ packetStr }}</div>
       </div>
@@ -45,7 +45,7 @@ import IconFont from '@/components/Iconfont'
 import { copy, getTableRow } from '@/utils/'
 import CountDown from '@/components/Countdown'
 import loading from '@/components/loading'
-import ecc from 'eosjs-ecc'
+import { generatePacketCode } from '@/utils'
 import { formatDate } from '@/utils/filter'
 
 export default {
@@ -108,9 +108,11 @@ export default {
         let strType = result.type === 1 ? 'MULTY_NORMAL_ACCOUNT' : 'MULTY_RANDOM_ACCOUNT'
 
         //  红包串
-        let params = result.id + '_' + strType + '_' + result.memo
+        // let params = result.id + '_' + strType + '_' + result.memo
         let privarekey = localStorage.getItem(this.$store.state.redPriKeyName)
-        this.packetStr = result.memo + '-' + strType + '-' + result.id + '-' + result.limit + '-' + ecc.sign(params, privarekey)
+        const lang = localStorage.getItem('redLang')
+        //  result.memo + '-' + strType + '-' + result.id + '-' + result.limit + '-' + ecc.sign(params, privarekey)
+        this.packetStr = generatePacketCode(result.memo, strType, result.id, result.limit, privarekey, lang)
         this.info = result
       }
       this.showLoading = false

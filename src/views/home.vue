@@ -2,23 +2,29 @@
   <div class="home-warrap">
     <div class="top">
       <img class="bg" src="@/assets/home.png" />
-      <div class="code"><textarea :placeholder="$t('请输入红包串号或者红包ID来领取和查看红包')" v-model="code"></textarea></div>
-      <div class="button" @click="go">GO!</div>
+      <div class="code"><textarea :placeholder="$t('请输入红包串领取红包')" v-model="code"></textarea></div>
+      <div class="button" @click="go">GO</div>
       <img class="logo" src="../assets/logo.png"/>
     </div>
     <div class="title">EOS {{$t('红包')}}</div>
     <!-- <router-link to="red"><div class="send-packet">{{$t('发红包')}}</div></router-link> -->
     <!-- <div class="sum-info">红包数:12993  &nbsp;&nbsp;&nbsp;红包总额:21212EOS</div> -->
-    <div class="lang" @click="setLang">EN/CN</div>
-    <div class="action">
-      <!-- <span><router-link to="redlist">{{$t('我塞的红包')}}</router-link></span><span class="tip">|</span> -->
-      <span><router-link to="red">{{$t('发红包')}}</router-link></span><span class="tip">|</span>
-      <span @click="linkToCreateAccount">{{$t('创建EOS账号')}}</span><span class="tip">|</span>
-      <span><router-link to="about">{{$t('关于我们')}}</router-link></span>
+    <div class="postion-box">
+      <div class="lang" @click="setLang">EN/CN</div>
+      <div class="action">
+        <!-- <span><router-link to="redlist">{{$t('我塞的红包')}}</router-link></span><span class="tip">|</span> -->
+        <span><router-link to="red">{{$t('发红包')}}</router-link></span><span class="tip">|</span>
+        <span @click="linkToCreateAccount">{{$t('创建EOS账号')}}</span><span class="tip">|</span>
+        <span><router-link to="about">{{$t('关于我们')}}</router-link></span>
+      </div>
+      <!-- <div class="decoration"><img src="../assets/decoration.png" /></div> -->
     </div>
-    <div class="decoration"><img src="../assets/decoration.png" /></div>
-    <img v-if="zzsFlag == 1" class="zzs" src="../assets/cn.png"/>
-    <img v-else class="zzs" src="../assets/en.png"/>
+    <div class="glide-position">
+      <i class="glide_box" />
+    </div>
+    <div class="sponsor">
+      <img class="zzs" alt="">
+    </div>
     <loading v-show='showLoading'></loading>
   </div>
 </template>
@@ -26,22 +32,34 @@
 <script>
 import { formatePacket, getTableRow } from '@/utils/'
 import loading from '@/components/loading'
-
+import { mapState } from 'vuex'
 export default {
   name: 'home',
   data () {
     return {
       showLoading: false,
       code: '',
-      zzsFlag: 1
+      lang: localStorage.getItem('redLang') || 'cn',
+      sponsor: false
     }
   },
   components: {loading},
+  created () {
+    this.$nextTick(() => {
+      setTimeout(() => {
+        // 延迟加载图片
+        this.lazyload()
+      }, 0)
+      if (!this.catter) {
+        this.$store.dispatch('connectScatter')
+      }
+    })
+  },
   methods: {
     go () {
       let formatCodeJson = formatePacket(this.code)
       if (!this.code) {
-        window.tip(this.$t('请输入红包ID或者红包串号'))
+        window.tip(this.$t('请输入红包串'))
       } else if (!formatCodeJson.isMemo) {
         window.tip(this.$t('请输入有效值'))
       } else {
@@ -80,12 +98,38 @@ export default {
       let lang = localStorage.getItem('redLang') || 'cn'
       localStorage.setItem('redLang', lang === 'cn' ? 'en' : 'cn')
       this.$i18n.locale = lang === 'cn' ? 'en' : 'cn'
-      this.zzsFlag = lang === 'cn' ? 2 : 1
+      this.lang = lang === 'cn' ? 'en' : 'cn'
+      this.lazyload()
     },
     linkToCreateAccount () {
       this.$store.commit('setCode', {code: ''})
       this.$router.push('account')
+    },
+    // 缓存加载图片
+    lazyload () {
+      function loadImage (obj, url, callback) {
+        let img = new Image()
+        img.src = url
+        // 判断图片是否在缓存中
+        if (img.complete) {
+          callback.call(img, obj)
+          return
+        }
+        // 图片加载到浏览器的缓存中回调函数
+        img.onload = function () {
+          callback.call(img, obj)
+        }
+      }
+      function showImage (obj) {
+        obj.src = this.src
+      }
+      const imgs = document.getElementsByClassName('zzs')
+      const url = this.lang === 'cn' ? '/static/cn.png' : '/static/en.png'
+      loadImage(imgs[0], url, showImage)
     }
+  },
+  computed: {
+    ...mapState(['scatter'])
   }
 }
 </script>
@@ -121,7 +165,7 @@ export default {
         width 80%
         resize none
         color #5D4220
-        font-size 12px
+        font-size 14px
         outline none
         &::placeholder
           color #C9C2B7
@@ -190,7 +234,7 @@ export default {
     z-index 2
     margin-top 30px
     color rgba(252,219,178,1)
-    font-size 12px
+    font-size 14px
     opacity 0.7
     .tip
       margin 0 10px
@@ -202,4 +246,33 @@ export default {
     margin-top -58px
     img
       width 90%
+  .glide-position
+  .postion-box
+    position absolute
+    bottom 46px
+    width 100%
+    max-width 640px
+  .glide-position
+    position absolute
+    bottom 5px
+    display flex
+    justify-content center
+    width 100%
+    @keyframes glide
+      0%
+        -webkit-transform: translatey(0) rotate(180deg)
+      50%
+        -webkit-transform: translatey(-6px) rotate(180deg)
+      100%
+        -webkit-transform: translatey(0) rotate(180deg)
+    .glide_box
+      display inline-block
+      width 26px
+      height 26px
+      background-image url('../assets/glide.png')
+      -webkit-animation glide 1s infinite linear
+  .sponsor
+    position absolute
+    top 100%
+    max-width 640px
 </style>

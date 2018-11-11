@@ -1,5 +1,6 @@
 import Clipboard from 'clipboard'
-
+import ecc from 'eosjs-ecc'
+import Eos from 'eosjs'
 // 生成UUID
 export function getUUID () {
   return (new Date()).getTime() * 10000 + parseInt((Math.random() * 10000 + 1))
@@ -10,7 +11,7 @@ export function formatePacket (str = '') {
   let result = {
     isMemo: false
   }
-
+  str = str.split(/\n|\r/)[0]
   let strSplit = str.split('-')
   let id = parseInt((new Date()).getTime() / 1000)
   if (strSplit.length < 5 && (isNaN(+strSplit[0]) || +strSplit[0] < id)) {
@@ -78,4 +79,47 @@ export function getTableRow (_this, params, success, error) {
     let response = JSON.parse(res)
     success && success.call(this, response)
   }, error)
+}
+/**
+ * 生成红包串
+ * @ blessing {*} 祝福语
+ * @ type {*} 红包类型
+ * @ uuid {*} 红包ID
+ * @ limit {*} 红包个数
+ * @ privarekey {*} 私钥
+ */
+export function generatePacketCode (blessing, type, uuid, limit, privarekey, lang) {
+  const cnStr = '复制本条消息并通过浏览器打开https://redpacketeos.com兑换EOS红包'
+  const enStr = 'Copy the whole message and redeem the EOS red packet from https://redpacketeos.com'
+  const langStr = lang === 'en' ? enStr : cnStr
+  let params = `${uuid}_${type}_${blessing}`
+  return `${blessing}-${type}-${uuid}-${limit}-${ecc.sign(params, privarekey)}\r\n------------------\r\n${langStr}`
+}
+/**
+ * 生成红包memo
+ */
+export function generateMemo (type, uuid, limit, redPubKeyName, blessing) {
+  return `REDPACKET-${type}-${uuid}-${limit}-${redPubKeyName}-${blessing}`
+}
+/**
+ * 转账
+ * @param {*} scatter
+ * @param {*} scatterNetwork
+ * @param {*} 用户标识
+ * @param {*} 收款账户
+ * @param {*} eos数量
+ * @param {*} memo
+ */
+export function transfer (scatter, scatterNetwork, accounIdentity, toAccont, amount, memo) {
+  const fromAccount = accounIdentity
+  const eosOptions = {expireInSeconds: 60 * 2}
+  const eos = scatter.eos(scatterNetwork, Eos, eosOptions)
+  const transactionOptions = { authorization: [`${fromAccount.name}@${fromAccount.authority}`] }
+  return eos.transfer(fromAccount.name, toAccont, (+amount).toFixed(4) + ' EOS', memo, transactionOptions).then(result => {
+    if (result && result.transaction_id) {
+      return 'success'
+    } else {
+      return result.error
+    }
+  })
 }
