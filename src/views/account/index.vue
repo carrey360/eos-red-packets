@@ -70,6 +70,7 @@ export default {
         'showDailog': false,
         'title': this.$t('提示'),
         'content': '',
+        'type': 'confirm',
         'btn': [{text: this.$t('否')}, {text: this.$t('是')}]
       },
       packetNumber: this.$store.state.code,
@@ -117,11 +118,13 @@ export default {
         } else if (formatCode.isMemo) {
           this.modalData.content = this.$t('确定要用该红包创建账号')
           this.modalData.showDailog = true
+          this.modalData.type = 'confirm'
         }
       } else {
         if (this.userInput.privateKey) {
           this.modalData.content = this.$t('确定私钥已保存安全位置')
           this.modalData.showDailog = true
+          this.modalData.type = 'confirm'
         } else {
           this.$router.push({path: 'acTransfer', query: this.userInput})
         }
@@ -137,6 +140,7 @@ export default {
           if (result && result.transaction_id) {
             this.modalData.content = this.$t('创建账号成功，请将私钥保存到安全位置')
             this.modalData.showDailog = true
+            this.modalData.type = 'sure'
             this.hasRedCreateSuc = true
           } else {
             window.tip(result.error)

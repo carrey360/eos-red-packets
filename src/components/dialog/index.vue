@@ -5,12 +5,12 @@
         <div class="modal-container">
           <h1 class="modal-title" v-html="modalData.title"></h1>
           <p class="modal-text" v-html="modalData.content"></p>
-          <div class="modal-btns one" v-if=" modalData.btn.length == 1" >
-            <button class="oneBtn"  @click="$emit('oneBtnAction')">
-              {{modalData.btn[0].text}}
+          <div class="modal-btns one" v-if=" modalData.type == 'sure'" >
+            <button class="oneBtn"  @click="$emit('leftBtnAction')">
+              {{modalData.btn[1].text}}
             </button>
           </div>
-          <div class="modal-btns two" v-if=" modalData.btn.length == 2">
+          <div class="modal-btns two" v-else>
             <button class="cancle"   @click="$emit('leftBtnAction')">
               {{modalData.btn[0].text}}
             </button>
@@ -85,12 +85,13 @@ export default {
 .oneBtn{
   width: rem(150);
   height: rem(45);
-  border: 0;
   outline: 0;
-  background: #FFD900;
-  border-radius: 60px;
-  color: #424242;
-  font-size: 15px;
+  border:none;
+  background: #FCDBB2;
+  border-radius: 2px;
+  font-size: rem(14);
+  color: #5D4220;
+  letter-spacing: 0;
 }
 .cancle{
   width:rem(130);

@@ -9,7 +9,7 @@
     <div class="title">EOS {{$t('红包')}}</div>
     <!-- <router-link to="red"><div class="send-packet">{{$t('发红包')}}</div></router-link> -->
     <!-- <div class="sum-info">红包数:12993  &nbsp;&nbsp;&nbsp;红包总额:21212EOS</div> -->
-    <div class="postion-box">
+    <div :class="[isInputFocus ? 'pos-static' : 'pos-fiexd', 'postion-box']">
       <div class="lang" @click="setLang">EN/CN</div>
       <div class="action">
         <!-- <span><router-link to="redlist">{{$t('我塞的红包')}}</router-link></span><span class="tip">|</span> -->
@@ -19,7 +19,7 @@
       </div>
       <!-- <div class="decoration"><img src="../assets/decoration.png" /></div> -->
     </div>
-    <div class="glide-position">
+    <div :class="[isInputFocus ? 'pos-static' : 'pos-fiexd', 'glide-position']">
       <i class="glide_box" />
     </div>
     <div class="sponsor">
@@ -40,10 +40,14 @@ export default {
       showLoading: false,
       code: '',
       lang: localStorage.getItem('redLang') || 'cn',
-      sponsor: false
+      sponsor: false,
+      isInputFocus: false
     }
   },
   components: {loading},
+  computed: {
+    ...mapState(['scatter'])
+  },
   created () {
     this.$nextTick(() => {
       setTimeout(() => {
@@ -52,6 +56,16 @@ export default {
       }, 0)
       if (!this.catter) {
         this.$store.dispatch('connectScatter')
+      }
+    })
+  },
+  mounted () {
+    let clientHeight = document.body.clientHeight
+    window.addEventListener('resize', () => {
+      if (clientHeight > document.body.clientHeight) {
+        this.inputFoccus()
+      } else {
+        this.inputBlur()
       }
     })
   },
@@ -126,10 +140,13 @@ export default {
       const imgs = document.getElementsByClassName('zzs')
       const url = this.lang === 'cn' ? '/static/cn.png' : '/static/en.png'
       loadImage(imgs[0], url, showImage)
+    },
+    inputFoccus () {
+      this.isInputFocus = true
+    },
+    inputBlur () {
+      this.isInputFocus = false
     }
-  },
-  computed: {
-    ...mapState(['scatter'])
   }
 }
 </script>
@@ -246,7 +263,10 @@ export default {
     margin-top -58px
     img
       width 90%
-  .glide-position
+  .pos-static
+    position static!important
+  .pos-fixed
+    position fixed
   .postion-box
     position absolute
     bottom 46px
