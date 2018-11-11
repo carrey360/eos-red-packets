@@ -86,6 +86,10 @@ export default {
       this.modalData.showDailog = false
     },
     rightBtnAction () {
+      if (this.hasRedCreateSuc) {
+        this.modalData.showDailog = false
+        return false
+      }
       let formatCode = formatePacket(this.packetNumber)
       if (this.packetNumber && formatCode.isMemo) {
         this.packetCreate()
