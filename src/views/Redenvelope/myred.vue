@@ -36,7 +36,7 @@
 <script>
 import TopBar from '@/components/topBar'
 import MyButton from '@/components/Button'
-import { copy, generatePacketCode } from '@/utils'
+import { copy, generatePacketCode, generateMemo } from '@/utils'
 
 export default {
   name: 'my-red',
@@ -54,15 +54,16 @@ export default {
   created () {
     let query = this.$route.query
     // REDPACKET-红包类型-红包id-红包个数-pubkey-祝福语
-    this.remark = 'REDPACKET-' + query.type + '-' + query.uuid + '-' + query.limit + '-' + localStorage.getItem(this.$store.state.redPubKeyName) + '-' + query.blessing
+    // this.remark = 'REDPACKET-' + query.type + '-' + query.uuid + '-' + query.limit + '-' + localStorage.getItem(this.$store.state.redPubKeyName) + '-' + query.blessing
+    this.remark = generateMemo(query.type, query.uuid, query.limit, localStorage.getItem(this.$store.state.redPubKeyName), query.redSelfPublicKey, query.blessing)
     // 签名
     // let params = query.uuid + '_' + query.type + '_' + query.blessing
-    let privarekey = localStorage.getItem(this.$store.state.redPriKeyName)
+    // let privarekey = localStorage.getItem(this.$store.state.redPriKeyName)
     const lang = localStorage.getItem('redLang')
     // 生成红包串
     const { blessing, type, uuid, limit } = query
     // query.blessing + '-' + query.type + '-' + query.uuid + '-' + query.limit + '-' + ecc.sign(params, privarekey)
-    this.packetStr = generatePacketCode(blessing, type, uuid, limit, privarekey, lang)
+    this.packetStr = generatePacketCode(blessing, type, uuid, limit, query.selfPrivateKey, lang)
   },
   methods: {
     copy (className) {

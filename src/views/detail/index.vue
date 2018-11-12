@@ -24,7 +24,7 @@
       <div v-show="curUserPublik == info.pubkey">
         <div class="title"><p>{{$t('红包串')}}</p><p class="copy packetStr" :data-clipboard-text="packetStr" @click="copy('.packetStr')">{{$t('复制')}}</p></div>
         <div class="tip">{{$t('分享该串给您朋友，让你朋友领取红包')}}</div>
-        <div class="packet-number common-input">{{ packetStr }}</div>
+        <textarea class="packet-number common-input" disabled="disabled" cols="3" rows="9" v-model="packetStr"></textarea>
       </div>
     </div>
 
@@ -73,6 +73,9 @@ export default {
     }
   },
   created () {
+    if (!this.$store.state.wsCache) {
+      this.$store.commit('SetWebStorageCache', {})
+    }
     let query = this.$route.query
     let params = {
       json: true,
@@ -110,9 +113,10 @@ export default {
         //  红包串
         // let params = result.id + '_' + strType + '_' + result.memo
         let privarekey = localStorage.getItem(this.$store.state.redPriKeyName)
+        let selfPrivarekey = this.$store.state.wsCache.get('red_' + result.id)
         const lang = localStorage.getItem('redLang')
-        //  result.memo + '-' + strType + '-' + result.id + '-' + result.limit + '-' + ecc.sign(params, privarekey)
-        this.packetStr = generatePacketCode(result.memo, strType, result.id, result.limit, privarekey, lang)
+        let memoPrivateKey = selfPrivarekey || privarekey
+        this.packetStr = generatePacketCode(result.memo, strType, result.id, result.limit, memoPrivateKey, lang)
         this.info = result
       }
       this.showLoading = false
@@ -208,6 +212,7 @@ export default {
     line-height rem(26)
     background-color #F8F8F8
     word-break break-all
+    resize none
   .packet-number
     height rem(158)
     line-height normal
