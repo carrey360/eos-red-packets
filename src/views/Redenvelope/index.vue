@@ -31,6 +31,7 @@ import MyButton from '@/components/Button'
 import * as utils from '@/utils/'
 import Iconfont from '@/components/Iconfont'
 import LimitInput from '@/components/LimitInput'
+import ecc from 'eosjs-ecc'
 import { transfer, generateMemo } from '@/utils'
 import { mapState } from 'vuex'
 
@@ -54,6 +55,9 @@ export default {
   created () {
     if (!this.scatter) {
       this.$store.dispatch('connectScatter')
+    }
+    if (!this.$store.state.wsCache) {
+      this.$store.commit('SetWebStorageCache', {})
     }
   },
   methods: {
@@ -81,12 +85,17 @@ export default {
         const { scatterNetwork, tranAccountName, redPubKeyName } = this.$store.state
         const { amount, number } = this.redInfo
         const type = this.curTab
-        const memo = generateMemo(type, uuid, number, localStorage.getItem(redPubKeyName), blessing)
-        transfer(this.scatter, scatterNetwork, this.accountIdentity, tranAccountName, amount, memo).then(res => {
-          window.tip(this.$t('转账成功'))
-          this.$router.push({path: 'myred', query: {amount, uuid, type, limit: number, blessing}})
-        }).catch(() => {
-          window.tip(this.$t('失败'))
+        // 生成红包的公私钥，使用红包的私钥生成签名
+        ecc.randomKey().then(privateKey => {
+          let redSelfPublicKey = ecc.privateToPublic(privateKey)
+          const memo = generateMemo(type, uuid, number, localStorage.getItem(redPubKeyName), redSelfPublicKey, blessing)
+          transfer(this.scatter, scatterNetwork, this.accountIdentity, tranAccountName, amount, memo).then(res => {
+            window.tip(this.$t('转账成功'))
+            this.$store.state.wsCache && this.$store.state.wsCache.set('red_' + uuid, privateKey, {exp: 48 * 60 * 60}) // exp 单位秒
+            this.$router.push({path: 'myred', query: {amount, uuid, type, limit: number, blessing, redSelfPublicKey, selfPrivateKey: privateKey}})
+          }).catch(() => {
+            window.tip(this.$t('失败'))
+          })
         })
       } else {
         this.$router.push({path: 'myred', query: {amount: this.redInfo.amount, uuid: uuid, type: this.curTab, limit: this.redInfo.number, blessing: blessing}})

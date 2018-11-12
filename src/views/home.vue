@@ -58,6 +58,9 @@ export default {
         this.$store.dispatch('connectScatter')
       }
     })
+    if (!this.$store.state.wsCache) {
+      this.$store.commit('SetWebStorageCache', {})
+    }
   },
   mounted () {
     let clientHeight = document.body.clientHeight
@@ -68,6 +71,7 @@ export default {
         this.inputBlur()
       }
     })
+    this.$store.state.wsCache.deleteAllExpires()
   },
   methods: {
     go () {
@@ -281,7 +285,9 @@ export default {
     bottom 5px
     display flex
     justify-content center
-    width 100%
+    // width 100%
+    left 50%
+    transform translateX(-50%)
     @keyframes glide
       0%
         -webkit-transform: translatey(0) rotate(180deg)

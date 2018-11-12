@@ -103,8 +103,8 @@ export function generatePacketCode (blessing, type, uuid, limit, privarekey, lan
 /**
  * 生成红包memo
  */
-export function generateMemo (type, uuid, limit, redPubKeyName, blessing) {
-  return `REDPACKET-${type}-${uuid}-${limit}-${redPubKeyName}-${blessing}`
+export function generateMemo (type, uuid, limit, redPubKeyName, redSelfPublicKey, blessing) {
+  return `REDPACKET-${type}-${uuid}-${limit}-${redPubKeyName}-${redSelfPublicKey}-${blessing}`
 }
 /**
  * 转账
