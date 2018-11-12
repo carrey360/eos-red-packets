@@ -79,7 +79,8 @@ export default {
         accountName: '',
         publicKey: '',
         privateKey: ''
-      }
+      },
+      formatCodeObj: {}
     }
   },
   methods: {
@@ -91,7 +92,8 @@ export default {
         this.modalData.showDailog = false
         return false
       }
-      let formatCode = formatePacket(this.packetNumber)
+
+      let formatCode = this.formatCodeObj
       if (this.packetNumber && formatCode.isMemo) {
         this.packetCreate()
       } else {
@@ -111,15 +113,20 @@ export default {
       }
       // 通过红包串创建账号
       if (this.packetNumber) {
-        let formatCode = formatePacket(this.packetNumber)
-        if (!formatCode.isMemo) {
-          window.tip(this.$t('请正确输入红包串'))
-          return false
-        } else if (formatCode.isMemo) {
-          this.modalData.content = this.$t('确定要用该红包创建账号')
-          this.modalData.showDailog = true
-          this.modalData.type = 'confirm'
-        }
+        this.showLoading = true
+        this.$nextTick(() => {
+          let formatCode = formatePacket(this.packetNumber)
+          this.showLoading = false
+          if (!formatCode.isMemo) {
+            window.tip(this.$t('请正确输入红包串'))
+            return false
+          } else if (formatCode.isMemo) {
+            this.formatCodeObj = formatCode
+            this.modalData.content = this.$t('确定要用该红包创建账号')
+            this.modalData.showDailog = true
+            this.modalData.type = 'confirm'
+          }
+        })
       } else {
         if (this.userInput.privateKey) {
           this.modalData.content = this.$t('确定私钥已保存安全位置')
@@ -155,7 +162,7 @@ export default {
     },
     packetCreateAction () {
       let eos = Eos(this.$store.state.eosConfig)
-      let formatCode = formatePacket(this.packetNumber)
+      let formatCode = this.formatCodeObj
 
       let params = {
         account_to_create: this.userInput.accountName,

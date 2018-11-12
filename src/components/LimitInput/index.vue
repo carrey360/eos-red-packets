@@ -72,15 +72,15 @@ export default {
     handleInput (e) {
       if (this.inputFlag) {
         this.inputVal = e.target.value
-        // let u = navigator.userAgent
-        // let isiOS = !!u.match(/\(i[^;]+;( U;)? CPU.+Mac OS X/)
-        // if (isiOS && this.isFrom === 'receive') {
-        //   let timeout = ''
-        //   timeout = setTimeout(() => {
-        //     window.scrollTo(0, document.body.clientHeight)
-        //     clearTimeout(timeout)
-        //   }, 100)
-        // }
+        let u = navigator.userAgent
+        let isiOS = !!u.match(/\(i[^;]+;( U;)? CPU.+Mac OS X/)
+        if (isiOS && this.isFrom === 'receive') {
+          let timeout = ''
+          timeout = setTimeout(() => {
+            window.scrollTo(0, document.body.clientHeight)
+            clearTimeout(timeout)
+          }, 100)
+        }
       }
     },
     compositionstart () {

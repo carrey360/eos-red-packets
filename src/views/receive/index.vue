@@ -20,7 +20,7 @@
       <li v-for="(item, key) in info.log" :key="key"><div>{{ item.who }}</div><div>{{ item.amount }}</div></li>
     </ul>
     <div v-show="info.log.length == 0" class="list-noData">{{$t('暂无数据')}}</div>
-    <!-- <div class="inner-div"></div> -->
+    <div class="inner-div"></div>
     <div class="error-tip" v-if="showError">{{ errorMsg }}</div>
     <div class="input-account" v-if="!isIputCodeNumber">
       <LimitInput :maxlength="100" numberType="nolimit" class="input" :placeholder="$t('请输入您的账号')" :isNumber="false" isFrom='receive' v-model="account"/>

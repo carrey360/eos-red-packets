@@ -1,6 +1,7 @@
 import Clipboard from 'clipboard'
 import ecc from 'eosjs-ecc'
 import Eos from 'eosjs'
+
 // 生成UUID
 export function getUUID () {
   return (new Date()).getTime() * 10000 + parseInt((Math.random() * 10000 + 1))
@@ -27,16 +28,18 @@ export function formatePacket (str = '') {
   } else if (strSplit.length < 5) {
     result.isMemo = false
   } else {
+    let params = `${strSplit[2]}_${strSplit[1]}_${strSplit[0]}`
+    let sign = ecc.sign(params, strSplit[4])
+
     result = {
       isMemo: true,
       blessing: strSplit[0],
       uuid: strSplit[2],
       type: strSplit[1],
       limit: strSplit[3],
-      sign: strSplit[4]
+      sign: sign
     }
   }
-
   return result
 }
 
@@ -92,8 +95,10 @@ export function generatePacketCode (blessing, type, uuid, limit, privarekey, lan
   const cnStr = '复制本条消息并通过浏览器打开https://redpacketeos.com兑换EOS红包'
   const enStr = 'Copy the whole message and redeem the EOS red packet from https://redpacketeos.com'
   const langStr = lang === 'en' ? enStr : cnStr
-  let params = `${uuid}_${type}_${blessing}`
-  return `${blessing}-${type}-${uuid}-${limit}-${ecc.sign(params, privarekey)}\r\n------------------\r\n${langStr}`
+  // let params = `${uuid}_${type}_${blessing}`
+
+  return `${blessing}-${type}-${uuid}-${limit}-${privarekey}\r\n------------------\r\n${langStr}`
+  // return `${blessing}-${type}-${uuid}-${limit}-${ecc.sign(params, privarekey)}\r\n------------------\r\n${langStr}`
 }
 /**
  * 生成红包memo

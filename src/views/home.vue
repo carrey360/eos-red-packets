@@ -71,10 +71,14 @@ export default {
   },
   methods: {
     go () {
-      let formatCodeJson = formatePacket(this.code)
       if (!this.code) {
         window.tip(this.$t('请输入红包串'))
-      } else if (!formatCodeJson.isMemo) {
+        return
+      }
+      this.showLoading = true
+      let formatCodeJson = formatePacket(this.code)
+      if (!formatCodeJson.isMemo) {
+        this.showLoading = false
         window.tip(this.$t('请输入有效值'))
       } else {
         this.showLoading = true
