@@ -6,14 +6,17 @@ import router from './router'
 import store from './store'
 import i18n from './i18n'
 
+// import vConsole from '@/utils/vconsole'
+// console.log(vConsole.version)
+
 Vue.config.productionTip = false
 
 /* eslint-disable no-new */
 new Vue({
   el: '#app',
-  router,
   store,
   i18n,
+  router,
   components: { App },
   template: '<App/>'
 })
