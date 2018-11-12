@@ -109,7 +109,7 @@ export default {
         // 成后跳转到领取红包页面
         this.$router.push({path: 'receive', query: {uuid: formatCodeJson.uuid, sign: formatCodeJson.sign}})
       } else {
-        window.tip(this.$t('您输入的内容无效或者红包已失效'))
+        window.tip(this.$t('红包已领完或者红包已失效'))
       }
     },
     setLang () {
