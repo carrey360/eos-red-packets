@@ -10,7 +10,7 @@
       <LimitInput v-show="!!scatter" numberType="float" :placeholder="$t('最少0.1')" :left-label="$t('红包金额')" right-label="EOS" v-model="redInfo.amount" />
       <LimitInput numberType="int" :placeholder="$t('最多100')" maxValue='100' :left-label="$t('红包个数')" :right-label="$t('个')" v-model="redInfo.number" />
       <div class="red-textarea">
-        <textarea :placeholder="$t('恭喜发财，大吉大利')" v-model="redInfo.blessing" maxLength="30"></textarea>
+        <textarea :placeholder="$t('恭喜发财，大吉大利')" v-model="redInfo.blessing" maxLength="20"></textarea>
       </div>
       <p class="warn-title"><span>{{$t('红包金额以实际转账为准')}}</span><router-link to='redabout'><Iconfont name="icon-bangzhutishi" class="iconfont"/></router-link></p>
 
@@ -98,7 +98,10 @@ export default {
           })
         })
       } else {
-        this.$router.push({path: 'myred', query: {amount: this.redInfo.amount, uuid: uuid, type: this.curTab, limit: this.redInfo.number, blessing: blessing}})
+        ecc.randomKey().then(privateKey => {
+          let redSelfPublicKey = ecc.privateToPublic(privateKey)
+          this.$router.push({path: 'myred', query: {amount: this.redInfo.amount, uuid: uuid, type: this.curTab, limit: this.redInfo.number, blessing: blessing, redSelfPublicKey, selfPrivateKey: privateKey}})
+        })
       }
     },
     handleTabClick (value) {
