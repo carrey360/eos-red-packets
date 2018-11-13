@@ -21,6 +21,7 @@
     <div class="warn-foot">
       <small>{{$t('未领取的红包，将于转账成功24小时后发起退款')}}</small>
     </div>
+    <loading v-show='showLoading'></loading>
   </div>
 </template>
 <script>
@@ -31,14 +32,17 @@ import MyButton from '@/components/Button'
 import * as utils from '@/utils/'
 import Iconfont from '@/components/Iconfont'
 import LimitInput from '@/components/LimitInput'
+import loading from '@/components/loading'
 import ecc from 'eosjs-ecc'
 import { transfer, generateMemo } from '@/utils'
 import { mapState } from 'vuex'
 
+let FLAG_GO = true
+
 export default {
   name: 'red-envelope',
   components: {
-    TopBar, Tab, TabItem, MyButton, Iconfont, LimitInput
+    TopBar, Tab, TabItem, MyButton, Iconfont, LimitInput, loading
   },
   data () {
     return {
@@ -49,7 +53,8 @@ export default {
         blessing: ''
       },
       defaultBlessing: this.$t('恭喜发财，大吉大利'),
-      packetCode: ''
+      packetCode: '',
+      showLoading: false
     }
   },
   created () {
@@ -81,7 +86,12 @@ export default {
         window.tip(this.$t('祝福语中不能包含'))
         return false
       }
+      if (!FLAG_GO) {
+        return false
+      }
+      FLAG_GO = false
       if (this.scatter) {
+        this.showLoading = true
         const { scatterNetwork, tranAccountName, redPubKeyName } = this.$store.state
         const { amount, number } = this.redInfo
         const type = this.curTab
@@ -91,13 +101,18 @@ export default {
           const memo = generateMemo(type, uuid, number, localStorage.getItem(redPubKeyName), redSelfPublicKey, blessing)
           transfer(this.scatter, scatterNetwork, this.accountIdentity, tranAccountName, amount, memo).then(res => {
             window.tip(this.$t('转账成功'))
+            this.showLoading = false
+            FLAG_GO = true
             this.$store.state.wsCache && this.$store.state.wsCache.set('red_' + uuid, privateKey, {exp: 48 * 60 * 60}) // exp 单位秒
             this.$router.push({path: 'myred', query: {amount, uuid, type, limit: number, blessing, redSelfPublicKey, selfPrivateKey: privateKey}})
           }).catch(() => {
+            this.showLoading = false
+            FLAG_GO = true
             window.tip(this.$t('失败'))
           })
         })
       } else {
+        FLAG_GO = true
         ecc.randomKey().then(privateKey => {
           let redSelfPublicKey = ecc.privateToPublic(privateKey)
           this.$router.push({path: 'myred', query: {amount: this.redInfo.amount, uuid: uuid, type: this.curTab, limit: this.redInfo.number, blessing: blessing, redSelfPublicKey, selfPrivateKey: privateKey}})

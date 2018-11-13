@@ -33,6 +33,9 @@
 import { formatePacket, getTableRow } from '@/utils/'
 import loading from '@/components/loading'
 import { mapState } from 'vuex'
+
+let FLAG_GO = true
+
 export default {
   name: 'home',
   data () {
@@ -75,7 +78,12 @@ export default {
   },
   methods: {
     go () {
+      if (!FLAG_GO) {
+        return false
+      }
+      FLAG_GO = false
       if (!this.code) {
+        FLAG_GO = true
         window.tip(this.$t('请输入红包串'))
         return
       }
@@ -83,6 +91,7 @@ export default {
       let formatCodeJson = formatePacket(this.code)
       if (!formatCodeJson.isMemo) {
         this.showLoading = false
+        FLAG_GO = true
         window.tip(this.$t('请输入有效值'))
       } else {
         this.showLoading = true
@@ -99,16 +108,18 @@ export default {
 
         let _that = this
         getTableRow(this, params, function (response) {
+          FLAG_GO = true
           _that.handleResponse(response, formatCodeJson)
         }, () => {
           window.tip(this.$t('失败'))
+          FLAG_GO = true
           _that.showLoading = false
         })
       }
     },
     handleResponse (response, formatCodeJson) {
       this.showLoading = false
-      if (response.rows && response.rows.length === 1 && response.rows[0].id === formatCodeJson.uuid) {
+      if (response.rows && response.rows.length === 1 && String(response.rows[0].id) === String(formatCodeJson.uuid)) {
         this.$store.commit('setCode', {code: this.code})
         // 成后跳转到领取红包页面
         this.$router.push({path: 'receive', query: {uuid: formatCodeJson.uuid, sign: formatCodeJson.sign}})
