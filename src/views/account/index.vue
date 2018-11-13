@@ -43,10 +43,10 @@
       </div>
 
       <div v-show="!hasRedCreateSuc" class="button" @click="create">{{$t('创建账号')}}</div>
-      <div v-show="hasRedCreateSuc" class="button disabled">{{$t('创建账号')}}</div>
+      <!-- <div v-show="hasRedCreateSuc" class="button disabled">{{$t('创建账号')}}</div> -->
     </div>
     <modal v-show="modalData.showDailog" :modalData="modalData" @leftBtnAction="leftBtnAction" @rightBtnAction="rightBtnAction"></modal>
-    <loading v-if='showLoading'></loading>
+    <loading v-show='showLoading'></loading>
   </div>
 </template>
 
@@ -58,6 +58,8 @@ import ecc from 'eosjs-ecc'
 import LimitInput from '@/components/LimitInput'
 import { formatePacket, copy } from '@/utils/'
 import Eos from 'eosjs'
+
+let FLAG_GO = true
 
 export default {
   name: 'account',
@@ -92,22 +94,23 @@ export default {
         this.modalData.showDailog = false
         return false
       }
-
-      let formatCode = this.formatCodeObj
-      if (this.packetNumber && formatCode.isMemo) {
-        this.packetCreate()
-      } else {
-        this.$router.push({path: 'acTransfer', query: this.userInput})
-      }
+      this.$router.push({path: 'acTransfer', query: this.userInput})
     },
     create () {
+      if (!FLAG_GO) {
+        return false
+      }
+      FLAG_GO = false
       if (!this.userInput.accountName) {
+        FLAG_GO = true
         window.tip(this.$t('请输入您的账号'))
         return false
       } else if (this.userInput.accountName.length !== 12) {
+        FLAG_GO = true
         window.tip(this.$t('请输入12位有效账号'))
         return false
       } else if (!this.userInput.publicKey) {
+        FLAG_GO = true
         window.tip(this.$t('请输入公钥'))
         return false
       }
@@ -116,15 +119,14 @@ export default {
         this.showLoading = true
         this.$nextTick(() => {
           let formatCode = formatePacket(this.packetNumber)
-          this.showLoading = false
           if (!formatCode.isMemo) {
+            this.showLoading = false
+            FLAG_GO = true
             window.tip(this.$t('请正确输入红包串'))
             return false
           } else if (formatCode.isMemo) {
             this.formatCodeObj = formatCode
-            this.modalData.content = this.$t('确定要用该红包创建账号')
-            this.modalData.showDailog = true
-            this.modalData.type = 'confirm'
+            this.packetCreate()
           }
         })
       } else {
@@ -138,26 +140,22 @@ export default {
       }
     },
     packetCreate () {
-      this.modalData.showDailog = false
-      this.$nextTick(() => {
-        this.showLoading = true
-        this.packetCreateAction().then(result => {
-          // 跳转
-          this.showLoading = false
-          if (result && result.transaction_id) {
-            this.modalData.content = this.$t('创建账号成功，请将私钥保存到安全位置')
-            this.modalData.showDailog = true
-            this.modalData.type = 'sure'
-            this.hasRedCreateSuc = true
-          } else {
-            window.tip(result.error)
-          }
-        }).catch((res) => {
-          this.showLoading = false
-          // let err = JSON.parse(String(res))
-          // window.tip((err.error.details && err.error.details[0] && err.error.details[0].message) || this.$t('失败'))
-          window.tip(this.$t('创建账号失败，可能账号已存在或红包金额不足'))
-        })
+      this.packetCreateAction().then(result => {
+        // 跳转
+        FLAG_GO = true
+        this.showLoading = false
+        if (result && result.transaction_id) {
+          this.modalData.content = this.$t('创建账号成功，请将私钥保存到安全位置')
+          this.modalData.showDailog = true
+          this.modalData.type = 'sure'
+          this.hasRedCreateSuc = true
+        } else {
+          window.tip(result.error)
+        }
+      }).catch((res) => {
+        FLAG_GO = true
+        this.showLoading = false
+        window.tip(this.$t('创建账号失败，可能账号已存在或红包金额不足'))
       })
     },
     packetCreateAction () {
@@ -180,6 +178,7 @@ export default {
           data: params
         }]
       })
+
       return result
     },
     createKey () {
