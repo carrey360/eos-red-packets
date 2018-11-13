@@ -1,32 +1,35 @@
 <template>
   <div class="receive-warrap">
     <topBar :title="$t('红包')"></topBar>
-    <div class="dispatch-info">
-      <img src="@/assets/red-top.png"/>
-      <div class="from">From {{ info.sender }}</div>
-      <div class="total">
-        Total<span class="amount">{{ info.amount }}</span>
-        <span v-if="info.type == 1" class="luck">{{$t('普')}}</span>
-        <span class="share" v-if="info.type == 2">{{$t('拼')}}</span></div>
-      <div class="blessing">{{ info.memo }}</div>
-      <div class="send-time">
-        <div>{{$t('创建时间')}}：{{ info.expire | formatDate('YYYY-MM-DD HH:mm') }}</div>
-        <div class="status"><count-down v-if="info.countDate" :count-date="info.countDate"/></div>
+    <div class="inner-wrap">
+      <div class="scroll-wrap">
+        <div class="dispatch-info">
+          <img src="@/assets/red-top.png"/>
+          <div class="from">From {{ info.sender }}</div>
+          <div class="total">
+            Total<span class="amount">{{ info.amount }}</span>
+            <span v-if="info.type == 1" class="luck">{{$t('普')}}</span>
+            <span class="share" v-if="info.type == 2">{{$t('拼')}}</span></div>
+          <div class="blessing">{{ info.memo }}</div>
+          <div class="send-time">
+            <div>{{$t('创建时间')}}：{{ info.expire | formatDate('YYYY-MM-DD HH:mm') }}</div>
+            <div class="status"><count-down v-if="info.countDate" :count-date="info.countDate"/></div>
+          </div>
+        </div>
+        <div class="amount-info">{{$t('兑换')}} {{ info.log.length }}/{{ info.limit }}, {{receiveAmount.toFixed(4)}}/{{ info.amount }}</div>
+        <!-- <div ref="listUl" class="receive-box"></div> -->
+        <ul ref="listUl" class="receive-list">
+          <li v-for="(item, key) in info.log" :key="key"><div>{{ item.who }}</div><div>{{ item.amount }}</div></li>
+        </ul>
+        <div v-show="info.log.length == 0" class="list-noData">{{$t('暂无数据')}}</div>
       </div>
     </div>
-    <div class="amount-info">{{$t('兑换')}} {{ info.log.length }}/{{ info.limit }}, {{receiveAmount.toFixed(4)}}/{{ info.amount }}</div>
-    <!-- <div ref="listUl" class="receive-box"></div> -->
-    <ul ref="listUl" class="receive-list">
-      <li v-for="(item, key) in info.log" :key="key"><div>{{ item.who }}</div><div>{{ item.amount }}</div></li>
-    </ul>
-    <div v-show="info.log.length == 0" class="list-noData">{{$t('暂无数据')}}</div>
-    <div class="inner-div"></div>
-    <div class="error-tip" v-if="showError">{{ errorMsg }}</div>
     <div class="input-account" v-if="!isIputCodeNumber">
       <LimitInput :maxlength="100" numberType="nolimit" class="input" :placeholder="$t('请输入您的账号')" :isNumber="false" isFrom='receive' v-model="account"/>
       <div class="no-account">{{$t('还没有EOS账号')}} ? <router-link to="account">{{$t('创建')}}</router-link></div>
       <div class="button" @click="receive">{{$t('领取')}}</div>
     </div>
+        <div class="error-tip" v-if="showError">{{ errorMsg }}</div>
     <loading v-show='showLoading'></loading>
   </div>
 </template>
@@ -183,6 +186,17 @@ export default {
 <style lang="stylus" scoped>
 .receive-warrap
   -webkit-overflow-scrolling touch
+  display flex
+  flex-direction column
+  height 100%
+  .inner-wrap
+    flex 1
+    overflow hidden
+    .scroll-wrap
+      width 100%
+      height 100%
+      overflow-x hidden
+      overflow-y auto
   img
     width 100%
   .dispatch-info
@@ -267,10 +281,10 @@ export default {
     padding-bottom constant(safe-area-inset-bottom)
     padding-bottom env(safe-area-inset-bottom)
     text-align center
-    position fixed
+    // position fixed
     max-width 640px
     // left 0
-    bottom 0
+    // bottom 0
     -webkit-transform translateZ(0)
     height rem(174)
     width 100%
