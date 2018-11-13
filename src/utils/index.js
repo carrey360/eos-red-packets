@@ -29,6 +29,7 @@ export function formatePacket (str = '') {
     result.isMemo = false
   } else {
     let params = `${strSplit[2]}_${strSplit[1]}_${strSplit[0]}`
+
     let sign = ecc.sign(params, strSplit[4])
 
     result = {
