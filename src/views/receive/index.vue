@@ -49,7 +49,7 @@ export default {
   components: {topBar, IconFont, loading, LimitInput, CountDown},
   data () {
     return {
-      account: '',
+      account: (this.$store.state.accountIdentity && this.$store.state.accountIdentity.name) || localStorage.getItem(this.$store.state.receivedAccountName) || '',
       showError: false,
       errorMsg: '',
       showLoading: false,
