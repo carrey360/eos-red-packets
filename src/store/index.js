@@ -26,6 +26,7 @@ const store = new Vuex.Store({
     redPriKeyName: 'redPriateKey',
     tranAccountName: 'redpacketeos',
     projectName: 'red-packets',
+    receivedAccountName: 'inputedName',
     scatterNetwork: {
       blockchain: 'eos',
       host: scatterHost,

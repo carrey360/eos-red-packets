@@ -61,6 +61,7 @@ export default {
   created () {
     let query = this.$route.query
     this.curAccountName = query.accountName
+    localStorage.setItem(this.$store.state.receivedAccountName, this.curAccountName) // 记录最后一次领取成功过账号名
     if (!query.id) {
       return
     }
