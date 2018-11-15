@@ -62,7 +62,7 @@ export default {
       upper_bound: hash + 1,
       key_type: 'i64',
       index_position: 4,
-      limit: 20
+      limit: 50
     }
     this.getTableRowsForAjax(params)
   },
