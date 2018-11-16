@@ -8,8 +8,10 @@
           <div class="from">From {{ info.sender }}</div>
           <div class="total">
             Total<span class="amount">{{ info.amount }}</span>
-            <span v-if="info.type == 1" class="luck">{{$t('普')}}</span>
-            <span class="share" v-if="info.type == 2">{{$t('拼')}}</span></div>
+            <span class="luck" v-if="info.type == 1">{{$t('普')}}</span>
+            <span class="share" v-if="info.type == 2">{{$t('拼')}}</span>
+            <span class="jian" v-if="info.type == 3">{{$t('建')}}</span>
+          </div>
           <div class="blessing">{{ info.memo }}</div>
           <div class="send-time">
             <div>{{$t('创建时间')}}：{{ info.expire | formatDate('YYYY-MM-DD HH:mm') }}</div>
@@ -26,8 +28,10 @@
     </div>
     <div class="input-account" v-if="!isIputCodeNumber">
       <LimitInput :maxlength="100" numberType="nolimit" class="input" :placeholder="$t('请输入您的账号')" :isNumber="false" isFrom='receive' v-model="account"/>
-      <div class="no-account">{{$t('还没有EOS账号')}} ? <router-link to="account">{{$t('创建')}}</router-link></div>
-      <div class="button" @click="receive">{{$t('领取')}}</div>
+      <div class="no-account" v-if="info.type != 3">{{$t('还没有EOS账号')}} ? <router-link to="account">{{$t('创建')}}</router-link></div>
+      <div class="no-account" style="text-align:left;margin-left:16px" v-else>{{$t('12位字符，需包含数字1-5和字母a-z两种元素')}}</div>
+      <div class="button" v-if="info.type != 3" @click="receive">{{$t('领取')}}</div>
+      <div class="button" v-else @click="createAccount">{{$t('领取并创建')}}</div>
     </div>
         <div class="error-tip" v-if="showError">{{ errorMsg }}</div>
     <loading v-show='showLoading'></loading>
@@ -43,6 +47,7 @@ import { formatDate } from '@/utils/filter'
 import CountDown from '@/components/Countdown'
 import { getTableRow } from '@/utils/'
 import Eos from 'eosjs'
+import ecc from 'eosjs-ecc'
 
 export default {
   name: 'receive',
@@ -110,6 +115,10 @@ export default {
         })
         result.expire = result.expire - 24 * 60 * 60
         this.info = result
+        // 如果是创建账号红包类型把输入框默认值去掉
+        if (result.type === 3) {
+          this.account = ''
+        }
       }
       // this.$nextTick(() => {
       //   const { clientHeight }  = this.$refs.listUl
@@ -128,6 +137,33 @@ export default {
         // 有账号领取
         this.doTransact()
       }
+    },
+    createAccount () {
+      // 验证输入账号是否正确
+      let reg = /^[a-z1-5.]{0,12}$/
+      if (!reg.test(this.account)) {
+        window.tip(this.$t('请输入正确的EOS账户'))
+        return false
+      } else if (!this.account) {
+        window.tip(this.$t('请输入正确的EOS账户'))
+        return false
+      }
+      this.showLoading = true
+      ecc.randomKey().then(privateKey => {
+        let publicKey = ecc.privateToPublic(privateKey)
+        this.packetCreateAction(publicKey).then(result => {
+          this.showLoading = false
+          if (result && result.transaction_id) {
+            window.tip(this.$t('创建账号成功'))
+            this.$router.push({path: 'account', query: {accountName: this.account, publicKey: publicKey, privateKey: publicKey, from: 'receive'}})
+          } else {
+            window.tip(result.error)
+          }
+        }).catch((res) => {
+          this.showLoading = false
+          window.tip(this.$t('创建账号失败，可能账号已存在或红包金额不足'))
+        })
+      })
     },
     // 执行动作
     doTransact () {
@@ -163,6 +199,29 @@ export default {
           data: params
         }]
       })
+      return result
+    },
+    packetCreateAction (publicKey) {
+      let eos = Eos(this.$store.state.eosConfig)
+      let formatCode = this.$route.query
+
+      let params = {
+        account_to_create: this.account,
+        owner_key: publicKey,
+        active_key: publicKey,
+        id: +formatCode.uuid,
+        sig: formatCode.sign
+      }
+
+      let result = eos.transaction({
+        actions: [{
+          account: this.$store.state.tranAccountName,
+          name: 'create',
+          authorization: [{actor: this.$store.state.defaultAccount, permission: 'redpacket'}],
+          data: params
+        }]
+      })
+
       return result
     },
     doShowError (message) {
@@ -223,6 +282,11 @@ export default {
         background-color #DCF2E8
         font-size 12px
         color #3ECF8B
+        padding 0 2px
+      .jian
+        background-color #FFEAEE
+        font-size 12px
+        color #EB5984
         padding 0 2px
     .blessing
       font-size 12px

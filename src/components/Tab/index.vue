@@ -48,7 +48,7 @@ export default {
       for (let i = 0; i < this.$refs.headerTab.children.length; i++) {
         if (i === this.activeIndex) {
           const { clientWidth, offsetLeft } = this.$refs.headerTab.children[i]
-          this.$refs.line.style.width = `${clientWidth - 48}px`
+          this.$refs.line.style.width = `${clientWidth - 40}px`
           this.$refs.line.style.transform = `translateX(${offsetLeft + 12}px)`
         }
       }
@@ -57,7 +57,7 @@ export default {
   methods: {
     handleClick (e, index, name) {
       const { clientWidth, offsetLeft } = e.target
-      this.$refs.line.style.width = `${clientWidth - 48}px`
+      this.$refs.line.style.width = `${clientWidth - 40}px`
       this.$refs.line.style.transform = `translateX(${offsetLeft + 12}px)`
       this.activeIndex = index
       for (let i = 0; i < this.$refs.contentTab.children.length; i++) {
@@ -92,7 +92,7 @@ export default {
       & > div
         font-size 14px
         color #A69987
-        padding 0 12px
+        padding 0 8px
         height 40px
         line-height 40px
       & > div:first-child

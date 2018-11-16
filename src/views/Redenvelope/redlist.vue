@@ -7,8 +7,9 @@
       <div class="item" @click="detail(item.id)" v-for="(item, key) in historyList" :key="key">
         <div class="item_left">
           <span class="num">{{ item.amount }}</span>
-          <span v-if="item.type == 4" class="share">{{$t('拼')}}</span>
-          <span v-if="item.type == 3" class="luck">{{$t('普')}}</span>
+          <span v-if="item.type == 1" class="luck">{{$t('普')}}</span>
+          <span v-if="item.type == 2" class="share">{{$t('拼')}}</span>
+          <span v-if="item.type == 3" class="jian">{{$t('建')}}</span>
           <count-down v-if="item.countDate" :count-date="item.countDate"/>
         </div>
         <div class="item_right">
@@ -136,6 +137,11 @@ export default {
           color #3ECF8B
           font-family Avenir-Medium
           background-color rgba(62, 207, 139, 0.1)
+          padding 2px 3px
+        .jian
+          background-color #FFEAEE
+          font-family Avenir-Medium
+          color #EB5984
           padding 2px 3px
       &_right
         max-width 66px

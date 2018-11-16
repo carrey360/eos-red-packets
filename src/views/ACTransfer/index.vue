@@ -50,7 +50,8 @@ export default {
     ScatterJS.plugins(new ScatterEOS())
     let query = this.$route.query
     // ACCOUNTCREATE-账号名-公钥
-    this.remark = 'ACCOUNT-' + query.accountName + '-' + query.publicKey + '-' + query.publicKey
+    // this.remark = 'ACCOUNT-' + query.accountName + '-' + query.publicKey + '-' + query.publicKey
+    this.remark = '1-' + query.accountName + '-' + query.publicKey
 
     ScatterJS.scatter.connect(this.$store.state.projectName).then(connected => {
       if (!connected) return false
@@ -79,7 +80,7 @@ export default {
 
         eos.transfer(account.name, this.account, (+this.amount).toFixed(4) + ' EOS', this.remark, transactionOptions).then(result => {
           if (result && result.transaction_id) {
-            window.tip('创建账号成功')
+            window.tip(this.$t('创建账号成功'))
             this.showScatterTransfer = false
             this.wantSentPacket = true
           } else {

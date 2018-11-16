@@ -5,6 +5,7 @@ Vue.use(VueI18n)
 let enConfig = {
   '普': 'share',
   '拼': 'luck',
+  '建': 'account',
   '状态': 'STATUS',
   '数量': 'QTY',
   '复制': 'COPY',
@@ -55,6 +56,7 @@ let enConfig = {
   '普通红包': 'Identical Amount',
   '拼手气红包': 'Random Amount',
   '最少0.1': 'Min 0.1',
+  '最少0.3': 'Min 0.3',
   '红包金额': 'Total',
   '最多100': 'Max 100',
   '红包个数': 'Quantity',
@@ -93,6 +95,8 @@ let enConfig = {
   '拼手气红包可以一对多发送，用户设置好红包总金额和红包个数后，会生成一串字符串，可分享至各个社交平台，每个被领取的红包金额随机不等': 'Lucky Red Packets can be sent one-to-many. After the user sets the total value of Red Packets and the number of Red Packets, a string will be generated, which can be shared to various social platforms. Everyone will receive a random value of Red Packets.',
   '服务费用': 'Service Fee',
   '红包被领取时合约将自动扣除0.1%的手续费，如果红包超过24小时红包未被领取，合约将自动返还全部EOS并不收取任何费用': '0.1% processing fee will be charged to redeemed red packet.No fee will be charged to the unredeemed red packet',
+  '简介建账号红包': 'The Red Packet for Account Creation',
+  '建账号红包可以一对一或者一对多发送，专为创建EOS账号所用，已存在的EOS账号不能领取该红包。用户设置好单个红包金额和红包个数，生成红包后可分享至各个社交平台。如果单个红包金额小于当前创建EOS账户所需的金额，则用户领取红包失败': 'The Red Packet for Account Creation can be sent one-to-one or one-to-many, which is specifically used to create EOS account. The existing EOS accounts cannot collect the red packet. Users set the amount of a single red packet and the number of red packets then share the red packets to various social platforms. If the amount of a red packet is less than the amount currently required to create an EOS account, the user will fail to collect the red packet.',
   '服务异常，请稍后': 'Service exception, please wait',
   '领取失败': 'Failed',
   '失败': 'Failed',
@@ -107,12 +111,19 @@ let enConfig = {
   '转账时复制下面的信息到Memo': 'Copy the following informarion into Memo.',
   '通过IM工具将红包串发送给你的朋友': 'Copy the red packet code to your friend in IM tools.',
   '祝福语中不能包含': '"-" cannot be included in the greetings',
-  '创建账号成功，请将私钥保存到安全位置': 'Create account successfully，keep your private key safe'
+  '创建账号成功，请将私钥保存到安全位置': 'Create account successfully，keep your private key safe',
+  '单个红包金额': 'Value of each packet',
+  '建账号红包': 'Account Creation',
+  '红包总金额': 'The total amount of this red packet',
+  '请输入单个红包金额': 'Please enter Value of each packet',
+  '单个红包金额不能低于0.3EOS': 'Value of each packet Not lower than 0.3EOS',
+  '领取并创建': 'Redeem now and create'
 }
 
 let cnConfig = {
   '普': '普',
   '拼': '拼',
+  '建': '建',
   '状态': '状态',
   '数量': '数量',
   '复制': '复制',
@@ -163,6 +174,7 @@ let cnConfig = {
   '普通红包': '普通红包',
   '拼手气红包': '拼手气红包',
   '最少0.1': '最少0.1',
+  '最少0.3': '最少0.3',
   '红包金额': '红包总金额',
   '最多100': '最多100',
   '红包个数': '红包个数',
@@ -201,6 +213,8 @@ let cnConfig = {
   '拼手气红包可以一对多发送，用户设置好红包总金额和红包个数后，会生成一串字符串，可分享至各个社交平台，每个被领取的红包金额随机不等': '拼手气红包可以一对多发送，用户设置好红包总金额和红包个数后，会生成一串字符串，可分享至各个社交平台，每个被领取的红包金额随机不等。',
   '服务费用': '服务费用',
   '红包被领取时合约将自动扣除0.1%的手续费，如果红包超过24小时红包未被领取，合约将自动返还全部EOS并不收取任何费用': '红包被领取时合约将自动扣除0.1%的手续费，如果红包超过24小时红包未被领取，合约将自动返还全部EOS并不收取任何费用。',
+  '简介建账号红包': '建账号红包',
+  '建账号红包可以一对一或者一对多发送，专为创建EOS账号所用，已存在的EOS账号不能领取该红包。用户设置好单个红包金额和红包个数，生成红包后可分享至各个社交平台。如果单个红包金额小于当前创建EOS账户所需的金额，则用户领取红包失败': '建账号红包可以一对一或者一对多发送，专为创建EOS账号所用，已存在的EOS账号不能领取该红包。用户设置好单个红包金额和红包个数，生成红包后可分享至各个社交平台。如果单个红包金额小于当前创建EOS账户所需的金额，则用户领取红包失败',
   '服务异常，请稍后': '服务异常，请稍后',
   '领取失败': '领取失败',
   '失败': '失败',
@@ -215,7 +229,13 @@ let cnConfig = {
   '转账时复制下面的信息到Memo': '转账时复制下面的信息到Memo',
   '通过IM工具将红包串发送给你的朋友': '通过IM工具将红包串发送给你的朋友',
   '祝福语中不能包含': '祝福语中不能包含"-"',
-  '创建账号成功，请将私钥保存到安全位置': '创建账号成功，请将私钥保存到安全位置'
+  '创建账号成功，请将私钥保存到安全位置': '创建账号成功，请将私钥保存到安全位置',
+  '单个红包金额': '单个红包金额',
+  '建账号红包': '建账号红包',
+  '红包总金额': '红包总金额',
+  '请输入单个红包金额': '请输入单个红包金额',
+  '单个红包金额不能低于0.3EOS': '单个红包金额不能低于0.3EOS',
+  '领取并创建': '领取并创建'
 }
 
 const messages = {

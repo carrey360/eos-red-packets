@@ -1,14 +1,18 @@
 <template>
   <div class="red-envelope">
-    <top-bar :title="$t('发红包')" />
+    <top-bar :title="$t('发红包')" showSended='1'/>
     <tab :card-show="false" @click="handleTabClick">
-      <tab-item name="MULTY_NORMAL_ACCOUNT" :label="$t('普通红包')" />
-      <tab-item name="MULTY_RANDOM_ACCOUNT" :label="$t('拼手气红包')" />
+      <tab-item name="1" :label="$t('普通红包')" />
+      <tab-item name="2" :label="$t('拼手气红包')" />
+      <tab-item name="3" :label="$t('建账号红包')" />
     </tab>
-    <div class="sendPacket"><router-link to="redlist">{{$t('我塞的红包')}}</router-link></div>
     <div class="red-envelope_wrap">
-      <LimitInput v-show="!!scatter" numberType="float" :placeholder="$t('最少0.1')" :left-label="$t('红包金额')" right-label="EOS" v-model="redInfo.amount" />
+      <LimitInput v-show="!!scatter && curTab != '3'" numberType="float" :placeholder="$t('最少0.1')" :left-label="$t('红包金额')" right-label="EOS" v-model="redInfo.amount" />
+      <LimitInput v-show="!!scatter && curTab == '3'" numberType="float" :placeholder="$t('最少0.3')" :left-label="$t('单个红包金额')" right-label="EOS" v-model="redInfo.amount" />
       <LimitInput numberType="int" :placeholder="$t('最多100')" maxValue='100' :left-label="$t('红包个数')" :right-label="$t('个')" v-model="redInfo.number" />
+      <div class="warn-title total_amount" v-show="!!scatter && curTab == '3' && totalAmount">
+        <small>{{$t('红包总金额')}}<i class="amount">{{ totalAmount }}EOS</i></small>
+      </div>
       <div class="red-textarea">
         <textarea :placeholder="$t('恭喜发财，大吉大利')" v-model="redInfo.blessing" maxLength="20"></textarea>
       </div>
@@ -46,7 +50,7 @@ export default {
   },
   data () {
     return {
-      curTab: 'MULTY_NORMAL_ACCOUNT',
+      curTab: '1',
       redInfo: {
         number: '',
         amount: '',
@@ -68,12 +72,22 @@ export default {
   methods: {
     handleSubmit () {
       if (this.scatter) { // 有scatter钱包
-        if (!this.redInfo.amount) {
-          window.tip(this.$t('请输入红包金额'))
-          return false
-        } else if ((this.redInfo.amount) < 0.1) {
-          window.tip(this.$t('红包金额不能低于0.1EOS'))
-          return false
+        if (this.curTab === '3') {
+          if (!this.redInfo.amount) {
+            window.tip(this.$t('请输入单个红包金额'))
+            return false
+          } else if ((this.redInfo.amount) < 0.1) {
+            window.tip(this.$t('单个红包金额不能低于0.3EOS'))
+            return false
+          }
+        } else {
+          if (!this.redInfo.amount) {
+            window.tip(this.$t('请输入红包金额'))
+            return false
+          } else if ((this.redInfo.amount) < 0.1) {
+            window.tip(this.$t('红包金额不能低于0.1EOS'))
+            return false
+          }
         }
       }
       if (!this.redInfo.number) {
@@ -93,8 +107,12 @@ export default {
       if (this.scatter) {
         this.showLoading = true
         const { scatterNetwork, tranAccountName, redPubKeyName } = this.$store.state
-        const { amount, number } = this.redInfo
+        let { amount, number } = this.redInfo
         const type = this.curTab
+        // 创建账号红包总金额
+        if (this.curTab === '3') {
+          amount = this.totalAmount
+        }
         // 生成红包的公私钥，使用红包的私钥生成签名
         ecc.randomKey().then(privateKey => {
           let redSelfPublicKey = ecc.privateToPublic(privateKey)
@@ -124,22 +142,19 @@ export default {
     }
   },
   computed: {
-    ...mapState(['scatter', 'accountIdentity'])
+    ...mapState(['scatter', 'accountIdentity']),
+    totalAmount: function () {
+      if (this.curTab === '3' && this.redInfo.amount && this.redInfo.number) {
+        return (this.redInfo.amount * this.redInfo.number).toFixed(4)
+      } else {
+        return ''
+      }
+    }
   }
 }
 </script>
 <style lang="stylus" scoped>
 .red-envelope
-  position relative
-  .sendPacket
-    position absolute
-    right 16px
-    top 55px
-    z-index 100
-    a
-      font-size 14px
-      text-decoration none
-      color #288EFB
   &_wrap
     padding 24px 16px
     .red-textarea
@@ -166,6 +181,13 @@ export default {
       display flex
       justify-content space-between
       align-items center
+      &.total_amount
+        margin-top -4px
+      .amount
+        font-style normal
+        font-size 12px
+        margin-left 5px
+        color #CD2243
       svg
         width 16px
         height 16px

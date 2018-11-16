@@ -3,7 +3,10 @@
     <div>
       <p @click="goback"><IconFont name="icon-fanhui" type="class" class="iconfont"/></p>
       <div class="title">{{ title }}</div>
-      <div><p @click="home" v-show="showHome"><IconFont name="icon-shouye" type="class" class="iconfont home"/></p></div>
+      <div>
+        <p @click="home" v-show="showHome"><IconFont name="icon-shouye" type="class" class="iconfont home"/></p>
+        <div v-show="showSended" class="sendPacket"><router-link to="redlist">{{$t('我塞的红包')}}</router-link></div>
+      </div>
     </div>
   </div>
 </template>
@@ -19,6 +22,10 @@ export default {
       default: false
     },
     title: {
+      type: String,
+      default: ''
+    },
+    showSended: {
       type: String,
       default: ''
     }
@@ -56,4 +63,9 @@ export default {
     font-size 14px
     &.home
       font-size 20px
+  .sendPacket
+    a
+      font-size 14px
+      text-decoration none
+      color #FFF
 </style>

@@ -11,6 +11,13 @@
           <input disabled="disabled" type="text" :value="account" />
         </div>
       </div>
+      <div v-show="!showScatterTransfer && totalAmount" class="text-box">
+        <p><span>{{$t('红包总金额')}}</span><span class="account"></span></p>
+        <div class="text totalAmount">
+          <input disabled="disabled" type="text" :value="totalAmount" />
+          <span>EOS</span>
+        </div>
+      </div>
       <div v-show="!showScatterTransfer" class="text-box">
         <p><span>{{$t('备注')}}</span><span class="remark" :data-clipboard-text="remark" @click="copy('.remark')">{{$t('复制')}}</span></p>
         <p class="tip_text">{{$t('转账时复制下面的信息到Memo')}}</p>
@@ -69,6 +76,16 @@ export default {
     copy (className) {
       copy(className, this)
     }
+  },
+  computed: {
+    totalAmount: function () {
+      let query = this.$route.query
+      if (query.type === '3' && query.limit) {
+        return (query.limit * 0.6).toFixed(4)
+      } else {
+        return ''
+      }
+    }
   }
 }
 </script>
@@ -96,6 +113,12 @@ export default {
     .text-box
       margin-bottom 24px
       textBox()
+      div.totalAmount
+        display flex
+        align-items center
+        justify-content space-between
+        span
+          padding-right 10px
     .my-red_btn_wrapp
       margin-top 32px
       display flex

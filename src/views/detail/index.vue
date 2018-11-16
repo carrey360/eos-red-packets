@@ -6,8 +6,9 @@
       <div class="from">From {{ info.sender }}</div>
       <div class="total">
         Total<span class="amount">{{ info.amount }}</span>
-        <span v-if="info.type == 1" class="luck">{{$t('普')}}</span>
+        <span class="luck" v-if="info.type == 1">{{$t('普')}}</span>
         <span class="share" v-if="info.type == 2">{{$t('拼')}}</span>
+        <span class="jian" v-if="info.type == 3">{{$t('建')}}</span>
       </div>
       <div class="blessing">{{ info.memo }}</div>
       <div class="send-time">
@@ -108,15 +109,13 @@ export default {
           this.receiveAmount += parseFloat(item.amount)
         })
         result.expire = result.expire - 24 * 60 * 60
-        let strType = result.type === 1 ? 'MULTY_NORMAL_ACCOUNT' : 'MULTY_RANDOM_ACCOUNT'
 
         //  红包串
-        // let params = result.id + '_' + strType + '_' + result.memo
         let privarekey = localStorage.getItem(this.$store.state.redPriKeyName)
         let selfPrivarekey = this.$store.state.wsCache.get('red_' + result.id)
         const lang = localStorage.getItem('redLang')
         let memoPrivateKey = selfPrivarekey || privarekey
-        this.packetStr = generatePacketCode(result.memo, strType, result.id, result.limit, memoPrivateKey, lang)
+        this.packetStr = generatePacketCode(result.memo, result.type, result.id, result.limit, memoPrivateKey, lang)
         this.info = result
       }
       this.showLoading = false
@@ -165,6 +164,11 @@ export default {
         background-color #DCF2E8
         font-size 12px
         color #3ECF8B
+        padding 0 2px
+      .jian
+        background-color #FFEAEE
+        font-size 12px
+        color #EB5984
         padding 0 2px
     .blessing
       font-size 12px

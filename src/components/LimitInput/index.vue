@@ -7,7 +7,7 @@
         <span v-if='rightLabel'>{{rightLabel}}</span>
       </div>
     </div>
-    <input v-else class="account-name common-input" autocorrect="off" autocapitalize="off" autocomplete="off" @compositionstart="compositionstart"
+    <input v-else class="account-name common-input" autocorrect="off" autocapitalize="off" autocomplete="off" @compositionstart="compositionstart" :readonly="readonly"
       @compositionend='compositionend' type="text" :placeholder="placeholder" :value="inputVal" @input="handleInput" :maxlength="maxlength" @blur="handleInput"/>
   </div>
 </template>
@@ -52,6 +52,10 @@ export default {
     maxlength: {
       type: Number,
       default: 12
+    },
+    readonly: {
+      type: Boolean,
+      default: false
     }
   },
   computed: {

@@ -28,7 +28,13 @@ export function formatePacket (str = '') {
   } else if (strSplit.length < 5) {
     result.isMemo = false
   } else {
-    let params = `${strSplit[2]}_${strSplit[1]}_${strSplit[0]}`
+    let typeNum = strSplit[1]
+    if (strSplit[1] === 'MULTY_NORMAL_ACCOUNT') {
+      typeNum = 1
+    } else if (strSplit[1] === 'MULTY_RANDOM_ACCOUNT') {
+      typeNum = 2
+    }
+    let params = `${strSplit[2]}_${typeNum}_${strSplit[0]}`
 
     let sign = ecc.sign(params, strSplit[4])
 
@@ -36,7 +42,7 @@ export function formatePacket (str = '') {
       isMemo: true,
       blessing: strSplit[0],
       uuid: strSplit[2],
-      type: strSplit[1],
+      type: typeNum,
       limit: strSplit[3],
       sign: sign
     }
@@ -105,7 +111,7 @@ export function generatePacketCode (blessing, type, uuid, limit, privarekey, lan
  * 生成红包memo
  */
 export function generateMemo (type, uuid, limit, redPubKeyName, redSelfPublicKey, blessing) {
-  return `REDPACKET-${type}-${uuid}-${limit}-${redPubKeyName}-${redSelfPublicKey}-${blessing}`
+  return `2-${type}-${uuid}-${limit}-${redPubKeyName}-${redSelfPublicKey}-${blessing}`
 }
 /**
  * 转账

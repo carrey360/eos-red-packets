@@ -6,7 +6,7 @@
         <p>{{$t('账号')}}</p>
         <p class="copy eosAccount" :data-clipboard-text="userInput.accountName" @click="copy('.eosAccount')">{{$t('复制')}}</p>
       </div>
-      <LimitInput :placeholder="$t('请输入您的账号')" :isNumber="false" v-model="userInput.accountName"/>
+      <LimitInput :placeholder="$t('请输入您的账号')" :isNumber="false" v-model="userInput.accountName" :readonly="hasRedCreateSuc"/>
       <div class="input-tip">{{$t('12位字符，需包含数字1-5和字母a-z两种元素')}}</div>
 
       <div class="title">
@@ -14,7 +14,7 @@
         <p v-if="!hasRedCreateSuc" class="copy" @click="createKey">{{$t('生成新公钥')}}</p>
         <p v-else class="copy publickey" :data-clipboard-text="userInput.publickey" @click="copy('.publickey')">{{$t('复制')}}</p>
       </div>
-      <textarea class="public-key common-input" :placeholder="$t('请输入公钥')" v-model="userInput.publicKey"></textarea>
+      <textarea class="public-key common-input" :placeholder="$t('请输入公钥')" v-model="userInput.publicKey" :readonly="hasRedCreateSuc"></textarea>
       <div class="input-tip">{{$t('所有者和使用者公钥相同')}}</div>
 
       <div class="title">
@@ -25,7 +25,7 @@
       <div class="input-tip red">{{$t('不要透露给任何人')}}</div>
 
       <div class="title"><p>{{$t('红包串')}}({{$t('选填')}})</p></div>
-      <textarea class="packet-number common-input" v-model="packetNumber"></textarea>
+      <textarea class="packet-number common-input" v-model="packetNumber" :readonly="hasRedCreateSuc"></textarea>
 
       <div class="account-tip">
         <p>{{$t('创建提示')}}</p>
@@ -83,6 +83,18 @@ export default {
         privateKey: ''
       },
       formatCodeObj: {}
+    }
+  },
+  created () {
+    let query = this.$route.query
+    // 如果从领取页面跳转过来设置默认值
+    if (query.from === 'receive') {
+      this.userInput = {
+        accountName: query.accountName,
+        publicKey: query.publicKey,
+        privateKey: query.privateKey
+      }
+      this.hasRedCreateSuc = true
     }
   },
   methods: {
