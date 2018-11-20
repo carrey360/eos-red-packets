@@ -22,7 +22,7 @@
         <small>{{$t('红包总金额')}}<i class="amount">{{ totalAmount }}EOS</i></small>
       </div>
       <div class="red-textarea">
-        <textarea :placeholder="$t('恭喜发财，大吉大利')" v-model="redInfo.blessing" maxLength="20"></textarea>
+        <textarea :placeholder="$t('恭喜发财，大吉大利')" v-model="redInfo.blessing" maxLength="30"></textarea>
       </div>
       <p class="warn-title"><span>{{$t('红包金额以实际转账为准')}}</span><router-link to='redabout'><Iconfont name="icon-bangzhutishi" class="iconfont"/></router-link></p>
 

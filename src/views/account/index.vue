@@ -94,6 +94,9 @@ export default {
         publicKey: query.publicKey,
         privateKey: query.privateKey
       }
+      this.modalData.content = this.$t('创建账号成功，请将私钥保存到安全位置')
+      this.modalData.showDailog = true
+      this.modalData.type = 'sure'
       this.hasRedCreateSuc = true
     }
   },
