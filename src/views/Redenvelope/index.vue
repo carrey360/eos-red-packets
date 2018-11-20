@@ -7,10 +7,18 @@
       <tab-item name="3" :label="$t('建账号红包')" />
     </tab>
     <div class="red-envelope_wrap">
-      <LimitInput v-show="!!scatter && curTab != '3'" numberType="float" :placeholder="$t('最少0.1')" :left-label="$t('红包金额')" right-label="EOS" v-model="redInfo.amount" />
-      <LimitInput v-show="!!scatter && curTab == '3'" numberType="float" :placeholder="$t('最少0.3')" :left-label="$t('单个红包金额')" right-label="EOS" v-model="redInfo.amount" />
+      <div v-show="curTab != 3" class="currencyWrapp">
+        <div>{{ $t('币种') }}</div>
+        <div>
+          <label v-for="(item, key) in currencyList" :key="key">
+            <input type="radio" @change="radioChange(key)" name="currency" :checked="item.name == curCheckedCurrency.name" class="a-radio"><span class="b-radio"></span>{{ item.name }}
+          </label>
+        </div>
+      </div>
+      <LimitInput v-show="!!scatter && curTab != 3" numberType="float" :placeholder="$t('最少')+ curCheckedCurrency.min" :left-label="$t('红包金额')" :right-label="curCheckedCurrency.name" v-model="redInfo.amount" />
+      <LimitInput v-show="!!scatter && curTab == 3" numberType="float" :placeholder="$t('最少0.3')" :left-label="$t('单个红包金额')" right-label="EOS" v-model="redInfo.amount" />
       <LimitInput numberType="int" :placeholder="$t('最多100')" maxValue='100' :left-label="$t('红包个数')" :right-label="$t('个')" v-model="redInfo.number" />
-      <div class="warn-title total_amount" v-show="!!scatter && curTab == '3' && totalAmount">
+      <div class="warn-title total_amount" v-show="!!scatter && curTab == 3 && totalAmount">
         <small>{{$t('红包总金额')}}<i class="amount">{{ totalAmount }}EOS</i></small>
       </div>
       <div class="red-textarea">
@@ -58,7 +66,12 @@ export default {
       },
       defaultBlessing: this.$t('恭喜发财，大吉大利'),
       packetCode: '',
-      showLoading: false
+      showLoading: false,
+      currencyList: [
+        {name: 'EOS', min: 0.1},
+        {name: 'EGT', min: 100}
+      ],
+      curCheckedCurrency: {}
     }
   },
   created () {
@@ -68,6 +81,7 @@ export default {
     if (!this.$store.state.wsCache) {
       this.$store.commit('SetWebStorageCache', {})
     }
+    this.curCheckedCurrency = this.currencyList[0]
   },
   methods: {
     handleSubmit () {
@@ -84,8 +98,8 @@ export default {
           if (!this.redInfo.amount) {
             window.tip(this.$t('请输入红包金额'))
             return false
-          } else if ((this.redInfo.amount) < 0.1) {
-            window.tip(this.$t('红包金额不能低于0.1EOS'))
+          } else if ((this.redInfo.amount) < this.curCheckedCurrency.min) {
+            window.tip(this.$t('红包金额不能低于') + this.curCheckedCurrency.min + this.curCheckedCurrency.name)
             return false
           }
         }
@@ -117,7 +131,7 @@ export default {
         ecc.randomKey().then(privateKey => {
           let redSelfPublicKey = ecc.privateToPublic(privateKey)
           const memo = generateMemo(type, uuid, number, localStorage.getItem(redPubKeyName), redSelfPublicKey, blessing)
-          transfer(this.scatter, scatterNetwork, this.accountIdentity, tranAccountName, amount, memo).then(res => {
+          transfer(this.scatter, scatterNetwork, this.accountIdentity, tranAccountName, amount, memo, this.curCheckedCurrency.name).then(res => {
             window.tip(this.$t('转账成功'))
             this.showLoading = false
             FLAG_GO = true
@@ -133,12 +147,20 @@ export default {
         FLAG_GO = true
         ecc.randomKey().then(privateKey => {
           let redSelfPublicKey = ecc.privateToPublic(privateKey)
+          this.$store.state.wsCache && this.$store.state.wsCache.set('red_' + uuid, privateKey, {exp: 48 * 60 * 60}) // exp 单位秒
           this.$router.push({path: 'myred', query: {amount: this.redInfo.amount, uuid: uuid, type: this.curTab, limit: this.redInfo.number, blessing: blessing, redSelfPublicKey, selfPrivateKey: privateKey}})
         })
       }
     },
     handleTabClick (value) {
       this.curTab = value
+      this.redInfo.amount = ''
+      if (value === 3) {
+        this.curCheckedCurrency = this.currencyList[0]
+      }
+    },
+    radioChange (key) {
+      this.curCheckedCurrency = this.currencyList[key]
     }
   },
   computed: {
@@ -201,4 +223,41 @@ export default {
     width 100%
     font-size 14px
     color #C9C2B7
+  .currencyWrapp
+    display flex
+    background-color #f8f8f8
+    margin-bottom 20px
+    padding 16px
+    font-size 14px
+    justify-content space-between
+    align-items center
+    label
+      margin-right 10px
+    .a-radio
+      display none
+    .b-radio
+      display inline-block
+      border 1px solid #ccc
+      width 14px
+      height 14px
+      border-radius 2px
+      vertical-align middle
+      margin-right 5px
+      position relative
+      margin-top -2px
+    .b-radio:before
+      content ''
+      font-size 0
+      width 10px
+      height 10px
+      background #A69987
+      position absolute
+      left 50%
+      top 50%
+      margin-left -5px
+      margin-top -5px
+      border-radius 2px
+      display none
+    .a-radio:checked~.b-radio:before
+      display block
 </style>

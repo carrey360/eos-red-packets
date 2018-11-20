@@ -122,16 +122,43 @@ export function generateMemo (type, uuid, limit, redPubKeyName, redSelfPublicKey
  * @param {*} eos数量
  * @param {*} memo
  */
-export function transfer (scatter, scatterNetwork, accounIdentity, toAccont, amount, memo) {
-  const fromAccount = accounIdentity
+export function transfer (scatter, scatterNetwork, accounIdentity, toAccont, amount, memo, currency = 'EOS') {
   const eosOptions = {expireInSeconds: 60 * 2}
   const eos = scatter.eos(scatterNetwork, Eos, eosOptions)
-  const transactionOptions = { authorization: [`${fromAccount.name}@${fromAccount.authority}`] }
-  return eos.transfer(fromAccount.name, toAccont, (+amount).toFixed(4) + ' EOS', memo, transactionOptions).then(result => {
-    if (result && result.transaction_id) {
-      return 'success'
-    } else {
-      return result.error
-    }
-  })
+  const fromAccount = accounIdentity
+  // 转eos
+  if (currency === 'EOS') {
+    const transactionOptions = { authorization: [`${fromAccount.name}@${fromAccount.authority}`] }
+    return eos.transfer(fromAccount.name, toAccont, (+amount).toFixed(4) + ' ' + currency, memo, transactionOptions).then(result => {
+      if (result && result.transaction_id) {
+        return 'success'
+      } else {
+        return result.error
+      }
+    })
+  } else if (currency === 'EGT') { // EGT
+    return eos.transaction(
+      {
+        actions: [
+          {
+            account: 'eosiotokener',
+            name: 'transfer',
+            authorization: [{actor: fromAccount.name, permission: 'active'}],
+            data: {
+              from: fromAccount.name,
+              to: toAccont,
+              quantity: (+amount).toFixed(4) + ' ' + currency,
+              memo: memo
+            }
+          }
+        ]
+      }
+    ).then(result => {
+      if (result && result.transaction_id) {
+        return 'success'
+      } else {
+        return result.error
+      }
+    })
+  }
 }
