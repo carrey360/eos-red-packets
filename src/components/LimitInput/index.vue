@@ -158,7 +158,7 @@ export default {
       color #5D4220
       font-size 14px
       white-space nowrap
-      margin-top 5px
+      margin-top 2px
     .inputwrapp
       display flex
       align-items center
