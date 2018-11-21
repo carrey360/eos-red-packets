@@ -56,7 +56,7 @@ let enConfig = {
   '普通红包': 'Identical Amount',
   '拼手气红包': 'Random Amount',
   '最少0.1': 'Min 0.1',
-  '最少0.3': 'Min 0.3',
+  '最少0.6': 'Min 0.6',
   '最少': 'Min',
   '币种': 'currency',
   '红包金额': 'Total',
@@ -119,7 +119,7 @@ let enConfig = {
   '建账号红包': 'Account Creation',
   '红包总金额': 'The total amount of this red packet',
   '请输入单个红包金额': 'Please enter Value of each packet',
-  '单个红包金额不能低于0.3EOS': 'Value of each packet Not lower than 0.3EOS',
+  '单个红包金额不能低于0.6EOS': 'Value of each packet Not lower than 0.6EOS',
   '领取并创建': 'Redeem now and create'
 }
 
@@ -177,7 +177,7 @@ let cnConfig = {
   '普通红包': '普通红包',
   '拼手气红包': '拼手气红包',
   '最少0.1': '最少0.1',
-  '最少0.3': '最少0.3',
+  '最少0.6': '最少0.6',
   '币种': '币种',
   '最少': '最少',
   '红包金额': '红包总金额',
@@ -240,7 +240,7 @@ let cnConfig = {
   '建账号红包': '建账号红包',
   '红包总金额': '红包总金额',
   '请输入单个红包金额': '请输入单个红包金额',
-  '单个红包金额不能低于0.3EOS': '单个红包金额不能低于0.3EOS',
+  '单个红包金额不能低于0.6EOS': '单个红包金额不能低于0.6EOS',
   '领取并创建': '领取并创建'
 }
 

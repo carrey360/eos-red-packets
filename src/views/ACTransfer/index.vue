@@ -43,7 +43,7 @@ export default {
       showScatterTransfer: false,
       wantSentPacket: false,
       scatterNetwork: this.$store.state.scatterNetwork,
-      amount: '0.8000'
+      amount: '0.6000'
     }
   },
   created () {
