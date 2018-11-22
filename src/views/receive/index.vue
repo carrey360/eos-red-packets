@@ -29,9 +29,9 @@
     <div class="input-account" v-if="!isIputCodeNumber">
       <LimitInput :maxlength="100" numberType="nolimit" class="input" :placeholder="$t('请输入您的账号')" :isNumber="false" isFrom='receive' v-model="account"/>
       <div class="no-account" v-if="info.type != 3 && getCurCurrency == 'EOS'">{{$t('还没有EOS账号')}} ? <router-link to="account">{{$t('创建')}}</router-link></div>
-      <div class="no-account" style="text-align:left;margin-left:16px" v-if="info.type == 3">{{$t('12位字符，需包含数字1-5和字母a-z两种元素')}}</div>
+      <div class="no-account" style="text-align:left;margin-left:16px" v-if="info.type == 3">{{$t('12位字符，由字母a-z与数字1-5组成')}}</div>
       <div class="button" v-if="info.type != 3" @click="receive">{{$t('领取')}}</div>
-      <div class="button" v-else @click="createAccount">{{$t('领取并创建')}}</div>
+      <div class="button" v-else @click="createAccount">{{$t('创建账号')}}</div>
     </div>
         <div class="error-tip" v-if="showError">{{ errorMsg }}</div>
     <loading v-show='showLoading'></loading>
