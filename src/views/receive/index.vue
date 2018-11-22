@@ -161,7 +161,7 @@ export default {
           this.showLoading = false
           if (result && result.transaction_id) {
             // window.tip(this.$t('创建账号成功'))
-            this.$router.push({path: 'account', query: {accountName: this.account, publicKey: publicKey, privateKey: publicKey, from: 'receive'}})
+            this.$router.push({path: 'account', query: {accountName: this.account, publicKey: publicKey, privateKey: privateKey, from: 'receive'}})
           } else {
             window.tip(result.error)
           }
