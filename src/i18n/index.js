@@ -18,7 +18,7 @@ let enConfig = {
   '请输入您的账号': 'Please input your account',
   '请输入12位有效账号': 'Please enter 12 valid account',
   '账号': 'Account',
-  '12位字符，需包含数字1-5和字母a-z两种元素': 'The 12 character contains two elements, the number 1-5 and the letter A-Z',
+  '12位字符，由字母a-z与数字1-5组成': '12 characters, from the set of a-z and 1-5',
   '公钥': 'PublicKey',
   '生成新公钥': 'Create New PublicKey',
   '不要透露给任何人': 'Do not reveal it to anyone',
@@ -119,8 +119,7 @@ let enConfig = {
   '建账号红包': 'Account Creation',
   '红包总金额': 'The total amount of this red packet',
   '请输入单个红包金额': 'Please enter Value of each packet',
-  '单个红包金额不能低于0.6EOS': 'Value of each packet Not lower than 0.6EOS',
-  '领取并创建': 'Redeem now and create'
+  '单个红包金额不能低于0.6EOS': 'Value of each packet Not lower than 0.6EOS'
 }
 
 let cnConfig = {
@@ -139,7 +138,7 @@ let cnConfig = {
   '请输入您的账号': '请输入您的账号',
   '请输入12位有效账号': '请输入12位有效账号',
   '账号': '账号',
-  '12位字符，需包含数字1-5和字母a-z两种元素': '12位字符，需包含数字1-5和字母a-z两种元素',
+  '12位字符，由字母a-z与数字1-5组成': '12位字符，由字母a-z与数字1-5组成',
   '公钥': '公钥',
   '生成新公钥': '生成新公钥',
   '不要透露给任何人': '不要透露给任何人',
@@ -240,8 +239,7 @@ let cnConfig = {
   '建账号红包': '建账号红包',
   '红包总金额': '红包总金额',
   '请输入单个红包金额': '请输入单个红包金额',
-  '单个红包金额不能低于0.6EOS': '单个红包金额不能低于0.6EOS',
-  '领取并创建': '领取并创建'
+  '单个红包金额不能低于0.6EOS': '单个红包金额不能低于0.6EOS'
 }
 
 const messages = {

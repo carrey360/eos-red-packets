@@ -7,7 +7,7 @@
         <p class="copy eosAccount" :data-clipboard-text="userInput.accountName" @click="copy('.eosAccount')">{{$t('复制')}}</p>
       </div>
       <LimitInput :placeholder="$t('请输入您的账号')" :isNumber="false" v-model="userInput.accountName" :readonly="hasRedCreateSuc"/>
-      <div class="input-tip">{{$t('12位字符，需包含数字1-5和字母a-z两种元素')}}</div>
+      <div class="input-tip">{{$t('12位字符，由字母a-z与数字1-5组成')}}</div>
 
       <div class="title">
         <p>{{$t('公钥')}}</p>
