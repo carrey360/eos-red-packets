@@ -119,7 +119,7 @@ let enConfig = {
   '建账号红包': 'Account Creation',
   '红包总金额': 'The total amount of this red packet',
   '请输入单个红包金额': 'Please enter Value of each packet',
-  '单个红包金额不能低于0.3EOS': 'Value of each packet Not lower than 0.3EOS',
+  '单个红包金额不能低于0.3EOS': 'Value of each packet Not lower than 0.3EOS'
 }
 
 let cnConfig = {
@@ -239,7 +239,7 @@ let cnConfig = {
   '建账号红包': '建账号红包',
   '红包总金额': '红包总金额',
   '请输入单个红包金额': '请输入单个红包金额',
-  '单个红包金额不能低于0.3EOS': '单个红包金额不能低于0.3EOS',
+  '单个红包金额不能低于0.3EOS': '单个红包金额不能低于0.3EOS'
 }
 
 const messages = {
