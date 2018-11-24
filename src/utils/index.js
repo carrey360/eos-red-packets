@@ -28,7 +28,8 @@ export function formatePacket (str = '') {
     var name = decodeURIComponent($1)
     var val = decodeURIComponent($2)
     val = String(val)
-    obj[name] = val.split(/\n|\r/)[0]
+
+    obj[name] = val.split(' ')[0]
     return rs
   })
 
@@ -102,9 +103,9 @@ export function getTableRow (_this, params, success, error) {
  * @ lang
  */
 export function generatePacketCode (bless, uuid, hash, lang) {
-  let cnStr = `${bless}\r\n- - - - - - - - - - - - -\r\n通过浏览器打开\r\nhttps://redpacketeos.com/receive?id=${uuid}&h=${hash}\r\n兑换EOS红包或者创建免费的EOS账户。EOS红包由火币矿池和麒麟社区共同开发。可以通过派发建账号红包来使用户免费创建EOS账号。`
+  let cnStr = `${bless}\r\n- - - - - - - - - - - - -\r\n通过浏览器打开 https://redpacketeos.com/receive?id=${uuid}&h=${hash} 兑换EOS红包或者创建免费的EOS账户。\r\nEOS红包由火币矿池和麒麟社区共同开发。可以通过派发建账号红包来使用户免费创建EOS账号。`
 
-  let enStr = `${bless}\r\n- - - - - - - - - - - - -\r\nCreate free EOS account or get free EOS through the following link \r\nhttps://redpacketeos.com/receive?id=${uuid}&h=${hash}\r\n This event is brought to you by “EOS Red Packets”, a project co-created by Huobi Pool and Kylin Community.`
+  let enStr = `${bless}\r\n- - - - - - - - - - - - -\r\nCreate free EOS account or get free EOS through the following link https://redpacketeos.com/receive?id=${uuid}&h=${hash} \r\nThis event is brought to you by “EOS Red Packets”, a project co-created by Huobi Pool and Kylin Community.`
 
   let langStr = lang === 'en' ? enStr : cnStr
   return langStr

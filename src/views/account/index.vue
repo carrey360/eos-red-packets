@@ -43,7 +43,7 @@
       </div>
 
       <div v-show="!hasRedCreateSuc && !packetNumber" class="button" @click="create">{{$t('创建账号')}}</div>
-      <div v-show="!hasRedCreateSuc && packetNumber" id="__nc" style="margin-left:auto;margin-right:auto;width:80%;height:30px;margin-top:10px">
+      <div v-show="!hasRedCreateSuc && packetNumber" class="accountNc" id="__nc" style="margin-left:auto;margin-right:auto;width:80%;height:30px;margin-top:10px">
         <div id="nc"></div>
       </div>
       <!-- <div v-show="hasRedCreateSuc" class="button disabled">{{$t('创建账号')}}</div> -->
@@ -123,14 +123,14 @@ export default {
         appkey: 'FFFF0N00000000007256',
         scene: 'nc_activity_h5',
         token: ncToken,
-        trans: {'key1': 'code200'},
+        // trans: {'key1': 'code200'},
         elementID: ['usernameID'],
         is_Opt: 0,
         language: language,
         timeout: 10000,
         retryTimes: 5,
         errorTimes: 5,
-        inline: false,
+        inline: true,
         apimap: {},
         bannerHidden: false,
         initHidden: false,
@@ -149,7 +149,7 @@ export default {
           _this.serverSig = res.data.sig
           _this.create()
         } else {
-          window.tip(res.msg)
+          window.tip(_this.$t('server_' + res.code))
           this.nc.reset()
         }
       })

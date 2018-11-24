@@ -143,7 +143,7 @@ export default {
               } else {
                 _this.showLoading = false
                 FLAG_GO = true
-                window.tip(res.msg)
+                window.tip(_this.$t('server_' + res.code))
               }
             }, function () {
               _this.showLoading = false

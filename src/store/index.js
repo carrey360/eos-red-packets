@@ -10,7 +10,7 @@ let chainId = '5fff1dae8dc8e2fc4d5b23b2c7665c97f9e9d8edf2b6485a86ba311c25639191'
 let scatterHost = 'api-kylin.eosasia.one'
 let scatterPort = 80
 let scatterProtocol = 'http'
-let apiHost = 'http://192.168.2.1:8080'
+let apiHost = 'http://kylin.redpacketeos.com:8000'
 
 if (process.env.NODE_ENV === 'production') {
   endpoint = 'https://api.redpacketeos.com'
@@ -18,7 +18,7 @@ if (process.env.NODE_ENV === 'production') {
   scatterHost = 'api.redpacketeos.com'
   scatterPort = 443
   scatterProtocol = 'https'
-  apiHost = 'http://10.102.5.139:8000'
+  apiHost = 'http://kylin.redpacketeos.com:8000'
 }
 let defaultPrivateKey = '5Jq1XzuZ1dsGb2LSgsfA9nmpSEUpo3NnRkAYb9MdzRuFoTHZsEC'
 const store = new Vuex.Store({

@@ -119,7 +119,12 @@ let enConfig = {
   '建账号红包': 'Account Creation',
   '红包总金额': 'The total amount of this red packet',
   '请输入单个红包金额': 'Please enter Value of each packet',
-  '单个红包金额不能低于0.6EOS': 'Value of each packet Not lower than 0.6EOS'
+  '单个红包金额不能低于0.6EOS': 'Value of each packet Not lower than 0.6EOS',
+  'server_1': 'params error',
+  'server_2': 'Red Packet does not exist',
+  'server_3': 'Invalid Red Packet',
+  'server_4': 'Query Red Packet failed',
+  'server_5': 'Man-machine verification failed'
 }
 
 let cnConfig = {
@@ -239,7 +244,12 @@ let cnConfig = {
   '建账号红包': '建账号红包',
   '红包总金额': '红包总金额',
   '请输入单个红包金额': '请输入单个红包金额',
-  '单个红包金额不能低于0.6EOS': '单个红包金额不能低于0.6EOS'
+  '单个红包金额不能低于0.6EOS': '单个红包金额不能低于0.6EOS',
+  'server_1': '参数错误',
+  'server_2': '红包不存在',
+  'server_3': '该红包无效',
+  'server_4': '查询红包失败',
+  'server_5': '人机验证失败'
 }
 
 const messages = {
