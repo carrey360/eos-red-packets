@@ -79,11 +79,11 @@ export default {
         let u = navigator.userAgent
         let isiOS = !!u.match(/\(i[^;]+;( U;)? CPU.+Mac OS X/)
         if (isiOS && this.isFrom === 'receive') {
-          // let timeout = ''
-          // timeout = setTimeout(() => {
-          //   window.scrollTo(0, document.body.clientHeight)
-          //   clearTimeout(timeout)
-          // }, 100)
+          let timeout = ''
+          timeout = setTimeout(() => {
+            window.scrollTo(0, document.body.clientHeight)
+            clearTimeout(timeout)
+          }, 100)
         }
       }
     },

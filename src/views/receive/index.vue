@@ -401,7 +401,7 @@ export default {
       justify-content space-between
       border-bottom 1px solid #F9F9F9
   .inner-div
-    height rem(160)
+    height rem(180)
   .error-tip
     max-width 640px
     background-color #FFEAED
@@ -410,7 +410,7 @@ export default {
     font-size 12px
     position fixed
     // left 0
-    bottom rem(160)
+    bottom rem(180)
     height rem(34)
     line-height rem(34)
     width 100%
@@ -423,7 +423,7 @@ export default {
     // left 0
     // bottom 0
     -webkit-transform translateZ(0)
-    height rem(160)
+    height rem(180)
     width 100%
     background-color #CE2344
     >>>input
