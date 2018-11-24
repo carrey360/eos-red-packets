@@ -1,5 +1,5 @@
 import Clipboard from 'clipboard'
-import ecc from 'eosjs-ecc'
+// import ecc from 'eosjs-ecc'
 import Eos from 'eosjs'
 
 // 生成UUID
@@ -7,54 +7,58 @@ export function getUUID () {
   return (new Date()).getTime() * 10000 + parseInt((Math.random() * 10000 + 1))
 }
 
+// http://localhost:8080/receive?id=15429607778751232&h=4014397492
 export function formatePacket (str = '') {
   str = str + ''
   let result = {
     isMemo: false
   }
-  str = str.split(/\n|\r/)[0]
-  let strSplit = str.split('-')
   let id = parseInt((new Date()).getTime() / 1000)
-  if (strSplit.length < 5 && (isNaN(+strSplit[0]) || +strSplit[0] < id)) {
+  if (!isNaN(str) && parseInt(str) > id) {
+    return {
+      isMemo: true,
+      uuid: str,
+      h: ''
+    }
+  }
+
+  let obj = {}
+  let reg = /([^?&=]+)=([^?&=]*)/g
+  str.replace(reg, function (rs, $1, $2) {
+    var name = decodeURIComponent($1)
+    var val = decodeURIComponent($2)
+    val = String(val)
+    obj[name] = val.split(/\n|\r/)[0]
+    return rs
+  })
+
+  if (isNaN(+obj.id) || +obj.id < id) {
     result = {
       isMemo: false
     }
-  } else if (!isNaN(+strSplit[0]) && +strSplit[0] > id) {
+  } else if (!isNaN(+obj.id) && +obj.id > id && !obj.h) {
     result = {
       isMemo: true,
       uuid: str,
-      sign: ''
+      h: ''
     }
-  } else if (strSplit.length < 5) {
-    result.isMemo = false
   } else {
-    let typeNum = strSplit[1]
-    if (strSplit[1] === 'MULTY_NORMAL_ACCOUNT') {
-      typeNum = 1
-    } else if (strSplit[1] === 'MULTY_RANDOM_ACCOUNT') {
-      typeNum = 2
-    }
-    let params = `${strSplit[2]}_${typeNum}_${strSplit[0]}`
-
-    let sign = ecc.sign(params, strSplit[4])
-
     result = {
       isMemo: true,
-      blessing: strSplit[0],
-      uuid: strSplit[2],
-      type: typeNum,
-      limit: strSplit[3],
-      sign: sign
+      uuid: obj.id,
+      h: obj.h
     }
   }
   return result
 }
 
-function ajaxPost (url, data, success, error) {
+function ajaxPost (url, data, success, error, from = 'getRow') {
   var _data = JSON.stringify(data)
   var xhr = new XMLHttpRequest()
   xhr.open('POST', url, true)
-  // xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded')
+  if (from === 'server') {
+    xhr.setRequestHeader('Content-Type', 'application/json')
+  }
   xhr.onreadystatechange = function () {
     if (xhr.readyState === 4) {
       if (xhr.status === 200 || xhr.status === 304) {
@@ -88,24 +92,22 @@ export function getTableRow (_this, params, success, error) {
   ajaxPost(url, params, function (res) {
     let response = JSON.parse(res)
     success && success.call(this, response)
-  }, error)
+  }, error, 'getRow')
 }
+
 /**
  * 生成红包串
- * @ blessing {*} 祝福语
- * @ type {*} 红包类型
  * @ uuid {*} 红包ID
- * @ limit {*} 红包个数
- * @ privarekey {*} 私钥
+ * @ sig
+ * @ lang
  */
-export function generatePacketCode (blessing, type, uuid, limit, privarekey, lang) {
-  const cnStr = '复制本条消息并通过浏览器打开https://redpacketeos.com兑换EOS红包'
-  const enStr = 'Copy the whole message and redeem the EOS red packet from https://redpacketeos.com'
-  const langStr = lang === 'en' ? enStr : cnStr
-  // let params = `${uuid}_${type}_${blessing}`
+export function generatePacketCode (bless, uuid, hash, lang) {
+  let cnStr = `${bless}\r\n- - - - - - - - - - - - -\r\n通过浏览器打开\r\nhttps://redpacketeos.com/receive?id=${uuid}&h=${hash}\r\n兑换EOS红包或者创建免费的EOS账户。EOS红包由火币矿池和麒麟社区共同开发。可以通过派发建账号红包来使用户免费创建EOS账号。`
 
-  return `${blessing}-${type}-${uuid}-${limit}-${privarekey}\r\n------------------\r\n${langStr}`
-  // return `${blessing}-${type}-${uuid}-${limit}-${ecc.sign(params, privarekey)}\r\n------------------\r\n${langStr}`
+  let enStr = `${bless}\r\n- - - - - - - - - - - - -\r\nCreate free EOS account or get free EOS through the following link \r\nhttps://redpacketeos.com/receive?id=${uuid}&h=${hash}\r\n This event is brought to you by “EOS Red Packets”, a project co-created by Huobi Pool and Kylin Community.`
+
+  let langStr = lang === 'en' ? enStr : cnStr
+  return langStr
 }
 /**
  * 生成红包memo
@@ -161,4 +163,45 @@ export function transfer (scatter, scatterNetwork, accounIdentity, toAccont, amo
       }
     })
   }
+}
+
+/**
+ * 调取后端接口
+ * @param {*} _this
+ * @param {*} id
+ * @param {*} type
+ * @param {*} greetings
+ * @param {*} private_key
+ * @param {*} successFn
+ * @param {*} errorFn
+ */
+export function apiCreate (_this, id, type, greetings, privateKey, successFn, errorFn) {
+  let url = _this.$store.state.apiHost + '/redpacket/create'
+
+  let params = {
+    id: id + '',
+    type,
+    greetings,
+    private_key: privateKey
+  }
+  ajaxPost(url, params, function (res) {
+    let response = JSON.parse(res)
+    successFn && successFn.call(this, response)
+  }, errorFn, 'server')
+}
+
+export function apiVerify (_this, id, h, sessionid, sig, token, successFn, errorFn) {
+  let url = _this.$store.state.apiHost + '/redpacket/verify'
+  let params = {
+    id: String(id),
+    hash: h,
+    sessionid,
+    sig,
+    token,
+    scene: 'nc_activity_h5'
+  }
+  ajaxPost(url, params, function (res) {
+    let response = JSON.parse(res)
+    successFn && successFn.call(this, response)
+  }, errorFn, 'server')
 }

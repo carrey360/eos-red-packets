@@ -46,6 +46,7 @@ import IconFont from '@/components/Iconfont'
 import { copy, getTableRow } from '@/utils/'
 import CountDown from '@/components/Countdown'
 import loading from '@/components/loading'
+import {hash2Ggc} from '@/utils/murmurhash2_gc'
 import { generatePacketCode } from '@/utils'
 import { formatDate } from '@/utils/filter'
 
@@ -115,7 +116,9 @@ export default {
         let selfPrivarekey = this.$store.state.wsCache.get('red_' + result.id)
         const lang = localStorage.getItem('redLang')
         let memoPrivateKey = selfPrivarekey || privarekey
-        this.packetStr = generatePacketCode(result.memo, result.type, result.id, result.limit, memoPrivateKey, lang)
+        let hash = hash2Ggc(result.id + '_' + memoPrivateKey)
+        // this.packetStr = generatePacketCode(result.memo, result.type, result.id, result.limit, memoPrivateKey, lang)
+        this.packetStr = generatePacketCode(result.memo, result.id, hash, lang)
         this.info = result
       }
       this.showLoading = false

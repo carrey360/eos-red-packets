@@ -30,8 +30,11 @@
       <LimitInput :maxlength="100" numberType="nolimit" class="input" :placeholder="$t('请输入您的账号')" :isNumber="false" isFrom='receive' v-model="account"/>
       <div class="no-account" v-if="info.type != 3 && getCurCurrency == 'EOS'">{{$t('还没有EOS账号')}} ? <router-link to="account">{{$t('创建')}}</router-link></div>
       <div class="no-account" style="text-align:left;margin-left:16px" v-if="info.type == 3">{{$t('12位字符，由字母a-z与数字1-5组成')}}</div>
-      <div class="button" v-if="info.type != 3" @click="receive">{{$t('领取')}}</div>
-      <div class="button" v-else @click="createAccount">{{$t('创建账号')}}</div>
+      <!-- <div class="button" v-if="info.type != 3" @click="receive">{{$t('领取')}}</div>
+      <div class="button" v-else @click="createAccount">{{$t('创建账号')}}</div> -->
+      <div id="__nc" style="margin-left:auto;margin-right:auto;width:80%;height:30px;margin-top:10px">
+        <div id="nc"></div>
+      </div>
     </div>
         <div class="error-tip" v-if="showError">{{ errorMsg }}</div>
     <loading v-show='showLoading'></loading>
@@ -45,7 +48,7 @@ import loading from '@/components/loading'
 import LimitInput from '@/components/LimitInput'
 import { formatDate } from '@/utils/filter'
 import CountDown from '@/components/Countdown'
-import { getTableRow } from '@/utils/'
+import { getTableRow, apiVerify } from '@/utils/'
 import Eos from 'eosjs'
 import ecc from 'eosjs-ecc'
 
@@ -71,15 +74,18 @@ export default {
         memo: '',
         expire: 0,
         log: []
-      }
+      },
+      serverSig: '',
+      nc: ''
     }
   },
   created () {
     let query = this.$route.query
-    if (!query.sign) {
+
+    if (!query.h) {
       this.isIputCodeNumber = true
     }
-    if (!query.uuid) {
+    if (!query.id) {
       return
     }
     this.showLoading = true
@@ -88,7 +94,7 @@ export default {
       code: this.$store.state.tranAccountName,
       scope: this.$store.state.tranAccountName,
       table: 'redpacket',
-      lower_bound: query.uuid,
+      lower_bound: +query.id,
       limit: 1,
       key_type: 'i64',
       index_position: 1
@@ -102,6 +108,11 @@ export default {
       _that.showLoading = false
     })
   },
+  mounted () {
+    if (!this.isIputCodeNumber) {
+      this.initNoCaptcha(this.$refs.nc)
+    }
+  },
   computed: {
     getCurCurrency () {
       let amount = String(this.info.amount)
@@ -109,6 +120,52 @@ export default {
     }
   },
   methods: {
+    initNoCaptcha () {
+      let _this = this
+      let NoCaptcha = window.NoCaptcha
+      let language = localStorage.getItem('redLang') || 'cn'
+      let ncToken = ['FFFF0N00000000007256', (new Date()).getTime(), Math.random()].join(':')
+      this.nc = NoCaptcha.init({
+        renderTo: '#nc',
+        appkey: 'FFFF0N00000000007256',
+        scene: 'nc_activity_h5',
+        token: ncToken,
+        // trans: {'key1': 'code0'},
+        elementID: ['usernameID'],
+        is_Opt: 0,
+        language: language,
+        timeout: 10000,
+        retryTimes: 5,
+        errorTimes: 5,
+        inline: false,
+        apimap: {},
+        bannerHidden: false,
+        initHidden: false,
+        callback: function (data) {
+          _this.captchaResponse(ncToken, data.csessionid, data.sig)
+        },
+        error: function (s) {}
+      })
+      NoCaptcha.setEnabled(true)
+      this.nc.reset() // 请务必确保这里调用一次reset()方法
+    },
+    captchaResponse (ncToken, sessionid, sig) {
+      let query = this.$route.query
+      let _this = this
+      apiVerify(this, query.id, query.h, sessionid, sig, ncToken, function (res) {
+        if (res.code === 0) {
+          _this.serverSig = res.data.sig
+          if (_this.info.type === 3) {
+            _this.createAccount()
+          } else {
+            _this.receive()
+          }
+        } else {
+          _this.nc.reset()
+          window.tip(res.msg)
+        }
+      })
+    },
     handleResponse (response) {
       if (response.rows) {
         let result = response.rows[0]
@@ -137,8 +194,10 @@ export default {
       let reg = /^[a-z1-5.]{0,12}$/
       if (!reg.test(this.account)) {
         window.tip(this.$t('请输入正确的EOS账户'))
+        this.nc && this.nc.reset()
       } else if (!this.account) {
         window.tip(this.$t('请输入正确的EOS账户'))
+        this.nc && this.nc.reset()
       } else {
         // 有账号领取
         this.doTransact()
@@ -149,9 +208,11 @@ export default {
       let reg = /^[a-z1-5.]{0,12}$/
       if (!reg.test(this.account)) {
         window.tip(this.$t('请输入正确的EOS账户'))
+        this.nc && this.nc.reset()
         return false
       } else if (!this.account) {
         window.tip(this.$t('请输入正确的EOS账户'))
+        this.nc && this.nc.reset()
         return false
       }
       this.showLoading = true
@@ -167,6 +228,7 @@ export default {
           }
         }).catch((res) => {
           this.showLoading = false
+          this.nc && this.nc.reset()
           window.tip(this.$t('创建账号失败，可能账号已存在或红包金额不足'))
         })
       })
@@ -179,10 +241,12 @@ export default {
         if (result && result.transaction_id) {
           this.$router.push({path: 'success', query: {id: this.info.id, accountName: this.account}})
         } else {
+          this.nc && this.nc.reset()
           window.tip(result.error)
         }
       }).catch(() => {
         this.showLoading = false
+        this.nc && this.nc.reset()
         window.tip(this.$t('领取失败'))
       })
     },
@@ -193,8 +257,8 @@ export default {
 
       let params = {
         receiver: this.account,
-        id: +query.uuid,
-        sig: query.sign
+        id: +query.id,
+        sig: this.serverSig
       }
 
       let result = eos.transaction({
@@ -215,8 +279,8 @@ export default {
         account_to_create: this.account,
         owner_key: publicKey,
         active_key: publicKey,
-        id: +formatCode.uuid,
-        sig: formatCode.sign
+        id: +formatCode.id,
+        sig: this.serverSig
       }
 
       let result = eos.transaction({

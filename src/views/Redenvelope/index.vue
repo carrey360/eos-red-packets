@@ -46,7 +46,7 @@ import Iconfont from '@/components/Iconfont'
 import LimitInput from '@/components/LimitInput'
 import loading from '@/components/loading'
 import ecc from 'eosjs-ecc'
-import { transfer, generateMemo } from '@/utils'
+import { transfer, generateMemo, apiCreate } from '@/utils'
 import { mapState } from 'vuex'
 
 let FLAG_GO = true
@@ -128,15 +128,28 @@ export default {
           amount = this.totalAmount
         }
         // 生成红包的公私钥，使用红包的私钥生成签名
+        let _this = this
         ecc.randomKey().then(privateKey => {
           let redSelfPublicKey = ecc.privateToPublic(privateKey)
           const memo = generateMemo(type, uuid, number, localStorage.getItem(redPubKeyName), redSelfPublicKey, blessing)
           transfer(this.scatter, scatterNetwork, this.accountIdentity, tranAccountName, amount, memo, this.curCheckedCurrency.name).then(res => {
-            window.tip(this.$t('转账成功'))
-            this.showLoading = false
-            FLAG_GO = true
-            this.$store.state.wsCache && this.$store.state.wsCache.set('red_' + uuid, privateKey, {exp: 48 * 60 * 60}) // exp 单位秒
-            this.$router.push({path: 'myred', query: {amount, uuid, type, limit: number, blessing, redSelfPublicKey, selfPrivateKey: privateKey}})
+            apiCreate(this, uuid, type, blessing, privateKey, function (res) {
+              if (res.code === 0) {
+                window.tip(_this.$t('转账成功'))
+                _this.showLoading = false
+                FLAG_GO = true
+                _this.$store.state.wsCache && _this.$store.state.wsCache.set('red_' + uuid, privateKey, {exp: 48 * 60 * 60}) // exp 单位秒
+                _this.$router.push({path: 'myred', query: {amount, uuid, type, limit: number, blessing, redSelfPublicKey, selfPrivateKey: privateKey, hash: res.data.hash}})
+              } else {
+                _this.showLoading = false
+                FLAG_GO = true
+                window.tip(res.msg)
+              }
+            }, function () {
+              _this.showLoading = false
+              FLAG_GO = true
+              window.tip(_this.$t('失败'))
+            })
           }).catch(() => {
             this.showLoading = false
             FLAG_GO = true
@@ -145,10 +158,19 @@ export default {
         })
       } else {
         FLAG_GO = true
+        let _this = this
         ecc.randomKey().then(privateKey => {
           let redSelfPublicKey = ecc.privateToPublic(privateKey)
-          this.$store.state.wsCache && this.$store.state.wsCache.set('red_' + uuid, privateKey, {exp: 48 * 60 * 60}) // exp 单位秒
-          this.$router.push({path: 'myred', query: {amount: this.redInfo.amount, uuid: uuid, type: this.curTab, limit: this.redInfo.number, blessing: blessing, redSelfPublicKey, selfPrivateKey: privateKey}})
+          apiCreate(this, uuid, this.curTab, blessing, privateKey, function (res) {
+            if (res.code === 0) {
+              this.$store.state.wsCache && this.$store.state.wsCache.set('red_' + uuid, privateKey, {exp: 48 * 60 * 60}) // exp 单位秒
+              this.$router.push({path: 'myred', query: {amount: this.redInfo.amount, uuid: uuid, type: this.curTab, limit: this.redInfo.number, blessing: blessing, redSelfPublicKey, selfPrivateKey: privateKey, hash: res.data.hash}})
+            } else {
+              window.tip(res.msg)
+            }
+          }, function () {
+            window.tip(_this.$t('失败'))
+          })
         })
       }
     },

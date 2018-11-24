@@ -122,7 +122,7 @@ export default {
       if (response.rows && response.rows.length === 1 && String(response.rows[0].id) === String(formatCodeJson.uuid)) {
         this.$store.commit('setCode', {code: this.code})
         // 成后跳转到领取红包页面
-        this.$router.push({path: 'receive', query: {uuid: formatCodeJson.uuid, sign: formatCodeJson.sign}})
+        this.$router.push({path: 'receive', query: {id: formatCodeJson.uuid, h: formatCodeJson.h}})
       } else {
         window.tip(this.$t('红包已领完或者红包已失效'))
       }

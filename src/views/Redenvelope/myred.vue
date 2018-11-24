@@ -67,10 +67,8 @@ export default {
     // let params = query.uuid + '_' + query.type + '_' + query.blessing
     // let privarekey = localStorage.getItem(this.$store.state.redPriKeyName)
     const lang = localStorage.getItem('redLang')
-    // 生成红包串
-    const { blessing, type, uuid, limit } = query
     // query.blessing + '-' + query.type + '-' + query.uuid + '-' + query.limit + '-' + ecc.sign(params, privarekey)
-    this.packetStr = generatePacketCode(blessing, type, uuid, limit, query.selfPrivateKey, lang)
+    this.packetStr = generatePacketCode(query.blessing, query.uuid, query.hash, lang)
   },
   methods: {
     copy (className) {

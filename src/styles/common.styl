@@ -14,6 +14,7 @@ li
 textarea
   -webkit-appearance none
 
+
 .list-noData
   height 50px
   line-height 50px
@@ -23,3 +24,55 @@ textarea
 
 rem($px)
     return  $px/12 * 1rem
+
+._nc .stage1{
+  height: 40px
+}
+
+._nc .stage1 .slider {
+  height: 40px;
+  border-radius: 26px;
+  box-shadow: 0 0 3px #999;
+  background-color: #F0BDC7;
+}
+/* 滑动条 */
+._nc .stage1 .track div {
+  border-radius: 26px;
+  color: #fff;
+}
+
+._nc .stage1 .button {
+  border-radius 26px
+  width: 40px;
+  height: 40px;
+}
+
+/* 滑动条背景色-正常 */
+._nc .stage1 .bg-green {
+  background-color: #E17B8E;
+}
+/* 滑动条背景色-失败 */
+._nc .stage1 .bg-red {
+  background-color: #ff5500;
+}
+._nc .icon-ok{
+  color: #D1A973
+}
+
+._nc .stage1 .track div, ._nc .stage1 .label{
+  line-height: 40px;
+  height: 40px;
+}
+._nc .stage1 .icon{
+  left: 5px;
+  top: 8px;
+}
+
+._nc .stage1 .icon.icon-ok, ._nc .stage1 .icon.icon-ok.icon-close{
+  top: -1px;
+  left: 6px;
+}
+
+._nc .icon-slide-arrow{
+  font-size 20px
+}

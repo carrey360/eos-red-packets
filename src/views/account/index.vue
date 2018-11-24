@@ -25,7 +25,7 @@
       <div class="input-tip red">{{$t('不要透露给任何人')}}</div>
 
       <div class="title"><p>{{$t('红包串')}}({{$t('选填')}})</p></div>
-      <textarea class="packet-number common-input" v-model="packetNumber" :readonly="hasRedCreateSuc"></textarea>
+      <textarea disabled='disabled' class="packet-number common-input" v-model="packetNumber" :readonly="hasRedCreateSuc"></textarea>
 
       <div class="account-tip">
         <p>{{$t('创建提示')}}</p>
@@ -42,7 +42,10 @@
         <p>{{$t('请勿通过网络工具传输私钥，例如用微信发送到电脑。一旦被黑客获取造成不可挽回的资产损失')}}</p>
       </div>
 
-      <div v-show="!hasRedCreateSuc" class="button" @click="create">{{$t('创建账号')}}</div>
+      <div v-show="!hasRedCreateSuc && !packetNumber" class="button" @click="create">{{$t('创建账号')}}</div>
+      <div v-show="!hasRedCreateSuc && packetNumber" id="__nc" style="margin-left:auto;margin-right:auto;width:80%;height:30px;margin-top:10px">
+        <div id="nc"></div>
+      </div>
       <!-- <div v-show="hasRedCreateSuc" class="button disabled">{{$t('创建账号')}}</div> -->
     </div>
     <modal v-show="modalData.showDailog" :modalData="modalData" @leftBtnAction="leftBtnAction" @rightBtnAction="rightBtnAction"></modal>
@@ -56,7 +59,7 @@ import modal from '@/components/dialog'
 import loading from '@/components/loading'
 import ecc from 'eosjs-ecc'
 import LimitInput from '@/components/LimitInput'
-import { formatePacket, copy } from '@/utils/'
+import { formatePacket, copy, apiVerify } from '@/utils/'
 import Eos from 'eosjs'
 
 let FLAG_GO = true
@@ -82,7 +85,9 @@ export default {
         publicKey: '',
         privateKey: ''
       },
-      formatCodeObj: {}
+      formatCodeObj: {},
+      serverSig: '',
+      nc: ''
     }
   },
   created () {
@@ -99,8 +104,56 @@ export default {
       this.modalData.type = 'sure'
       this.hasRedCreateSuc = true
     }
+    if (this.packetNumber) {
+      let formatCode = formatePacket(this.packetNumber)
+      this.formatCodeObj = formatCode
+    }
+  },
+  mounted () {
+    this.initNoCaptcha()
   },
   methods: {
+    initNoCaptcha () {
+      let _this = this
+      let NoCaptcha = window.NoCaptcha
+      let language = localStorage.getItem('redLang') || 'cn'
+      let ncToken = ['FFFF0N00000000007256', (new Date()).getTime(), Math.random()].join(':')
+      this.nc = NoCaptcha.init({
+        renderTo: '#nc',
+        appkey: 'FFFF0N00000000007256',
+        scene: 'nc_activity_h5',
+        token: ncToken,
+        trans: {'key1': 'code200'},
+        elementID: ['usernameID'],
+        is_Opt: 0,
+        language: language,
+        timeout: 10000,
+        retryTimes: 5,
+        errorTimes: 5,
+        inline: false,
+        apimap: {},
+        bannerHidden: false,
+        initHidden: false,
+        callback: function (data) {
+          _this.captchaResponse(ncToken, data.csessionid, data.sig)
+        },
+        error: function (s) {}
+      })
+      NoCaptcha.setEnabled(true)
+      this.nc.reset() // 请务必确保这里调用一次reset()方法
+    },
+    captchaResponse (ncToken, sessionid, sig) {
+      let _this = this
+      apiVerify(this, this.formatCodeObj.uuid, this.formatCodeObj.h, sessionid, sig, ncToken, function (res) {
+        if (res.code === 0) {
+          _this.serverSig = res.data.sig
+          _this.create()
+        } else {
+          window.tip(res.msg)
+          this.nc.reset()
+        }
+      })
+    },
     leftBtnAction () {
       this.modalData.showDailog = false
     },
@@ -119,28 +172,30 @@ export default {
       if (!this.userInput.accountName) {
         FLAG_GO = true
         window.tip(this.$t('请输入您的账号'))
+        this.nc && this.nc.reset()
         return false
       } else if (this.userInput.accountName.length !== 12) {
         FLAG_GO = true
         window.tip(this.$t('请输入12位有效账号'))
+        this.nc && this.nc.reset()
         return false
       } else if (!this.userInput.publicKey) {
         FLAG_GO = true
         window.tip(this.$t('请输入公钥'))
+        this.nc && this.nc.reset()
         return false
       }
       // 通过红包串创建账号
       if (this.packetNumber) {
         this.showLoading = true
         this.$nextTick(() => {
-          let formatCode = formatePacket(this.packetNumber)
-          if (!formatCode.isMemo) {
+          if (!this.formatCodeObj.isMemo) {
             this.showLoading = false
             FLAG_GO = true
             window.tip(this.$t('请正确输入红包串'))
+            this.nc && this.nc.reset()
             return false
-          } else if (formatCode.isMemo) {
-            this.formatCodeObj = formatCode
+          } else if (this.formatCodeObj.isMemo) {
             this.packetCreate()
           }
         })
@@ -182,7 +237,7 @@ export default {
         owner_key: this.userInput.publicKey,
         active_key: this.userInput.publicKey,
         id: +formatCode.uuid,
-        sig: formatCode.sign
+        sig: this.serverSig
       }
 
       let result = eos.transaction({
