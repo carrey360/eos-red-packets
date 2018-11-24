@@ -139,22 +139,32 @@ export default {
         initHidden: false,
         callback: function (data) {
           _this.captchaResponse(ncToken, data.csessionid, data.sig)
-        },
-        error: function (s) {}
+        }
       })
       NoCaptcha.setEnabled(true)
       this.nc.reset() // 请务必确保这里调用一次reset()方法
+      this.nc.on('fail', function (e) {
+        window.tip(_this.$t('用户验证失败'))
+        _this.nc.reset()
+      })
     },
     captchaResponse (ncToken, sessionid, sig) {
       let _this = this
+      this.showLoading = true
       apiVerify(this, this.formatCodeObj.uuid, this.formatCodeObj.h, sessionid, sig, ncToken, function (res) {
         if (res.code === 0) {
+          _this.showLoading = false
           _this.serverSig = res.data.sig
           _this.create()
         } else {
+          _this.showLoading = false
           window.tip(_this.$t('server_' + res.code))
           this.nc.reset()
         }
+      }, function (msg) {
+        _this.showLoading = false
+        _this.nc.reset()
+        window.tip(_this.$t(msg || '失败'))
       })
     },
     leftBtnAction () {

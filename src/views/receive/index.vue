@@ -133,40 +133,50 @@ export default {
         appkey: 'FFFF0N00000000007256',
         scene: _this.$store.state.captchaScene,
         token: ncToken,
-        // trans: {'key1': 'code0'},
+        trans: {'key1': 'code0'},
         elementID: ['usernameID'],
         is_Opt: 0,
         language: language,
         timeout: 10000,
         retryTimes: 5,
         errorTimes: 5,
-        inline: true,
+        inline: false,
         apimap: {},
         bannerHidden: false,
         initHidden: false,
         callback: function (data) {
           _this.captchaResponse(ncToken, data.csessionid, data.sig)
-        },
-        error: function (s) {}
+        }
       })
       NoCaptcha.setEnabled(true)
       this.nc.reset() // 请务必确保这里调用一次reset()方法
+      this.nc.on('fail', function (e) {
+        window.tip(_this.$t('用户验证失败'))
+        _this.nc.reset()
+      })
     },
     captchaResponse (ncToken, sessionid, sig) {
       let query = this.$route.query
       let _this = this
+      this.showLoading = true
       apiVerify(this, query.id, query.h, sessionid, sig, ncToken, function (res) {
         if (res.code === 0) {
           _this.serverSig = res.data.sig
+          _this.showLoading = false
           if (_this.info.type === 3) {
             _this.createAccount()
           } else {
             _this.receive()
           }
         } else {
+          _this.showLoading = false
           _this.nc.reset()
           window.tip(_this.$t('server_' + res.code))
         }
+      }, function (msg) {
+        _this.showLoading = false
+        _this.nc.reset()
+        window.tip(_this.$t(msg || '失败'))
       })
     },
     handleResponse (response) {

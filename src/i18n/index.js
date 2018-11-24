@@ -109,7 +109,7 @@ let enConfig = {
   '创建账号失败，可能账号已存在或红包金额不足': 'Create account failed, account already exists or insufficient balance',
   '请输入正确的EOS账户': 'Invalid account',
   '请输入红包串领取红包': 'Please enter red packet code',
-  '第一步: 请按下面信息从交易所提币或通过EOS钱包转帐': 'Step 1.Please follow the imformation below to withdraw EOS from the exchange or tranfer EOS from wallet.',
+  '第一步: 请按下面信息从交易所提币或通过EOS钱包转帐,完成后请点击[转账完成]按钮': 'Step 1.Please follow the imformation below to withdraw EOS from the exchange or tranfer EOS from wallet. click [Successed] button when complete',
   '第二步: 复制并通过IM工具把[红包串]发送给你的朋友们': 'Step 2.Copy the red packet code to your friend in IM tools.',
   '转账时复制下面的信息到Memo': 'Copy the following informarion into Memo.',
   '通过IM工具将红包串发送给你的朋友': 'Copy the red packet code to your friend in IM tools.',
@@ -124,7 +124,10 @@ let enConfig = {
   'server_2': 'Red Packet does not exist',
   'server_3': 'Invalid Red Packet',
   'server_4': 'Query Red Packet failed',
-  'server_5': 'Man-machine verification failed'
+  'server_5': 'Man-machine verification failed',
+  '转账完成': 'Successed',
+  '用户验证失败': 'User authentication failed',
+  '请求超时': 'request timeout'
 }
 
 let cnConfig = {
@@ -234,7 +237,7 @@ let cnConfig = {
   '创建账号失败，可能账号已存在或红包金额不足': '创建账号失败，可能账号已存在或红包金额不足',
   '请输入正确的EOS账户': '请输入正确的EOS账户',
   '请输入红包串领取红包': '请输入红包串领取红包',
-  '第一步: 请按下面信息从交易所提币或通过EOS钱包转帐': '第一步: 请按下面信息从交易所提币或通过EOS钱包转帐',
+  '第一步: 请按下面信息从交易所提币或通过EOS钱包转帐,完成后请点击[转账完成]按钮': '第一步: 请按下面信息从交易所提币或通过EOS钱包转帐,完成后请点击[转账完成]按钮',
   '第二步: 复制并通过IM工具把[红包串]发送给你的朋友们': '第二步: 复制并通过IM工具把[红包串]发送给你的朋友们',
   '转账时复制下面的信息到Memo': '转账时复制下面的信息到Memo',
   '通过IM工具将红包串发送给你的朋友': '通过IM工具将红包串发送给你的朋友',
@@ -249,7 +252,10 @@ let cnConfig = {
   'server_2': '红包不存在',
   'server_3': '该红包无效',
   'server_4': '查询红包失败',
-  'server_5': '人机验证失败'
+  'server_5': '人机验证失败',
+  '转账完成': '转账完成',
+  '用户验证失败': '用户验证失败',
+  '请求超时': '请求超时'
 }
 
 const messages = {

@@ -3,7 +3,7 @@
     <top-bar :title="$t('发红包')" :showHome="showHome"/>
     <div class="my-red_wrap">
       <div v-show="!showScatterTransfer" class="step_box">
-        <p>{{$t('第一步: 请按下面信息从交易所提币或通过EOS钱包转帐')}} </p>
+        <p>{{$t('第一步: 请按下面信息从交易所提币或通过EOS钱包转帐,完成后请点击[转账完成]按钮')}}<br/> </p>
       </div>
       <div v-show="!showScatterTransfer" class="text-box">
         <p><span>{{$t('收款账户')}}</span><span class="account" :data-clipboard-text="account" @click="copy('.account')">{{$t('复制')}}</span></p>
@@ -26,10 +26,10 @@
           <textarea disabled="disabled" cols="3" rows="5" v-model="remark"></textarea>
         </div>
       </div>
-      <div v-show="!showScatterTransfer" class="step_box btm_top">
+      <div v-show="!showScatterTransfer && packetStr" class="step_box btm_top">
         <p>{{$t('第二步: 复制并通过IM工具把[红包串]发送给你的朋友们')}}</p>
       </div>
-      <div class="text-box">
+      <div class="text-box" v-if="packetStr">
         <p><span>{{$t('红包串')}}</span><span class="packetStr" :data-clipboard-text="packetStr" @click="copy('.packetStr')">{{$t('复制')}}</span></p>
         <p class="tip_text">{{$t('通过IM工具将红包串发送给你的朋友')}}</p>
         <div class="text packetStr">
@@ -37,13 +37,16 @@
         </div>
         <div class="router-link"><router-link to="redlist">{{$t('我塞的红包')}}</router-link></div>
       </div>
+      <div v-show="!showScatterTransfer && !packetStr" class="submit">
+        <my-button @click="handleSubmit" :label="$t('转账完成')" />
+      </div>
     </div>
   </div>
 </template>
 <script>
 import TopBar from '@/components/topBar'
 import MyButton from '@/components/Button'
-import { copy, generatePacketCode, generateMemo } from '@/utils'
+import { copy, generatePacketCode, generateMemo, apiCreate } from '@/utils'
 
 export default {
   name: 'my-red',
@@ -68,11 +71,27 @@ export default {
     // let privarekey = localStorage.getItem(this.$store.state.redPriKeyName)
     const lang = localStorage.getItem('redLang')
     // query.blessing + '-' + query.type + '-' + query.uuid + '-' + query.limit + '-' + ecc.sign(params, privarekey)
-    this.packetStr = generatePacketCode(query.blessing, query.uuid, query.hash, lang)
+    if (query.hash) {
+      this.packetStr = generatePacketCode(query.blessing, query.uuid, query.hash, lang)
+    }
   },
   methods: {
     copy (className) {
       copy(className, this)
+    },
+    handleSubmit () {
+      let _this = this
+      const lang = localStorage.getItem('redLang')
+      let {uuid, type, blessing, redSelfPublicKey} = this.$route.query
+      apiCreate(this, uuid, type, blessing, redSelfPublicKey, function (res) {
+        if (res.code === 0) {
+          this.packetStr = generatePacketCode(blessing, uuid, res.data.hash, lang)
+        } else {
+          window.tip(_this.$t('server_' + res.code))
+        }
+      }, function () {
+        window.tip(_this.$t('失败'))
+      })
     }
   },
   computed: {

@@ -58,6 +58,7 @@ function ajaxPost (url, data, success, error, from = 'getRow') {
   var xhr = new XMLHttpRequest()
   xhr.open('POST', url, true)
   if (from === 'server') {
+    xhr.timeout = 10000
     xhr.setRequestHeader('Content-Type', 'application/json')
   }
   xhr.onreadystatechange = function () {
@@ -69,6 +70,11 @@ function ajaxPost (url, data, success, error, from = 'getRow') {
       }
     }
   }
+
+  xhr.ontimeout = function () {
+    error && error('请求超时')
+  }
+
   xhr.send(_data)
 }
 

@@ -157,20 +157,10 @@ export default {
           })
         })
       } else {
-        FLAG_GO = true
-        let _this = this
         ecc.randomKey().then(privateKey => {
           let redSelfPublicKey = ecc.privateToPublic(privateKey)
-          apiCreate(this, uuid, this.curTab, blessing, privateKey, function (res) {
-            if (res.code === 0) {
-              this.$store.state.wsCache && this.$store.state.wsCache.set('red_' + uuid, privateKey, {exp: 48 * 60 * 60}) // exp 单位秒
-              this.$router.push({path: 'myred', query: {amount: this.redInfo.amount, uuid: uuid, type: this.curTab, limit: this.redInfo.number, blessing: blessing, redSelfPublicKey, selfPrivateKey: privateKey, hash: res.data.hash}})
-            } else {
-              window.tip(res.msg)
-            }
-          }, function () {
-            window.tip(_this.$t('失败'))
-          })
+          this.$store.state.wsCache && this.$store.state.wsCache.set('red_' + uuid, privateKey, {exp: 48 * 60 * 60}) // exp 单位秒
+          this.$router.push({path: 'myred', query: {amount: this.redInfo.amount, uuid: uuid, type: this.curTab, limit: this.redInfo.number, blessing: blessing, redSelfPublicKey, selfPrivateKey: privateKey}})
         })
       }
     },
@@ -199,6 +189,8 @@ export default {
 </script>
 <style lang="stylus" scoped>
 .red-envelope
+  >>>.top-bar-warrap > div .title
+    margin-left 54px!important
   &_wrap
     padding 24px 16px
     .red-textarea
