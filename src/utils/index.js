@@ -199,7 +199,7 @@ export function apiVerify (_this, id, h, sessionid, sig, token, successFn, error
     sessionid,
     sig,
     token,
-    scene: 'nc_activity_h5'
+    scene: _this.$store.state.captchaScene
   }
   ajaxPost(url, params, function (res) {
     let response = JSON.parse(res)

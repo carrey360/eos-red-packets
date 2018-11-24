@@ -89,6 +89,9 @@ export default {
       return
     }
     this.showLoading = true
+    // 检查设备
+    this.$store.commit('checkTerminal', {})
+
     let params = {
       json: true,
       code: this.$store.state.tranAccountName,
@@ -128,7 +131,7 @@ export default {
       this.nc = NoCaptcha.init({
         renderTo: '#nc',
         appkey: 'FFFF0N00000000007256',
-        scene: 'nc_activity_h5',
+        scene: _this.$store.state.captchaScene,
         token: ncToken,
         // trans: {'key1': 'code0'},
         elementID: ['usernameID'],

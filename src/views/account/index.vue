@@ -92,6 +92,9 @@ export default {
   },
   created () {
     let query = this.$route.query
+    // 检查设备
+    this.$store.commit('checkTerminal', {})
+
     // 如果从领取页面跳转过来设置默认值
     if (query.from === 'receive') {
       this.userInput = {
@@ -121,7 +124,7 @@ export default {
       this.nc = NoCaptcha.init({
         renderTo: '#nc',
         appkey: 'FFFF0N00000000007256',
-        scene: 'nc_activity_h5',
+        scene: _this.$store.state.captchaScene,
         token: ncToken,
         // trans: {'key1': 'code200'},
         elementID: ['usernameID'],
