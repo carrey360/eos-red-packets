@@ -19,7 +19,7 @@ if (process.env.NODE_ENV === 'production') {
   scatterHost = 'api.redpacketeos.com'
   scatterPort = 443
   scatterProtocol = 'https'
-  apiHost = 'http://kylin.redpacketeos.com:8000'
+  apiHost = 'https://www.redpacketeos.com'
 }
 let defaultPrivateKey = '5Jq1XzuZ1dsGb2LSgsfA9nmpSEUpo3NnRkAYb9MdzRuFoTHZsEC'
 const store = new Vuex.Store({
