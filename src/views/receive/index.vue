@@ -158,6 +158,31 @@ export default {
     captchaResponse (ncToken, sessionid, sig) {
       let query = this.$route.query
       let _this = this
+      // 创建账号红包
+      if (_this.info.type === 3) {
+        // 验证输入账号是否正确
+        let reg = /^[a-z1-5.]{0,12}$/
+        if (!reg.test(this.account)) {
+          window.tip(this.$t('请输入正确的EOS账户'))
+          this.nc && this.nc.reset()
+          return false
+        } else if (!this.account) {
+          window.tip(this.$t('请输入正确的EOS账户'))
+          this.nc && this.nc.reset()
+          return false
+        }
+      } else { // 直接领取红包
+        let reg = /^[a-z1-5.]{0,12}$/
+        if (!reg.test(this.account)) {
+          window.tip(this.$t('请输入正确的EOS账户'))
+          this.nc && this.nc.reset()
+          return false
+        } else if (!this.account) {
+          window.tip(this.$t('请输入正确的EOS账户'))
+          this.nc && this.nc.reset()
+          return false
+        }
+      }
       this.showLoading = true
       apiVerify(this, query.id, query.h, sessionid, sig, ncToken, function (res) {
         if (res.code === 0) {
@@ -209,31 +234,10 @@ export default {
       // })
     },
     receive () {
-      // 验证输入账号是否正确
-      let reg = /^[a-z1-5.]{0,12}$/
-      if (!reg.test(this.account)) {
-        window.tip(this.$t('请输入正确的EOS账户'))
-        this.nc && this.nc.reset()
-      } else if (!this.account) {
-        window.tip(this.$t('请输入正确的EOS账户'))
-        this.nc && this.nc.reset()
-      } else {
-        // 有账号领取
-        this.doTransact()
-      }
+      // 有账号领取
+      this.doTransact()
     },
     createAccount () {
-      // 验证输入账号是否正确
-      let reg = /^[a-z1-5.]{0,12}$/
-      if (!reg.test(this.account)) {
-        window.tip(this.$t('请输入正确的EOS账户'))
-        this.nc && this.nc.reset()
-        return false
-      } else if (!this.account) {
-        window.tip(this.$t('请输入正确的EOS账户'))
-        this.nc && this.nc.reset()
-        return false
-      }
       this.showLoading = true
       ecc.randomKey().then(privateKey => {
         let publicKey = ecc.privateToPublic(privateKey)

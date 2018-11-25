@@ -6,8 +6,8 @@ import router from './router'
 import store from './store'
 import i18n from './i18n'
 
-// import vConsole from '@/utils/vconsole'
-// console.log(vConsole.version)
+import vConsole from '@/utils/vconsole'
+console.log(vConsole.version)
 
 Vue.config.productionTip = false
 
