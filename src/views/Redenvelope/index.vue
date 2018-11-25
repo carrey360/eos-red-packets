@@ -16,7 +16,7 @@
         </div>
       </div>
       <LimitInput v-show="!!scatter && curTab != 3" numberType="float" :placeholder="$t('最少')+ curCheckedCurrency.min" :left-label="$t('红包金额')" :right-label="curCheckedCurrency.name" v-model="redInfo.amount" />
-      <LimitInput v-show="!!scatter && curTab == 3" numberType="float" :placeholder="0.6" :left-label="$t('单个红包金额')" right-label="EOS" v-model="redInfo.amount" />
+      <LimitInput v-show="!!scatter && curTab == 3" numberType="float" :placeholder="0.6+''" :left-label="$t('单个红包金额')" right-label="EOS" v-model="redInfo.amount" />
       <LimitInput numberType="int" :placeholder="$t('最多100')" maxValue='100' :left-label="$t('红包个数')" :right-label="$t('个')" v-model="redInfo.number" />
       <div class="warn-title total_amount" v-show="!!scatter && curTab == 3 && totalAmount">
         <small>{{$t('红包总金额')}}<i class="amount">{{ totalAmount }}EOS</i></small>
