@@ -15,7 +15,7 @@
         <p v-else class="copy publickey" :data-clipboard-text="userInput.publickey" @click="copy('.publickey')">{{$t('复制')}}</p>
       </div>
       <textarea class="public-key common-input" :placeholder="$t('请输入公钥')" v-model="userInput.publicKey" :readonly="hasRedCreateSuc"></textarea>
-      <div class="input-tip">{{$t('所有者和使用者公钥相同')}}</div>
+      <div class="input-tip">{{$t('owner key和active key相同')}}</div>
 
       <div class="title">
         <p>{{$t('私钥')}}</p>
@@ -127,7 +127,7 @@ export default {
         scene: _this.$store.state.captchaScene,
         token: ncToken,
         // trans: {'key1': 'code200'},
-        elementID: ['usernameID'],
+        // elementID: ['accountFlag'],
         is_Opt: 0,
         language: language,
         timeout: 10000,

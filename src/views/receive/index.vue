@@ -48,7 +48,7 @@ import loading from '@/components/loading'
 import LimitInput from '@/components/LimitInput'
 import { formatDate } from '@/utils/filter'
 import CountDown from '@/components/Countdown'
-import { getTableRow, apiVerify } from '@/utils/'
+import { generatePacketCode, getTableRow, apiVerify } from '@/utils/'
 import Eos from 'eosjs'
 import ecc from 'eosjs-ecc'
 
@@ -134,7 +134,7 @@ export default {
         scene: _this.$store.state.captchaScene,
         token: ncToken,
         trans: {'key1': 'code0'},
-        elementID: ['usernameID'],
+        // elementID: ['receiveFlag'],
         is_Opt: 0,
         language: language,
         timeout: 10000,
@@ -180,6 +180,7 @@ export default {
       })
     },
     handleResponse (response) {
+      this.showLoading = false
       if (response.rows) {
         let result = response.rows[0]
         let nowTime = parseInt((new Date()).getTime() / 1000)
@@ -195,12 +196,17 @@ export default {
         if (result.type === 3) {
           this.account = ''
         }
+        if (!this.$store.state.code) {
+          let query = this.$route.query
+          let lang = localStorage.getItem('redLang')
+          let packetStr = generatePacketCode(result.memo, result.id, query.h, lang)
+          this.$store.commit('setCode', {code: packetStr})
+        }
       }
       // this.$nextTick(() => {
       //   const { clientHeight }  = this.$refs.listUl
       //   this.$refs.listUl.style.height = `${clientHeight}px`
       // })
-      this.showLoading = false
     },
     receive () {
       // 验证输入账号是否正确

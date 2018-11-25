@@ -40,21 +40,24 @@
       <div v-show="!showScatterTransfer && !packetStr" class="submit">
         <my-button @click="handleSubmit" :label="$t('转账完成')" />
       </div>
+      <loading v-show='showLoading'></loading>
     </div>
   </div>
 </template>
 <script>
 import TopBar from '@/components/topBar'
 import MyButton from '@/components/Button'
+import loading from '@/components/loading'
 import { copy, generatePacketCode, generateMemo, apiCreate } from '@/utils'
 
 export default {
   name: 'my-red',
   components: {
-    TopBar, MyButton
+    TopBar, MyButton, loading
   },
   data () {
     return {
+      showLoading: false,
       showHome: true,
       packetStr: '',
       showScatterTransfer: !!this.$store.state.scatter,
@@ -83,13 +86,16 @@ export default {
       let _this = this
       const lang = localStorage.getItem('redLang')
       let {uuid, type, blessing, redSelfPublicKey} = this.$route.query
+      this.showLoading = true
       apiCreate(this, uuid, type, blessing, redSelfPublicKey, function (res) {
+        _this.showLoading = false
         if (res.code === 0) {
-          this.packetStr = generatePacketCode(blessing, uuid, res.data.hash, lang)
+          _this.packetStr = generatePacketCode(blessing, uuid, res.data.hash, lang)
         } else {
           window.tip(_this.$t('server_' + res.code))
         }
       }, function () {
+        _this.showLoading = true
         window.tip(_this.$t('失败'))
       })
     }
