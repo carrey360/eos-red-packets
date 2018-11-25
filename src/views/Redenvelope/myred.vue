@@ -85,9 +85,9 @@ export default {
     handleSubmit () {
       let _this = this
       const lang = localStorage.getItem('redLang')
-      let {uuid, type, blessing, redSelfPublicKey} = this.$route.query
+      let {uuid, type, blessing, selfPrivateKey} = this.$route.query
       this.showLoading = true
-      apiCreate(this, uuid, type, blessing, redSelfPublicKey, function (res) {
+      apiCreate(this, uuid, type, blessing, selfPrivateKey, function (res) {
         _this.showLoading = false
         if (res.code === 0) {
           _this.packetStr = generatePacketCode(blessing, uuid, res.data.hash, lang)
