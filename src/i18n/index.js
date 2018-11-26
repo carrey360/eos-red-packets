@@ -128,7 +128,8 @@ let enConfig = {
   'server_5': 'Man-machine verification failed',
   '转账完成': 'Successed',
   '用户验证失败': 'User authentication failed',
-  '请求超时': 'request timeout'
+  '请求超时': 'request timeout',
+  '请输入您要新创建的账户名': 'Please input new account'
 }
 
 let cnConfig = {
@@ -257,7 +258,8 @@ let cnConfig = {
   'server_5': '人机验证失败',
   '转账完成': '转账完成',
   '用户验证失败': '用户验证失败',
-  '请求超时': '请求超时'
+  '请求超时': '请求超时',
+  '请输入您要新创建的账户名': '请输入您要新创建的账户名'
 }
 
 const messages = {

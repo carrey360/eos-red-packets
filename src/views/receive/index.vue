@@ -27,7 +27,7 @@
       </div>
     </div>
     <div class="input-account" v-if="!isIputCodeNumber">
-      <LimitInput :maxlength="100" numberType="nolimit" class="input" :placeholder="$t('请输入您的账号')" :isNumber="false" isFrom='receive' v-model="account"/>
+      <LimitInput :maxlength="100" numberType="nolimit" class="input" :placeholder="placeholder" :isNumber="false" isFrom='receive' v-model="account"/>
       <div class="no-account" v-if="info.type != 3 && getCurCurrency == 'EOS'">{{$t('还没有EOS账号')}} ? <router-link to="account">{{$t('创建')}}</router-link></div>
       <div class="no-account" style="text-align:left;margin-left:16px" v-if="info.type == 3">{{$t('12位字符，由字母a-z与数字1-5组成')}}</div>
       <!-- <div class="button" v-if="info.type != 3" @click="receive">{{$t('领取')}}</div>
@@ -76,11 +76,18 @@ export default {
         log: []
       },
       serverSig: '',
-      nc: ''
+      nc: '',
+      placeholder: ''
     }
   },
   created () {
     let query = this.$route.query
+
+    if (query.lang) {
+      localStorage.setItem('redLang', query.lang)
+      this.$i18n.locale = query.lang
+    }
+    this.placeholder = this.$t('请输入您的账号')
 
     if (!query.h) {
       this.isIputCodeNumber = true
@@ -220,6 +227,7 @@ export default {
         // 如果是创建账号红包类型把输入框默认值去掉
         if (result.type === 3) {
           this.account = ''
+          this.placeholder = this.$t('请输入您要新创建的账户名')
         }
         if (!this.$store.state.code) {
           let query = this.$route.query
