@@ -88,7 +88,7 @@ const store = new Vuex.Store({
       state.wsCache = wsCache
     },
     'checkTerminal': (state) => {
-      let isMobile = /Android|webOS|iPhone|iPod|BlackBerry/i.test(navigator.userAgent)
+      let isMobile = /Android|webOS|iPhone|iPod|BlackBerry|MicroMessenger/i.test(navigator.userAgent)
       state.captchaScene = isMobile ? 'nc_activity_h5' : 'nc_activity'
     }
   }
