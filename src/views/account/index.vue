@@ -28,18 +28,18 @@
       <textarea disabled='disabled' class="packet-number common-input" v-model="packetNumber" :readonly="hasRedCreateSuc"></textarea>
 
       <div class="account-tip">
-        <p>{{$t('创建提示')}}</p>
-        <p>{{$t('创建账号会扣除部分EOS，剩余部分会转入账号内')}}</p>
-      </div>
-
-      <div class="account-tip">
-        <p>{{$t('离线保存')}}</p>
+        <p class="red">{{$t('离线保存')}}</p>
         <p>{{$t('建议抄写或打印私钥后放置在安全地点保存')}}</p>
       </div>
 
       <div class="account-tip">
-        <p>{{$t('请勿使用网络传输')}}</p>
+        <p class="red">{{$t('请勿使用网络传输')}}</p>
         <p>{{$t('请勿通过网络工具传输私钥，例如用微信发送到电脑。一旦被黑客获取造成不可挽回的资产损失')}}</p>
+      </div>
+
+      <div class="account-tip">
+        <p>{{$t('创建提示')}}</p>
+        <p>{{$t('创建账号会扣除部分EOS，剩余部分会转入账号内')}}</p>
       </div>
 
       <div v-show="!hasRedCreateSuc && !packetNumber" class="button" @click="create">{{$t('创建账号')}}</div>
